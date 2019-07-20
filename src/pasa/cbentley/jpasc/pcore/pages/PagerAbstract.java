@@ -51,7 +51,7 @@ public abstract class PagerAbstract<T> implements IStringable {
     * Should the list returned for publishing should exceed the range size?
     * 
     */
-   private boolean isFitRange;
+   private boolean    isFitRange;
 
    /**
     * in manual exact page size mode, once page has been filled, you have to turn it explicitely and the page is
@@ -72,7 +72,7 @@ public abstract class PagerAbstract<T> implements IStringable {
    /**
     * Current lookup starting position
     */
-   protected Integer    lookUpPointer;
+   protected Integer  lookUpPointer;
 
    /**
     * null if unknown which means the pager doesn't know when to stop.
@@ -80,6 +80,9 @@ public abstract class PagerAbstract<T> implements IStringable {
     */
    protected Integer  lookUpRangeEnd;
 
+   /**
+    * null if not known. will be set to 0 by build
+    */
    protected Integer  lookUpRangeStart;
 
    /**
@@ -192,6 +195,22 @@ public abstract class PagerAbstract<T> implements IStringable {
    }
 
    /**
+    * Total items expected to be found.
+    * -1 if unknown
+    * @return
+    */
+   public int getCountTotalItems() {
+      if(lookUpRangeEnd == null) {
+         return -1;
+      }
+      if (lookUpRangeStart == null) {
+         return lookUpRangeEnd;
+      } else {
+         return lookUpRangeEnd - lookUpRangeStart;
+      }
+   }
+
+   /**
     * When AP
     * @return
     */
@@ -284,7 +303,7 @@ public abstract class PagerAbstract<T> implements IStringable {
       List<T> listReturn = listFiltered;
       if (isManualExactPageSize && listFiltered != null) {
          //possible leftover
-         
+
          //take it all and if 
          List<T> listItemsUnPublished = new ArrayList<>();
          if (listLeftOver != null) {
