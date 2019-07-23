@@ -9,6 +9,8 @@ import com.github.davidbolet.jpascalcoin.api.model.Account;
 import pasa.cbentley.core.src4.interfaces.IStrAcceptor;
 import pasa.cbentley.jpasc.pcore.ctx.PCoreCtx;
 import pasa.cbentley.jpasc.pcore.listlisteners.IListListener;
+import pasa.cbentley.jpasc.pcore.pages.PagerAbstract;
+import pasa.cbentley.jpasc.pcore.pages.PagerAccount;
 
 /**
  * Task for searching wallet account with a specific name {@link IStrAcceptor}
@@ -21,5 +23,20 @@ public class ListTaskAccountChainBalanceMinMax extends ListTaskAccountChainFindA
       super(pc, listener);
       this.balanceMin = balanceMin;
       this.balanceMax = balanceMax;
+   }
+   
+   /**
+    * so as soon as we have a result, we publish it
+    */
+   protected PagerAbstract<Account> createPagerDefault() {
+      Integer numAccounts = pc.getPClient().getBlockCount() * 5;
+      PagerAccount pageAccount = new PagerAccount(pc);
+      pageAccount.setLookUpRangeStart(0); //start at beginning of chain
+      pageAccount.setLookUpRangeEnd(numAccounts);
+      pageAccount.setTimingEnabled(true);
+      pageAccount.setManualExactPageSize(false);
+      pageAccount.setPageSize(1);
+      pageAccount.build();
+      return pageAccount;
    }
 }
