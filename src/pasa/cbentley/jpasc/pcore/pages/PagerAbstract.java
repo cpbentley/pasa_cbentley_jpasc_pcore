@@ -102,6 +102,16 @@ public abstract class PagerAbstract<T> implements IStringable {
     */
    private Integer    pageSizeRoot;
 
+   /**
+    * Valid when timing is enable. Decreases page size so that it is below this value.
+    */
+   private int pageTimingMax = 700;
+
+   /**
+    * Valid when timing is enable. increase page size so that it is above 100ms
+    */
+   private int pageTimingMin = 100;
+
    protected PCoreCtx pc;
 
    private long       timing;
@@ -200,7 +210,7 @@ public abstract class PagerAbstract<T> implements IStringable {
     * @return
     */
    public int getCountTotalItems() {
-      if(lookUpRangeEnd == null) {
+      if (lookUpRangeEnd == null) {
          return -1;
       }
       if (lookUpRangeStart == null) {
@@ -365,6 +375,14 @@ public abstract class PagerAbstract<T> implements IStringable {
       return pageSizeRoot;
    }
 
+   public int getPageTimingMax() {
+      return pageTimingMax;
+   }
+
+   public int getPageTimingMin() {
+      return pageTimingMin;
+   }
+
    /**
     * 
     * @return
@@ -447,10 +465,10 @@ public abstract class PagerAbstract<T> implements IStringable {
          //compute timing needed for the last batch. if it was fast, increase number of objects per batch
          now = System.currentTimeMillis();
          long diff = now - timing;
-         if (diff < 100) { //goal is to have a refresh at the level of human brain ability, i.e 200ms
+         if (diff < pageTimingMin) { //goal is to have a refresh at the level of human brain ability, i.e 200ms
             pageSizeActive *= 2;
-         } else if (diff > 600) {
-            pageSizeActive = (pageSizeActive / 2) + 1; //+1 to avoid zero
+         } else if (diff > pageTimingMax) {
+            pageSizeActive = (pageSizeActive * 2 / 3) + 1; //+1 to avoid zero
          }
       }
 
@@ -527,6 +545,14 @@ public abstract class PagerAbstract<T> implements IStringable {
     */
    public void setPageSize(Integer pageSize) {
       this.pageSizeRoot = pageSize;
+   }
+
+   public void setPageTimingMax(int pageTimingMax) {
+      this.pageTimingMax = pageTimingMax;
+   }
+
+   public void setPageTimingMin(int pageTimingMin) {
+      this.pageTimingMin = pageTimingMin;
    }
 
    /**
