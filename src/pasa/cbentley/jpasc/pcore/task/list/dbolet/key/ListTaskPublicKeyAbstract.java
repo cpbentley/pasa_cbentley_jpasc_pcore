@@ -31,7 +31,7 @@ public abstract class ListTaskPublicKeyAbstract extends ListTaskPage<PublicKey> 
    }
 
    protected List<PublicKey> getFiltered(List<PublicKey> list) {
-      if (publicKeyFilter != null) {
+      if (publicKeyFilter != null && list != null) {
          List<PublicKey> filteredList = new ArrayList<PublicKey>(list.size());
          for (PublicKey acc : list) {
             if (publicKeyFilter.filterPublicKey(acc)) {
