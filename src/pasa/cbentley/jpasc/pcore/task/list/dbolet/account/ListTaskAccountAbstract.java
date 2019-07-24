@@ -59,7 +59,7 @@ public abstract class ListTaskAccountAbstract extends ListTaskPage<Account> {
    }
 
    protected List<Account> getFiltered(List<Account> list) {
-      if (filterSetAccount != null) {
+      if (filterSetAccount != null && list != null) {
          List<Account> filteredList = new ArrayList<Account>(list.size());
          for (Account acc : list) {
             if (filterSetAccount.filterAccount(acc)) {
