@@ -32,7 +32,7 @@ public abstract class ListTaskBlockAbstract extends ListTaskPage<Block> {
    }
 
    protected List<Block> getFiltered(List<Block> list) {
-      if (filterBlock != null) {
+      if (filterBlock != null && list != null) {
          List<Block> filteredList = new ArrayList<Block>(list.size());
          for (Block acc : list) {
             if (filterBlock.filterBlock(acc)) {
