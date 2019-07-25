@@ -38,9 +38,9 @@ public abstract class PagerAbstract<T> implements IStringable {
     */
    protected int      countPublished;
 
-   private int        errorCounter = 0;
+   private int        errorCounter  = 0;
 
-   private boolean    isAscending  = true;    //by default true
+   private boolean    isAscending   = true;   //by default true
 
    //#debug
    private boolean    isBuilt;
@@ -91,8 +91,6 @@ public abstract class PagerAbstract<T> implements IStringable {
     */
    private Integer    lookUpRemainder;
 
-   private long       now;
-
    protected int      pageSizeActive;
 
    /**
@@ -105,12 +103,12 @@ public abstract class PagerAbstract<T> implements IStringable {
    /**
     * Valid when timing is enable. Decreases page size so that it is below this value.
     */
-   private int pageTimingMax = 700;
+   private int        pageTimingMax = 700;
 
    /**
     * Valid when timing is enable. increase page size so that it is above 100ms
     */
-   private int pageTimingMin = 100;
+   private int        pageTimingMin = 100;
 
    protected PCoreCtx pc;
 
@@ -177,6 +175,9 @@ public abstract class PagerAbstract<T> implements IStringable {
       if (isTimingEnabled) {
          timing = System.currentTimeMillis();
       }
+
+      //#debug
+      toDLog().pInit("Build Finished", this, PagerAbstract.class, "build", LVL_05_FINE, false);
    }
 
    /**
@@ -238,17 +239,6 @@ public abstract class PagerAbstract<T> implements IStringable {
          return !isManualPageComplete;
       }
 
-      if (isTimingEnabled) {
-         //compute timing needed for the last batch. if it was fast, increase number of objects per batch
-         now = System.currentTimeMillis();
-         long diff = now - timing;
-         if (diff < 100) { //goal is to have a refresh at the level of human brain ability, i.e 200ms
-            pageSizeActive *= 2;
-         } else if (diff > 600) {
-            pageSizeActive = (pageSizeActive / 2) + 1; //+1 to avoid zero
-         }
-      }
-
       if (lookUpRangeEnd != null) {
          if (isAscending()) {
             lookUpRemainder = lookUpRangeEnd - lookUpPointer;
@@ -258,8 +248,7 @@ public abstract class PagerAbstract<T> implements IStringable {
          if (lookUpRemainder <= 0) {
             return false;
          } else {
-            pageSizeActive = Math.min(lookUpRemainder, pageSizeRoot);
-            timing = now;
+            pageSizeActive = Math.min(lookUpRemainder, pageSizeActive);
             return true;
          }
       } else {
@@ -337,6 +326,7 @@ public abstract class PagerAbstract<T> implements IStringable {
             countPageItemsPublished = 0;
          }
       }
+      timingChecks();
       isContinuePaging = getListIsContinue();
       countPublished += listReturn.size();
       return listReturn;
@@ -439,59 +429,6 @@ public abstract class PagerAbstract<T> implements IStringable {
       return isTimingEnabled;
    }
 
-   public boolean pageTurnInLoop(List<T> listProcessed, List<T> listPublished) {
-      //#mdebug
-      if (!isBuilt) {
-         throw new RuntimeException("Object build() method was not called");
-      }
-      //#enddebug
-      if (listProcessed == null || listProcessed.isEmpty()) {
-         countPageItemsPublished = 0;
-         return false;
-      }
-
-      countProcessed += listProcessed.size();
-      countPublished += listPublished.size();
-      lookUpPointer = getNextStart(listProcessed, listPublished);
-
-      if (isManualExactPageSize) {
-         //check if we have reach the page size requested at build time
-         if (countPageItemsPublished >= pageSizeRoot) {
-            return false;
-         }
-      }
-
-      if (isTimingEnabled) {
-         //compute timing needed for the last batch. if it was fast, increase number of objects per batch
-         now = System.currentTimeMillis();
-         long diff = now - timing;
-         if (diff < pageTimingMin) { //goal is to have a refresh at the level of human brain ability, i.e 200ms
-            pageSizeActive *= 2;
-         } else if (diff > pageTimingMax) {
-            pageSizeActive = (pageSizeActive * 2 / 3) + 1; //+1 to avoid zero
-         }
-      }
-
-      if (lookUpRangeEnd != null) {
-         if (isAscending()) {
-            lookUpRemainder = lookUpRangeEnd - lookUpPointer;
-         } else {
-            lookUpRemainder = lookUpPointer - lookUpRangeStart;
-         }
-         if (lookUpRemainder <= 0) {
-            return false;
-         } else {
-            pageSizeActive = Math.min(lookUpRemainder, pageSizeRoot);
-            timing = now;
-            return true;
-         }
-      } else {
-         //since we don't know the total number... we will stop
-         //once the list is empty or null
-         return true;
-      }
-   }
-
    /**
     * true, pointer will go up
     * false, pointer will iterate down.
@@ -563,6 +500,34 @@ public abstract class PagerAbstract<T> implements IStringable {
       this.isTimingEnabled = isTimingEnable;
    }
 
+   /**
+    * If timing is enabled, updates the page size based on the time it took to complete the previous page.
+    * 
+    * Increase is currently *2
+    * Decrease is 2/3
+    */
+   private void timingChecks() {
+      if (isTimingEnabled) {
+         //compute timing needed for the last batch. if it was fast, increase number of objects per batch
+         long now = System.currentTimeMillis();
+         long diff = now - timing;
+         if (diff < pageTimingMin) { //goal is to have a refresh at the level of human brain ability, i.e 200ms
+            //#debug
+            String msg = "Increasing PageSize from " + pageSizeActive + " to " + (pageSizeActive * 2) + " time=" + diff;
+            //#debug
+            toDLog().pWork(msg, this, PagerAbstract.class, "timingChecks", LVL_05_FINE, true);
+            pageSizeActive *= 2;
+         } else if (diff > pageTimingMax) {
+            //#debug
+            String msg = "Decreasing PageSize from " + pageSizeActive + " to " + ((pageSizeActive * 2 / 3) + 1) + " time=" + diff;
+            //#debug
+            toDLog().pWork(msg, this, PagerAbstract.class, "timingChecks", LVL_05_FINE, true);
+            pageSizeActive = (pageSizeActive * 2 / 3) + 1; //+1 to avoid zero
+         }
+         timing = now;
+      }
+   }
+
    //#mdebug
    public IDLog toDLog() {
       return pc.toDLog();
@@ -620,6 +585,8 @@ public abstract class PagerAbstract<T> implements IStringable {
       dc.appendVarWithSpace("isManualExactPageSize", isManualExactPageSize);
       dc.appendVarWithSpace("isTimingEnabled", isTimingEnabled);
       dc.appendVarWithSpace("isBuilt", isBuilt);
+      dc.appendVarWithSpace("pageTimingMin", pageTimingMin);
+      dc.appendVarWithSpace("pageTimingMax", pageTimingMax);
    }
    //#enddebug
 
