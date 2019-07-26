@@ -24,6 +24,8 @@ import pasa.cbentley.jpasc.pcore.ctx.PCoreCtx;
  * 
  * 591357
  * 
+ * the following is useful for more temporary file storage
+ * System.getProperty("java.io.tmpdir")
  * 
  * @author Charles Bentley
  *
