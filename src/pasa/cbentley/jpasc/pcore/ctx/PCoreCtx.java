@@ -161,7 +161,7 @@ public class PCoreCtx extends ACtx implements IStringable, ICtx {
       pd = new PCoreDebug(this);
    }
 
-   public void addI18NKey(ArrayList<String> list) {
+   public void addI18NKey(List<String> list) {
       list.add("i18nPascalJavaCore");
    }
 
@@ -389,6 +389,11 @@ public class PCoreCtx extends ACtx implements IStringable, ICtx {
       return pingParams;
    }
 
+   /**
+    * Its never null.
+    * 
+    * @return
+    */
    public PkNamesStore getPkNameStore() {
       return namesStore;
    }
