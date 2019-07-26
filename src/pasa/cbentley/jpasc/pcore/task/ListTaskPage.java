@@ -9,11 +9,18 @@ import java.util.List;
 import com.github.davidbolet.jpascalcoin.exception.RPCApiException;
 
 import pasa.cbentley.core.src4.logging.Dctx;
+import pasa.cbentley.core.src4.thread.AbstractBRunnable;
 import pasa.cbentley.jpasc.pcore.ctx.PCoreCtx;
 import pasa.cbentley.jpasc.pcore.dboletbridge.IPascalCoinClient;
 import pasa.cbentley.jpasc.pcore.listlisteners.IListListener;
 import pasa.cbentley.jpasc.pcore.pages.PagerAbstract;
 
+/**
+ * TODO move a generic version of this to core5
+ * @author Charles Bentley
+ *
+ * @param <T>
+ */
 public abstract class ListTaskPage<T> extends ListTask<T> {
 
    /**
@@ -25,16 +32,39 @@ public abstract class ListTaskPage<T> extends ListTask<T> {
       super(pc, listener);
    }
 
+   /**
+    * Create the {@link PagerAbstract} controlling this task.
+    * @return
+    */
    protected abstract PagerAbstract<T> createPagerDefault();
 
+   /**
+    * Build a list of items for the given page
+    * @param client
+    * @param start
+    * @param pageSize
+    * @return
+    */
    protected abstract List<T> findItems(IPascalCoinClient client, Integer start, Integer pageSize);
 
+   /**
+    * Filters the list. Returns same list if no filtering required.
+    * @param list
+    * @return
+    */
    protected abstract List<T> getFiltered(List<T> list);
 
+   /**
+    * Returns the {@link PagerAbstract} of thhis {@link ListTaskPage}
+    * @return
+    */
    public PagerAbstract<T> getPager() {
       return pager;
    }
 
+   /**
+    * Implementation of {@link AbstractBRunnable#runAbstract()}
+    */
    public void runAbstract() {
       if (pager == null) {
          pager = createPagerDefault();
@@ -42,7 +72,14 @@ public abstract class ListTaskPage<T> extends ListTask<T> {
       runAbstract(pager);
    }
 
+   /**
+    * 
+    * @param pager
+    */
    public void runAbstract(PagerAbstract<T> pager) {
+      //#debug
+      toDLog().pFlow("Start of Method", this, ListTaskPage.class, "runAbstract", LVL_04_FINER, true);
+
       IPascalCoinClient pclient = pc.getPClient();
       List<T> listProcessed = null;
       List<T> listFiltered = null;
@@ -70,9 +107,11 @@ public abstract class ListTaskPage<T> extends ListTask<T> {
             hasMoreDataPages = pager.isContinuePagingAfterException();
          }
       } while (hasMoreDataPages && isContinue());
+
+      //#debug
+      toDLog().pFlow("End of Method", this, ListTaskPage.class, "runAbstract", LVL_04_FINER, true);
    }
 
-   
    /**
     * Sets the {@link PagerAbstract} that will govern how results are fed to the {@link IListListener}
     * @param pager

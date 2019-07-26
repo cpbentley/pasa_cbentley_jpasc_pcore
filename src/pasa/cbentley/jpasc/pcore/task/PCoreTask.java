@@ -9,6 +9,12 @@ import pasa.cbentley.core.src4.logging.IDLog;
 import pasa.cbentley.core.src4.thread.AbstractBRunnable;
 import pasa.cbentley.jpasc.pcore.ctx.PCoreCtx;
 
+/**
+ * Base class for all background tasks within the {@link PCoreCtx}
+ * 
+ * @author Charles Bentley
+ *
+ */
 public abstract class PCoreTask extends AbstractBRunnable {
 
    private PCoreTask  parentTask;
@@ -20,10 +26,17 @@ public abstract class PCoreTask extends AbstractBRunnable {
       this.pc = pc;
    }
 
+   /**
+    * The parent task of this task. null if none.
+    * @return
+    */
    public PCoreTask getParentTask() {
       return parentTask;
    }
 
+   /**
+    * If parent task is not null. we check it. Parent decides for the child.
+    */
    public boolean isContinue() {
       if (parentTask != null) {
          boolean isParentContinue = parentTask.isContinue();
