@@ -16,11 +16,13 @@ import java.util.Map;
 
 import pasa.cbentley.core.src4.ctx.UCtx;
 import pasa.cbentley.core.src4.logging.Dctx;
+import pasa.cbentley.core.src4.logging.IDLog;
 import pasa.cbentley.core.src4.logging.IStringable;
 import pasa.cbentley.jpasc.pcore.ctx.PCoreCtx;
 
 /**
- * Tracks some people
+ * Class that associates public key to readable names chosen by the user
+ * 
  * 
  * 591357
  * 
@@ -32,37 +34,92 @@ import pasa.cbentley.jpasc.pcore.ctx.PCoreCtx;
  */
 public class PkNamesStore implements IStringable {
 
+   private String              fileName;
+
    /**
-    * When the wallet sees a pub key that is not in name or wallet, it adds it to ownerIDs with an generated name.
-    * <br>
+    * When the wallet sees a pub key that is not known.
     * 
     * we don't want to store IDs
     */
-   private Map<String, String> ownerIDs    = new HashMap<String, String>();
+   private Map<String, String> mapKeyToChainID;
 
    /**
-    * Maps encoded PK to names. Set by
-    * Its a global list that is used by all table models when they want to 
+    * Maps encoded public key to names. 
+    * 
+    * Global list that is used by all table models when they want to 
     * match the public key to a user readable name.
     * <br>
-    * Names that are not controlled by the pascal deamon
+    * Those names are not controlled by the pascal reference wallet.
     */
-   private Map<String, String> ownerNames  = new HashMap<String, String>();
+   private Map<String, String> mapKeyToNameChain;
 
    /**
-    * At the start of the wallet, the wallet keys are inserted here
-    * Built upon connection
+    * At the start of the wallet, the reference wallet public keys and their names are added to this map.
+    * 
+    * This is done upon connection
     */
-   private Map<String, String> ownerWallet = new HashMap<String, String>();
+   private Map<String, String> mapKeyToNameWallet;
 
-   private PCoreCtx      pc;
+   private int                 version;
 
+   /**
+    * 
+    */
+   protected final PCoreCtx    pc;
+
+   /**
+    * 
+    * @param pcx
+    */
    public PkNamesStore(PCoreCtx pcx) {
       this.pc = pcx;
-      
+      mapKeyToNameWallet = new HashMap<String, String>();
+      mapKeyToNameChain = new HashMap<String, String>();
+      mapKeyToChainID = new HashMap<String, String>();
       //TODO upon connection we have to update, so we are linked to a connexion ?
-      
+
       //TODO Offline work?
+   }
+
+   /**
+    * Called by the exit and save commands 
+    */
+   public void cmdExitSave() {
+      //#debug
+      toDLog().pInit("Saving", this, PkNamesStore.class, "cmdExitSave", LVL_05_FINE, false);
+
+      File f = getFileSettings();
+      ObjectOutputStream oos = null;
+      try {
+         FileOutputStream fos = new FileOutputStream(f);
+         oos = new ObjectOutputStream(fos);
+         oos.writeInt(1); //version number
+         oos.writeObject(mapKeyToNameChain);
+         oos.close();
+      } catch (FileNotFoundException e) {
+         e.printStackTrace();
+      } catch (IOException e) {
+         e.printStackTrace();
+      } finally {
+         try {
+            oos.close();
+         } catch (IOException e) {
+            e.printStackTrace();
+         }
+      }
+   }
+
+   public int getVersion() {
+      return version;
+   }
+
+   public String getFileName() {
+      return fileName;
+   }
+
+   public File getFileSettings() {
+      File f = new File(pc.getSettingsPath(), fileName);
+      return f;
    }
 
    /**
@@ -71,32 +128,42 @@ public class PkNamesStore implements IStringable {
     * @return
     */
    public String getKeyName(String pub) {
-      String name = ownerWallet.get(pub);
+      String name = mapKeyToNameWallet.get(pub);
       if (name == null) {
-         name = ownerNames.get(pub);
+         name = mapKeyToNameChain.get(pub);
          if (name == null) {
-            name = ownerIDs.get(pub);
+            name = mapKeyToChainID.get(pub);
             if (name == null) {
                //add one
-               int ownerCount = ownerIDs.size() + 1;
+               int ownerCount = mapKeyToChainID.size() + 1;
                name = String.valueOf(ownerCount);
-               ownerIDs.put(pub, name);
+               mapKeyToChainID.put(pub, name);
             }
          }
       }
       return name;
    }
 
+   public Map<String, String> getWalletMapping() {
+      return mapKeyToNameChain;
+   }
+
+   @SuppressWarnings("unchecked")
    public void initialize() {
-      //load names
-      String path = System.getProperty("user.dir");
-      File f = new File(path, "pascjavaswingstate.state");
+
+      //#debug
+      toDLog().pInit("msg", this, PkNamesStore.class, "initialize", LVL_05_FINE, true);
+
+      File f = getFileSettings();
       ObjectInputStream ois = null;
       try {
          FileInputStream fis = new FileInputStream(f);
          ois = new ObjectInputStream(fis);
-         int version = ois.readInt();
-         ownerNames = (Map<String, String>) ois.readObject();
+         version = ois.readInt();
+         Object obj = ois.readObject();
+         if (obj instanceof Map) {
+            mapKeyToNameChain = (Map) obj;
+         }
          ois.close();
       } catch (FileNotFoundException e) {
          e.printStackTrace();
@@ -113,42 +180,28 @@ public class PkNamesStore implements IStringable {
       }
    }
 
-   public void exit() {
-      String path = System.getProperty("user.dir");
-      File f = new File(path, "pascjavaswingstate.state");
-      ObjectOutputStream oos = null;
-      try {
-         FileOutputStream fos = new FileOutputStream(f);
-         oos = new ObjectOutputStream(fos);
-         oos.writeInt(0); //version number
-         oos.writeObject(ownerNames);
-         oos.close();
-      } catch (FileNotFoundException e) {
-         e.printStackTrace();
-      } catch (IOException e) {
-         e.printStackTrace();
-      } finally {
-         try {
-            oos.close();
-         } catch (IOException e) {
-            e.printStackTrace();
-         }
-      }
-   }
-
-   public void setWalletMapping(Map<String, String> walletMapping) {
-      ownerNames = walletMapping;
-   }
-
+   /**
+    * Called 
+    * @param encodedPk
+    * @param name
+    */
    public void setPkName(String encodedPk, String name) {
-      ownerNames.put(encodedPk, name);
+      mapKeyToNameChain.put(encodedPk, name);
    }
 
-   public Map<String, String> getWalletMapping() {
-      return ownerNames;
+   /**
+    * Called when a mapping from reference wallet has been found
+    * @param walletMapping
+    */
+   public void setWalletMapping(Map<String, String> walletMapping) {
+      mapKeyToNameChain = walletMapping;
    }
 
    //#mdebug
+   public IDLog toDLog() {
+      return pc.toDLog();
+   }
+
    public String toString() {
       return Dctx.toString(this);
    }
@@ -157,31 +210,27 @@ public class PkNamesStore implements IStringable {
       dc.root(this, "PkNamesStore");
       dc.append("Wallet Key Names");
       dc.tab();
-      for (String key : ownerWallet.keySet()) {
-         String encodedKey = ownerWallet.get(key);
+      for (String key : mapKeyToNameWallet.keySet()) {
+         String encodedKey = mapKeyToNameWallet.get(key);
          dc.appendVarWithSpace(key, encodedKey);
          dc.nl();
       }
-      
+
       dc.append("Tools Custom Names");
       dc.tab();
-      for (String key : ownerNames.keySet()) {
-         String encodedKey = ownerNames.get(key);
+      for (String key : mapKeyToNameChain.keySet()) {
+         String encodedKey = mapKeyToNameChain.get(key);
          dc.appendVarWithSpace(key, encodedKey);
          dc.nl();
       }
       //TODO use dc data flag to switch off this often bloated information
       dc.append("Tool Forced Names");
       dc.tab();
-      for (String key : ownerIDs.keySet()) {
-         String encodedKey = ownerIDs.get(key);
+      for (String key : mapKeyToChainID.keySet()) {
+         String encodedKey = mapKeyToChainID.get(key);
          dc.appendVarWithSpace(key, encodedKey);
          dc.nl();
       }
-   }
-
-   public UCtx toStringGetUCtx() {
-      return pc.getUCtx();
    }
 
    public String toString1Line() {
@@ -190,6 +239,10 @@ public class PkNamesStore implements IStringable {
 
    public void toString1Line(Dctx dc) {
       dc.root1Line(this, "PkNamesStore");
+   }
+
+   public UCtx toStringGetUCtx() {
+      return pc.getUCtx();
    }
    //#enddebug
 
