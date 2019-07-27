@@ -34,13 +34,15 @@ public class RPCConnection implements IBlockListener {
    /**
     *  Thread safe. when accessed by {@link PingRunnable}.
     */
-   private List<IBlockListener> blockListeners = new Vector<>();
+   private List<IBlockListener> blockListeners      = new Vector<>();
 
-   private Integer              lastBlockMined = 0;
+   private Integer              lastBlockMined      = 0;
 
-   private Integer              currentPending = 0;
+   private int                  lastBlockMinedValue = 0;
 
-   boolean                      isLocked       = true;
+   private Integer              currentPending      = 0;
+
+   boolean                      isLocked            = true;
 
    private PCoreCtx             pc;
 
@@ -52,7 +54,7 @@ public class RPCConnection implements IBlockListener {
 
    private Short                port;
 
-   private boolean              isConnected    = false;
+   private boolean              isConnected         = false;
 
    public RPCConnection(PCoreCtx pcc) {
       this.pc = pcc;
@@ -87,7 +89,7 @@ public class RPCConnection implements IBlockListener {
       String ipStr = " " + ip + ":" + port;
       try {
          Integer blockCount = pclient.getBlockCount();
-         lastBlockMined = pclient.getBlockCount() - 1;
+         setLastBlockMined(pclient.getBlockCount() - 1);
          if (blockCount != null) {
             isConnected = true;
             boolean wasLocked = pclient.getNodeStatus().getLocked();
@@ -95,7 +97,7 @@ public class RPCConnection implements IBlockListener {
                pc.getLog().consoleLog("Connection to localhost: Wallet is not locked. Configure lock settings");
             }
             //by default, we try to auto lock the wallet
-            boolean autoLockOnLogin = pc.getPrefs().getBoolean(ITechPCore.PKEY_AUTO_LOCK, true); 
+            boolean autoLockOnLogin = pc.getPrefs().getBoolean(ITechPCore.PKEY_AUTO_LOCK, true);
             if (autoLockOnLogin) {
                //try auto locking
                isLocked = pclient.lock(); //by default when connecting. it locks the wallet
@@ -109,7 +111,7 @@ public class RPCConnection implements IBlockListener {
             } else {
                isLocked = wasLocked;
             }
-         
+
             StringBBuilder sb = new StringBBuilder();
             sb.append("Connected to Wallet Node with #");
             sb.append(blockCount);
@@ -135,7 +137,7 @@ public class RPCConnection implements IBlockListener {
          e.printStackTrace();
          return false;
       }
-   
+
    }
 
    /**
@@ -161,6 +163,14 @@ public class RPCConnection implements IBlockListener {
     */
    public Integer getLastBlockMined() {
       return lastBlockMined;
+   }
+   
+   /**
+    * 
+    * @return
+    */
+   public int getLastBlockMinedValue() {
+      return lastBlockMinedValue;
    }
 
    /**
@@ -231,14 +241,14 @@ public class RPCConnection implements IBlockListener {
    }
 
    public void forceUpdateLastMinedBlock() {
-      lastBlockMined = pclient.getBlockCount() - 1;
+      setLastBlockMined(pclient.getBlockCount() - 1);
    }
 
    /**
     * 
     */
    public void pingNewBlock(Integer newBlock, long millis) {
-      lastBlockMined = newBlock;
+      setLastBlockMined(newBlock);
       for (IBlockListener bl : blockListeners) {
          bl.pingNewBlock(newBlock, millis);
       }
@@ -278,7 +288,7 @@ public class RPCConnection implements IBlockListener {
       this.pclient = pclient;
       //TODO manage connection exception
       try {
-         lastBlockMined = pclient.getBlockCount() - 1;
+         setLastBlockMined(pclient.getBlockCount() - 1);
       } catch (RPCIOException e) {
          //daemon is not connected
 
@@ -328,5 +338,12 @@ public class RPCConnection implements IBlockListener {
       return pc.getUCtx();
    }
    //#enddebug
+
+   public void setLastBlockMined(Integer lastBlockMined) {
+      if (lastBlockMined != null) {
+         this.lastBlockMined = lastBlockMined;
+         lastBlockMinedValue = lastBlockMined.intValue();
+      }
+   }
 
 }
