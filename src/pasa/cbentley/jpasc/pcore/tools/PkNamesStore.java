@@ -78,6 +78,7 @@ public class PkNamesStore implements IStringable {
       mapKeyToChainID = new HashMap<String, String>();
       //TODO upon connection we have to update, so we are linked to a connexion ?
 
+      fileName = "jpasc_nameskey.state";
       //TODO Offline work?
    }
 

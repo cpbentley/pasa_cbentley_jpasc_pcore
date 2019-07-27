@@ -7,7 +7,6 @@ package pasa.cbentley.jpasc.pcore.ctx;
 import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -142,6 +141,8 @@ public class PCoreCtx extends ACtx implements IStringable, ICtx {
 
    private RPCConnection            rpcConnection;
 
+   private String settingsPathCustom;
+
    public PCoreCtx(UCtx uc, C5Ctx c5) {
       super(uc);
       this.c5 = c5;
@@ -180,7 +181,7 @@ public class PCoreCtx extends ACtx implements IStringable, ICtx {
 
    public void exit() {
       //make sure db of pk names is saved
-      namesStore.exit();
+      namesStore.cmdExitSave();
    }
 
    /**
@@ -442,6 +443,26 @@ public class PCoreCtx extends ACtx implements IStringable, ICtx {
       return rpcConnection;
    }
 
+   /**
+    * The default path is home.dir
+    * 
+    * If the user has setup a specific path with {@link PCoreCtx#setSettingsPathCustom(String)}
+    * 
+    * This value is read?
+    * 
+    * @return
+    */
+   public String getSettingsPath() {
+      if (settingsPathCustom == null) {
+         return System.getProperty("home.dir");
+      }
+      return settingsPathCustom;
+   }
+
+   public String getSettingsPathCustom() {
+      return settingsPathCustom;
+   }
+
    public UCtx getUCtx() {
       return uc;
    }
@@ -465,6 +486,10 @@ public class PCoreCtx extends ACtx implements IStringable, ICtx {
 
    public void setPrefs(IPrefs prefs) {
       this.prefsUser = prefs;
+   }
+
+   public void setSettingsPathCustom(String settingsPathCustom) {
+      this.settingsPathCustom = settingsPathCustom;
    }
 
    public IDLog toDLog() {
