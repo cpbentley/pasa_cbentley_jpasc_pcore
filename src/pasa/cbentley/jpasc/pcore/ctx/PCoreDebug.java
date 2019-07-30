@@ -19,6 +19,8 @@ import pasa.cbentley.jpasc.pcore.utils.PascalUtils;
 
 public class PCoreDebug {
 
+   //#mdebug
+   
    protected final PCoreCtx pc;
 
    public PCoreDebug(PCoreCtx pc) {
@@ -199,4 +201,6 @@ public class PCoreDebug {
          d1(ac, dc);
       }
    }
+   
+   //#enddebug
 }

@@ -18,7 +18,6 @@ import pasa.cbentley.jpasc.pcore.interfaces.IAccessAccountDBolet;
 import pasa.cbentley.jpasc.pcore.listlisteners.ListenerHolderAccount;
 import pasa.cbentley.jpasc.pcore.network.RPCConnection;
 import pasa.cbentley.jpasc.pcore.pages.PagerAbstract;
-import pasa.cbentley.jpasc.pcore.task.list.dbolet.account.chain.ListTaskAccountChainPriceMinMax;
 import pasa.cbentley.jpasc.pcore.task.list.dbolet.account.wallet.ListTaskAccountWalletPriceMinMax;
 
 /**
@@ -27,37 +26,12 @@ import pasa.cbentley.jpasc.pcore.task.list.dbolet.account.wallet.ListTaskAccount
  * @author Charles Bentley
  *
  */
-public class AccessAccountDBoletRPCWallet  implements IAccessAccountDBolet {
+public class AccessAccountDBoletRPCWallet implements IAccessAccountDBolet {
 
    protected final PCoreCtx pc;
 
    public AccessAccountDBoletRPCWallet(PCoreCtx pc) {
       this.pc = pc;
-   }
-   
-   
-   public List<Account> getAccountsRangeBalance(PagerAbstract<Account> page, Double minBalance, Double maxBalance) {
-     throw new RuntimeException("not implemented yet");
-   }
-
-   public List<Account> getAccountsRangeAge(PagerAbstract<Account> page, Integer minAge, Integer maxAge) {
-      throw new RuntimeException("not implemented yet");
-   }
-
-   public List<Account> getAccountsRangePrice(PagerAbstract<Account> page, Double minPrice, Double maxPrice) {
-      ListenerHolderAccount list = new ListenerHolderAccount(pc);
-      ListTaskAccountWalletPriceMinMax task = new ListTaskAccountWalletPriceMinMax(pc,list, minPrice, maxPrice);
-      task.setPager(page);
-      task.runAbstract();
-      return list.getAccounts();
-   }
-
-   public List<Account> getAccountsWithName(PagerAbstract<Account> page, String str) {
-      throw new RuntimeException("not implemented yet");
-   }
-
-   public Account getAccountWithName(String str) {
-      throw new RuntimeException("not implemented yet");
    }
 
    /**
@@ -72,12 +46,46 @@ public class AccessAccountDBoletRPCWallet  implements IAccessAccountDBolet {
 
    }
 
+   public List<Account> getAccountsAll(PagerAbstract<Account> page) {
+      throw new RuntimeException("not implemented yet");
+   }
+
+   public List<Account> getAccountsFilter(PagerAbstract<Account> page, IFilterAccountT<Account> filter) {
+      // TODO Auto-generated method stub
+      return null;
+   }
+
    public List<Account> getAccountsKey(PagerAbstract<Account> page, PublicKeyJava pk) {
       throw new RuntimeException("not implemented yet");
 
    }
 
-   public List<Account> getAccountsAll(PagerAbstract<Account> page) {
+   public List<Account> getAccountsRangeAge(PagerAbstract<Account> page, Integer minAge, Integer maxAge) {
+      throw new RuntimeException("not implemented yet");
+   }
+
+   public List<Account> getAccountsRangeBalance(PagerAbstract<Account> page, Double minBalance, Double maxBalance) {
+      throw new RuntimeException("not implemented yet");
+   }
+
+   public List<Account> getAccountsRangePrice(PagerAbstract<Account> page, Double minPrice, Double maxPrice) {
+      ListenerHolderAccount list = new ListenerHolderAccount(pc);
+      ListTaskAccountWalletPriceMinMax task = new ListTaskAccountWalletPriceMinMax(pc, list, minPrice, maxPrice);
+      task.setPager(page);
+      task.runAbstract();
+      return list.getAccounts();
+   }
+
+   public List<Account> getAccountsType(PagerAbstract<Account> page, Integer type) {
+      // TODO Auto-generated method stub
+      return null;
+   }
+
+   public List<Account> getAccountsWithName(PagerAbstract<Account> page, String str) {
+      throw new RuntimeException("not implemented yet");
+   }
+
+   public Account getAccountWithName(String str) {
       throw new RuntimeException("not implemented yet");
    }
 
@@ -99,10 +107,6 @@ public class AccessAccountDBoletRPCWallet  implements IAccessAccountDBolet {
       return Dctx.toString1Line(this);
    }
 
-   private void toStringPrivate(Dctx dc) {
-
-   }
-
    public void toString1Line(Dctx dc) {
       dc.root1Line(this, "AccessAccountRPC");
       toStringPrivate(dc);
@@ -112,19 +116,10 @@ public class AccessAccountDBoletRPCWallet  implements IAccessAccountDBolet {
       return pc.getUCtx();
    }
 
+   private void toStringPrivate(Dctx dc) {
 
-   public List<Account> getAccountsType(PagerAbstract<Account> page, Integer type) {
-      // TODO Auto-generated method stub
-      return null;
-   }
-
-
-   public List<Account> getAccountsFilter(PagerAbstract<Account> page, IFilterAccountT<Account> filter) {
-      // TODO Auto-generated method stub
-      return null;
    }
 
    //#enddebug
-   
 
 }

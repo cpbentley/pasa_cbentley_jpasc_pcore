@@ -492,6 +492,7 @@ public class PCoreCtx extends ACtx implements IStringable, ICtx {
       this.settingsPathCustom = settingsPathCustom;
    }
 
+   //#mdebug
    public IDLog toDLog() {
       return uc.toDLog();
    }
@@ -500,7 +501,6 @@ public class PCoreCtx extends ACtx implements IStringable, ICtx {
       return pd;
    }
 
-   //#mdebug
    public String toString() {
       return Dctx.toString(this);
    }

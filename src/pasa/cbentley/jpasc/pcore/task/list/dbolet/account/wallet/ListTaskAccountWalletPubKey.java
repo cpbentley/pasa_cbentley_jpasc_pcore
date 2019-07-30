@@ -37,6 +37,9 @@ public class ListTaskAccountWalletPubKey extends ListTaskAccountAbstract {
       this.pubKey = key;
    }
 
+   protected List<Account> findItems(IPascalCoinClient client, Integer start, Integer max) {
+      return client.getWalletAccounts(pubKey.getEncPubKey(), null, start, max);
+   }
    
    //#mdebug
    public void toString(Dctx dc) {
@@ -52,10 +55,6 @@ public class ListTaskAccountWalletPubKey extends ListTaskAccountAbstract {
       dc.root1Line(this, "ListTaskAccountWalletPubKey");
       toStringPrivate(dc);
       super.toString1Line(dc.sup1Line());
-   }
-
-   protected List<Account> findItems(IPascalCoinClient client, Integer start, Integer max) {
-      return client.getWalletAccounts(pubKey.getEncPubKey(), null, start, max);
    }
 
    //#enddebug

@@ -9,7 +9,6 @@ import java.util.List;
 
 import com.github.davidbolet.jpascalcoin.api.model.Block;
 
-import pasa.cbentley.core.src4.ctx.UCtx;
 import pasa.cbentley.core.src4.logging.Dctx;
 import pasa.cbentley.jpasc.pcore.ctx.PCoreCtx;
 import pasa.cbentley.jpasc.pcore.filter.IFilterBlock;
@@ -25,10 +24,14 @@ public abstract class ListTaskBlockAbstract extends ListTaskPage<Block> {
 
    private IFilterBlock filterBlock;
 
-   private boolean isAscendingOrder;
-   
+   private boolean      isAscendingOrder;
+
    public ListTaskBlockAbstract(PCoreCtx pc, IListListener<Block> listener) {
       super(pc, listener);
+   }
+
+   public IFilterBlock getFilterBlock() {
+      return filterBlock;
    }
 
    protected List<Block> getFiltered(List<Block> list) {
@@ -45,33 +48,6 @@ public abstract class ListTaskBlockAbstract extends ListTaskPage<Block> {
       }
    }
 
-   public IFilterBlock getFilterBlock() {
-      return filterBlock;
-   }
-
-   public void setFilterBlock(IFilterBlock filterBlock) {
-      this.filterBlock = filterBlock;
-   }
-   
-   //#mdebug
-   public void toString(Dctx dc) {
-      dc.root(this, "ListTaskBlockAbstract");
-      toStringPrivate(dc);
-      super.toString(dc.sup());
-      dc.nlLvl(filterBlock, "IFilterBlock");
-   }
-
-   private void toStringPrivate(Dctx dc) {
-      
-   }
-
-   public void toString1Line(Dctx dc) {
-      dc.root1Line(this, "ListTaskBlockAbstract");
-      toStringPrivate(dc);
-      super.toString1Line(dc.sup1Line());
-      dc.nlLvlOneLine(filterBlock, "IFilterBlock");
-   }
-
    public boolean isAscendingOrder() {
       return isAscendingOrder;
    }
@@ -85,7 +61,27 @@ public abstract class ListTaskBlockAbstract extends ListTaskPage<Block> {
       this.isAscendingOrder = isAscendingOrder;
    }
 
-   //#enddebug
-   
+   public void setFilterBlock(IFilterBlock filterBlock) {
+      this.filterBlock = filterBlock;
+   }
 
+   //#mdebug
+   public void toString(Dctx dc) {
+      dc.root(this, "ListTaskBlockAbstract");
+      toStringPrivate(dc);
+      super.toString(dc.sup());
+      dc.nlLvl(filterBlock, "IFilterBlock");
+   }
+
+   public void toString1Line(Dctx dc) {
+      dc.root1Line(this, "ListTaskBlockAbstract");
+      toStringPrivate(dc);
+      super.toString1Line(dc.sup1Line());
+      dc.nlLvlOneLine(filterBlock, "IFilterBlock");
+   }
+
+   private void toStringPrivate(Dctx dc) {
+
+   }
+   //#enddebug
 }
