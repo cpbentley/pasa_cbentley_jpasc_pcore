@@ -8,6 +8,8 @@ import java.util.List;
 
 import com.github.davidbolet.jpascalcoin.api.model.Account;
 
+import pasa.cbentley.core.src4.ctx.UCtx;
+import pasa.cbentley.core.src4.logging.Dctx;
 import pasa.cbentley.jpasc.pcore.ctx.PCoreCtx;
 import pasa.cbentley.jpasc.pcore.dboletbridge.IPascalCoinClient;
 import pasa.cbentley.jpasc.pcore.listlisteners.IListListener;
@@ -46,5 +48,26 @@ public class ListTaskAccountChainFindAccounts4 extends ListTaskAccountAbstract {
    protected List<Account> findItems(IPascalCoinClient client, Integer start, Integer max) {
       return client.findAccounts(name, type, start, max);
    }
+   
+   //#mdebug
+   public void toString(Dctx dc) {
+      dc.root(this, "ListTaskAccountChainFindAccounts4");
+      toStringPrivate(dc);
+      super.toString(dc.sup());
+   }
+
+   private void toStringPrivate(Dctx dc) {
+      
+   }
+
+   public void toString1Line(Dctx dc) {
+      dc.root1Line(this, "ListTaskAccountChainFindAccounts4");
+      toStringPrivate(dc);
+      super.toString1Line(dc.sup1Line());
+   }
+
+   //#enddebug
+   
+
 
 }

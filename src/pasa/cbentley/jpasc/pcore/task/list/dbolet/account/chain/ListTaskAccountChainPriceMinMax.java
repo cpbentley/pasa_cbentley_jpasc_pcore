@@ -6,6 +6,8 @@ package pasa.cbentley.jpasc.pcore.task.list.dbolet.account.chain;
 
 import com.github.davidbolet.jpascalcoin.api.model.Account;
 
+import pasa.cbentley.core.src4.ctx.UCtx;
+import pasa.cbentley.core.src4.logging.Dctx;
 import pasa.cbentley.jpasc.pcore.ctx.PCoreCtx;
 import pasa.cbentley.jpasc.pcore.filter.account.FilterAccountPriceMinMax;
 import pasa.cbentley.jpasc.pcore.listlisteners.IListListener;
@@ -41,4 +43,25 @@ public class ListTaskAccountChainPriceMinMax extends ListTaskAccountChainFindAcc
       pageAccount.build();
       return pageAccount;
    }
+   
+   //#mdebug
+   public void toString(Dctx dc) {
+      dc.root(this, "ListTaskAccountChainPriceMinMax");
+      toStringPrivate(dc);
+      super.toString(dc.sup());
+   }
+
+   private void toStringPrivate(Dctx dc) {
+      
+   }
+
+   public void toString1Line(Dctx dc) {
+      dc.root1Line(this, "ListTaskAccountChainPriceMinMax");
+      toStringPrivate(dc);
+      super.toString1Line(dc.sup1Line());
+   }
+
+   //#enddebug
+   
+
 }
