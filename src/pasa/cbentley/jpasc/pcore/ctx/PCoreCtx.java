@@ -454,7 +454,7 @@ public class PCoreCtx extends ACtx implements IStringable, ICtx {
     */
    public String getSettingsPath() {
       if (settingsPathCustom == null) {
-         return System.getProperty("home.dir");
+         return System.getProperty("user.home");
       }
       return settingsPathCustom;
    }

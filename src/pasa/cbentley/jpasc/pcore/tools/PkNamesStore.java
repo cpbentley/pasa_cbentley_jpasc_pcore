@@ -86,10 +86,12 @@ public class PkNamesStore implements IStringable {
     * Called by the exit and save commands 
     */
    public void cmdExitSave() {
-      //#debug
-      toDLog().pInit("Saving", this, PkNamesStore.class, "cmdExitSave", LVL_05_FINE, false);
-
       File f = getFileSettings();
+      
+      //#debug
+      toDLog().pInit("Saving to "+ f.getAbsolutePath(), this, PkNamesStore.class, "cmdExitSave", LVL_05_FINE, false);
+
+      
       ObjectOutputStream oos = null;
       try {
          FileOutputStream fos = new FileOutputStream(f);
