@@ -4,6 +4,7 @@
  */
 package pasa.cbentley.jpasc.pcore.utils;
 
+import pasa.cbentley.core.src4.helpers.StringBBuilder;
 import pasa.cbentley.jpasc.pcore.ctx.PCoreCtx;
 
 /**
@@ -27,19 +28,43 @@ public class PascalCoinDouble {
 
    public PascalCoinDouble(PCoreCtx pc, Double balance) {
       if (balance != null) {
-         String balanceStr = Double.toString(balance.doubleValue());
+         String balanceStr = pc.getPascalCoinsFormat().format(balance.doubleValue());
+         //.toString(balance.doubleValue());
          int indexOfDot = balanceStr.indexOf('.');
          if (indexOfDot != -1) {
             String maintisseStr = balanceStr.substring(0, indexOfDot);
             mantisse = Integer.valueOf(maintisseStr);
-            String molinasStr = balanceStr.substring(indexOfDot + 1, balanceStr.length() - 1);
+            String molinasStr = balanceStr.substring(indexOfDot + 1, balanceStr.length());
             if (molinasStr.length() > pc.getDecimalSize()) {
                //we cannot have a double with more than 4 decimals
                throw new IllegalArgumentException();
             }
-            molinas = Integer.valueOf(molinasStr);
+            if (!molinasStr.equals("")) {
+               molinas = Integer.valueOf(molinasStr);
+            }
          }
       }
+   }
+
+   public String getMolinasStr() {
+      return String.valueOf(molinas);
+   }
+
+   public int getMolinasInt() {
+      return molinas;
+   }
+
+   public int getMantisse() {
+      return mantisse;
+   }
+
+   public String getString() {
+      //for the string we have to make sure we have 00 in front
+      StringBBuilder sb = new StringBBuilder();
+      sb.append(mantisse);
+      sb.append(".");
+      sb.appendPrettyFront(molinas, 4, '0');
+      return sb.toString();
    }
 
    public double getDoubleValue() {
