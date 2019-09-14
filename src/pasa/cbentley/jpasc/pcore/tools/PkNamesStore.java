@@ -19,6 +19,7 @@ import pasa.cbentley.core.src4.logging.Dctx;
 import pasa.cbentley.core.src4.logging.IDLog;
 import pasa.cbentley.core.src4.logging.IStringable;
 import pasa.cbentley.jpasc.pcore.ctx.PCoreCtx;
+import pasa.cbentley.jpasc.pcore.network.RPCConnection;
 
 /**
  * Class that associates public key to readable names chosen by the user
@@ -60,7 +61,7 @@ public class PkNamesStore implements IStringable {
     */
    private Map<String, String> mapKeyToNameWallet;
 
-   private int                 version;
+   private int                 version = 1;
 
    /**
     * 
@@ -68,6 +69,7 @@ public class PkNamesStore implements IStringable {
    protected final PCoreCtx    pc;
 
    /**
+    * Creates a store for the given {@link PCoreCtx} and its {@link RPCConnection}.
     * 
     * @param pcx
     */
@@ -79,7 +81,6 @@ public class PkNamesStore implements IStringable {
       //TODO upon connection we have to update, so we are linked to a connexion ?
 
       fileName = "jpasc_nameskey.state";
-      //TODO Offline work?
    }
 
    /**
@@ -87,11 +88,10 @@ public class PkNamesStore implements IStringable {
     */
    public void cmdExitSave() {
       File f = getFileSettings();
-      
-      //#debug
-      toDLog().pInit("Saving to "+ f.getAbsolutePath(), this, PkNamesStore.class, "cmdExitSave", LVL_05_FINE, false);
 
-      
+      //#debug
+      toDLog().pInit("Saving to " + f.getAbsolutePath(), this, PkNamesStore.class, "cmdExitSave", LVL_05_FINE, false);
+
       ObjectOutputStream oos = null;
       try {
          FileOutputStream fos = new FileOutputStream(f);
@@ -147,7 +147,19 @@ public class PkNamesStore implements IStringable {
       return name;
    }
 
-   public Map<String, String> getWalletMapping() {
+   /**
+    * The map of encoded keys to names
+    * @return
+    */
+   public Map<String, String> getMappingChain() {
+      return mapKeyToChainID;
+   }
+
+   /**
+    * 
+    * @return
+    */
+   public Map<String, String> getMappingWallet() {
       return mapKeyToNameChain;
    }
 
@@ -189,6 +201,8 @@ public class PkNamesStore implements IStringable {
     * @param name
     */
    public void setPkName(String encodedPk, String name) {
+      //#debug
+      toDLog().pFlow("name=" + name + " - " + encodedPk, this, PkNamesStore.class, "setPkName", LVL_05_FINE, true);
       mapKeyToNameChain.put(encodedPk, name);
    }
 
@@ -211,29 +225,14 @@ public class PkNamesStore implements IStringable {
 
    public void toString(Dctx dc) {
       dc.root(this, "PkNamesStore");
-      dc.append("Wallet Key Names");
-      dc.tab();
-      for (String key : mapKeyToNameWallet.keySet()) {
-         String encodedKey = mapKeyToNameWallet.get(key);
-         dc.appendVarWithSpace(key, encodedKey);
-         dc.nl();
-      }
-
-      dc.append("Tools Custom Names");
-      dc.tab();
-      for (String key : mapKeyToNameChain.keySet()) {
-         String encodedKey = mapKeyToNameChain.get(key);
-         dc.appendVarWithSpace(key, encodedKey);
-         dc.nl();
-      }
-      //TODO use dc data flag to switch off this often bloated information
-      dc.append("Tool Forced Names");
-      dc.tab();
-      for (String key : mapKeyToChainID.keySet()) {
-         String encodedKey = mapKeyToChainID.get(key);
-         dc.appendVarWithSpace(key, encodedKey);
-         dc.nl();
-      }
+      dc.appendVarWithSpace("version", version);
+      dc.appendVarWithSpace("fileName", fileName);
+      dc.nl();
+      
+      pc.getC5().toStringHashMapStringString(dc, mapKeyToNameWallet, "Wallet Key Names",false);
+      pc.getC5().toStringHashMapStringString(dc, mapKeyToNameChain, "Chain Custom Names",false);
+      pc.getC5().toStringHashMapStringString(dc, mapKeyToChainID, "Automatic Generated Names",false);
+      
    }
 
    public String toString1Line() {

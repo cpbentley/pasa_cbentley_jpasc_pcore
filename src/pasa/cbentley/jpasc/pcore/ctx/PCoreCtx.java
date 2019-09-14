@@ -6,6 +6,7 @@ package pasa.cbentley.jpasc.pcore.ctx;
 
 import java.math.BigDecimal;
 import java.text.DateFormat;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.List;
@@ -123,7 +124,7 @@ public class PCoreCtx extends ACtx implements IStringable, ICtx {
 
    private AccessPascalPrivate      pascalAccessPrivate;
 
-   private String                   payloadEncoding = "UTF-8";
+   private String                   payloadEncoding   = "UTF-8";
 
    private PCoreDebug               pd;
 
@@ -141,7 +142,13 @@ public class PCoreCtx extends ACtx implements IStringable, ICtx {
 
    private RPCConnection            rpcConnection;
 
-   private String settingsPathCustom;
+   private String                   settingsPathCustom;
+
+   private DecimalFormat            pascalCoinsFormat = new DecimalFormat("#.####");
+
+   public DecimalFormat getPascalCoinsFormat() {
+      return pascalCoinsFormat;
+   }
 
    public PCoreCtx(UCtx uc, C5Ctx c5) {
       super(uc);

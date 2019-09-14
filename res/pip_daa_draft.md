@@ -1,6 +1,6 @@
 <pre>
   PIP: *reserved for PIP editor*
-  Title: Block Time Reward Accumulator
+  Title: Block Time Miner Reward Accumulator
   Type: Protocol
   Impact: Hard-Fork - Protcol
   Author: Charles Bentley <i>&lt;cbentley@mail.ru&gt;</i>
@@ -20,42 +20,43 @@ and coming back once the difficulty is down.
 
 ## Specification
 
-The idea is the introduce time in the equation. Many before have proposed the idea. The idea is to reduce
+The idea is the introduce time in the equation. Many before have proposed the idea. The idea is to reduce 
 the block reward when a block is found faster.
+
 The question remains on how to redistribute the extra reward?
-What do we want actually? We want the extra rewards to go to the miners who mine long high difficulty blocks.
+
+What do we want actually? We want the extra rewards to go to the miners who mine long high difficulty blocks. And we want
+to discourage mining strategies that mine fast blocks.
 
 The solution must not touch the block timing goals as it would destroy the timing clock of the chain.
 
 The solution proposed here only adapts the reward.
 
-The new consensus introduces a Reward Accumulator. Its a simple object at the start of the Safebox.
+The new consensus introduces a Mining Reward Accumulator. Its a object at the start of the Safebox.
+
 It has a double field for reward and fees.
 It has a Fifo queue of Accounts.
 
-We can also reward 
+Every block adds the block reward, the accounts and the fees to the Accumulator.
 
-Every block founds add the block reward, the accounts and the fees to the Accumulator.
+The safebox awards the miner a reward that is proportional to the time deviation. 
+Let the block time difference be the miner published timestamp difference.
+If block time difference is 5 minutes, the accumulator pays a full reward.
+If block time difference is 2.5 minutes, the accumulator pays a half a reward
+If block time difference is 6 or more minutes, the accumulator pays the full reward and percentage
+of the accumulated reward based on the time difference.
 
-Reward accumulator also have the power to reward miners for including operations?
+The Dev reward is distributed separately.
 
-Naive solution. 
+How could we use the Reward accumulator to incite miners for including operations?
 
-When a miner finds a valid hash. He creates a block and puts the timestamp in it. And continue mining on it.
-
-
-When the timestamp is put into the block, the miner pays the previous block miner his due.
-So the miner 
-
-When a block is found by a miner, The Accumulator pays the miners
+TODO.
 
  
 ## Rationale
 
 CPU mining is a mercenary industry. Miners don't have allegiance to a given chain. They can easily switch their CPUs to the most profitable chain. This is especially true for big farms who will follow the biggest ROI.
 
-
-Discussion why was the specification was chosen over alternate designs. Evidence supporting the specification should be provided here, as well as community concerns and consensus.
 
 ## Backwards Compatibility
 
