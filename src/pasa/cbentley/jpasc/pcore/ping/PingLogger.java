@@ -51,7 +51,7 @@ public class PingLogger implements IBlockListener {
          long minutes = TimeUnit.MILLISECONDS.toMinutes(millis);
          String str = String.format("%d,%d min,sec", minutes, TimeUnit.MILLISECONDS.toSeconds(millis) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millis)));
          
-         StringBBuilder sb = new StringBBuilder();
+         StringBBuilder sb = new StringBBuilder(pc.getUCtx());
          //TODO introduce sentence for i8n
          sb.append("New Block " + newBlock);
          sb.append(" found after " + str + ".");

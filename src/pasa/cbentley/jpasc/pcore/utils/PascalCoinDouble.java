@@ -15,18 +15,22 @@ import pasa.cbentley.jpasc.pcore.ctx.PCoreCtx;
  */
 public class PascalCoinDouble {
 
-   public static final PascalCoinDouble ZERO = new PascalCoinDouble(0, 0);
 
    private int                          mantisse;
 
    private int                          molinas;
 
-   public PascalCoinDouble(int mantisse, int molinas) {
+   protected final PCoreCtx pc;
+
+   public PascalCoinDouble(PCoreCtx pc, int mantisse, int molinas) {
+      this.pc = pc;
       this.mantisse = mantisse;
       this.molinas = molinas;
    }
 
    public PascalCoinDouble(PCoreCtx pc, Double balance) {
+      this.pc = pc;
+      
       if (balance != null) {
          String balanceStr = pc.getPascalCoinsFormat().format(balance.doubleValue());
          //.toString(balance.doubleValue());
@@ -60,7 +64,7 @@ public class PascalCoinDouble {
 
    public String getString() {
       //for the string we have to make sure we have 00 in front
-      StringBBuilder sb = new StringBBuilder();
+      StringBBuilder sb = new StringBBuilder(pc.getUCtx());
       sb.append(mantisse);
       sb.append(".");
       sb.appendPrettyFront(molinas, 4, '0');

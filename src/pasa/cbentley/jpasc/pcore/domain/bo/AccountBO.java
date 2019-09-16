@@ -69,11 +69,12 @@ public class AccountBO extends ByteObject implements ITechAccountVariableFullBO,
          int offset = getVarOffset(ACCOUNT_VAR_03_BALANCE_3);
          int coins = get4(offset);
          int molinas = get2(offset + 4);
-         return new PascalCoinDouble(coins, molinas);
+         return new PascalCoinDouble(pc, coins, molinas);
       } else {
-         return PascalCoinDouble.ZERO;
+         return pc.getZERO();
       }
    }
+
    public void addBalanceTo(PascalCoinDouble pascalCoinDouble) {
       if (hasFlag(ACCOUNT_OFFSET_01_FLAG_1, ACCOUNT_FLAG_8_HAS_BALANCE)) {
          //how to code a double here? 0000 digits for molinas
@@ -81,9 +82,10 @@ public class AccountBO extends ByteObject implements ITechAccountVariableFullBO,
          int offset = getVarOffset(ACCOUNT_VAR_03_BALANCE_3);
          int coins = get4(offset);
          int molinas = get2(offset + 4);
-         pascalCoinDouble.addCoinMolinas(coins,molinas);
-      } 
+         pascalCoinDouble.addCoinMolinas(coins, molinas);
+      }
    }
+
    public Integer getAccountBlockLastUpdated() {
       return get3(ACCOUNT_OFFSET_06_AGE_3); //fixed size
    }
@@ -175,10 +177,10 @@ public class AccountBO extends ByteObject implements ITechAccountVariableFullBO,
          if (hasFlag(ACCOUNT_OFFSET_02_FLAGX_1, ACCOUNT_FLAGX_1_TINY_BALANCE)) {
             int coins = get4(offsetPrice);
             int molinas = get2(offsetPrice + 4);
-            return new PascalCoinDouble(coins, molinas);
+            return new PascalCoinDouble(pc,coins, molinas);
          }
       }
-      return PascalCoinDouble.ZERO;
+      return pc.getZERO();
    }
 
    public String getSalePrivateNewEncPubkey() {

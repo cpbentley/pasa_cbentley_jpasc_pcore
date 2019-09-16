@@ -119,7 +119,7 @@ public class RPCConnection implements IBlockListener {
                isLocked = wasLocked;
             }
 
-            StringBBuilder sb = new StringBBuilder();
+            StringBBuilder sb = new StringBBuilder(pc.getUCtx());
             sb.append("Connected to Wallet Node with #");
             sb.append(blockCount);
             sb.append(" blocks");

@@ -146,6 +146,8 @@ public class PCoreCtx extends ACtx implements IStringable, ICtx {
 
    private DecimalFormat            pascalCoinsFormat = new DecimalFormat("#.####");
 
+   private PascalCoinDouble ZERO;
+
    public DecimalFormat getPascalCoinsFormat() {
       return pascalCoinsFormat;
    }
@@ -153,6 +155,7 @@ public class PCoreCtx extends ACtx implements IStringable, ICtx {
    public PCoreCtx(UCtx uc, C5Ctx c5) {
       super(uc);
       this.c5 = c5;
+      ZERO = new PascalCoinDouble(this, 0, 0);
       boc = new BOCtx(uc);
       backgroundExec = Executors.newCachedThreadPool();
       namesStore = new PkNamesStore(this);
@@ -191,6 +194,9 @@ public class PCoreCtx extends ACtx implements IStringable, ICtx {
       namesStore.cmdExitSave();
    }
 
+   public PascalCoinDouble getZERO() {
+      return ZERO;
+   }
    /**
     * Pascal access only to private accounts.. blocks will be live from RPC
     * @return
