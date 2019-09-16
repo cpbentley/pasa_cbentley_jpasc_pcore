@@ -74,13 +74,20 @@ public class RPCConnection implements IBlockListener {
    }
 
    /**
-    * Blocking call.
     * 
-    * @return true if connection was successful
+    * @return
     */
-   public boolean connectLocalhost() {
+   public boolean connectLocalhostTestNet() {
+      Short port = PascalCoinConstants.DEFAULT_TEST_RPC_PORT;
+      boolean b = connectLocalhost(port);
+      if (b) {
+         pc.getLog().consoleLogDateGreen("Connected to the test net!");
+      }
+      return b;
+   }
+
+   public boolean connectLocalhost(Short port) {
       String ip = "127.0.0.1";
-      Short port = PascalCoinConstants.DEFAULT_MAINNET_RPC_PORT;
       this.ip = ip;
       this.port = port;
       //TODO introduce client factory
@@ -137,7 +144,16 @@ public class RPCConnection implements IBlockListener {
          e.printStackTrace();
          return false;
       }
+   }
 
+   /**
+    * Blocking call.
+    * 
+    * @return true if connection was successful
+    */
+   public boolean connectLocalhost() {
+      Short port = PascalCoinConstants.DEFAULT_MAINNET_RPC_PORT;
+      return connectLocalhost(port);
    }
 
    /**
@@ -164,7 +180,7 @@ public class RPCConnection implements IBlockListener {
    public Integer getLastBlockMined() {
       return lastBlockMined;
    }
-   
+
    /**
     * 
     * @return
