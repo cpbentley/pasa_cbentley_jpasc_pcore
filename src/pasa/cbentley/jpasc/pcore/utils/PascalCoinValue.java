@@ -23,6 +23,10 @@ public class PascalCoinValue implements IStringable {
 
    private BigDecimal val;
 
+   public PascalCoinValue(PCoreCtx pc, Double value) {
+      this(pc, value.doubleValue());
+   }
+
    public PascalCoinValue(PCoreCtx pc, double value) {
       this.pc = pc;
       if (value == 0.0d) {
@@ -44,7 +48,7 @@ public class PascalCoinValue implements IStringable {
    public String getString() {
       return val.toPlainString();
    }
-   
+
    public PascalCoinValue multiply(int i) {
       if (val == BigDecimal.ZERO) {
          //special case optimization
@@ -54,6 +58,20 @@ public class PascalCoinValue implements IStringable {
          return new PascalCoinValue(pc, newVal);
       }
    }
+
+   /**
+    * Mutates the value. Not thread safe
+    * @param balance
+    */
+   public void addMutable(double balance) {
+      BigDecimal bal = BigDecimal.valueOf(balance);
+      val = val.add(bal);
+   }
+
+   public void addMutable(Double balance) {
+      this.addMutable(balance.doubleValue());
+   }
+
    public PascalCoinValue add(PascalCoinValue pcv) {
       if (pcv.val == BigDecimal.ZERO) {
          //special case optimization
@@ -74,7 +92,7 @@ public class PascalCoinValue implements IStringable {
       dc.appendVarWithSpace("doubleValue", val.doubleValue());
       dc.appendVarWithSpace("intValue", val.intValue());
       dc.appendVarWithSpace("intValueExact", val.intValueExact());
-      
+
    }
 
    public String toString1Line() {

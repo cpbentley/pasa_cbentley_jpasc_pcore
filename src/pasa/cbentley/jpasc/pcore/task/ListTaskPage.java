@@ -16,6 +16,7 @@ import pasa.cbentley.jpasc.pcore.listlisteners.IListListener;
 import pasa.cbentley.jpasc.pcore.pages.PagerAbstract;
 
 /**
+ * List objects from an {@link IPascalCoinClient}
  * TODO move a generic version of this to core5
  * @author Charles Bentley
  *
@@ -56,6 +57,8 @@ public abstract class ListTaskPage<T> extends ListTask<T> {
 
    /**
     * Returns the {@link PagerAbstract} of thhis {@link ListTaskPage}
+    * 
+    * Could be null if overriding class does not initialize it
     * @return
     */
    public PagerAbstract<T> getPager() {
@@ -106,12 +109,20 @@ public abstract class ListTaskPage<T> extends ListTask<T> {
             //tell the pager there was a failure.. pager will decide if he wants may try again
             hasMoreDataPages = pager.isContinuePagingAfterException();
          }
-      } while (hasMoreDataPages && isContinue());
+      } while (hasMoreDataPages && isContinue() && !isTaskShouldStop());
 
       //#debug
       toDLog().pFlow("End of Method", this, ListTaskPage.class, "runAbstract", LVL_04_FINER, true);
    }
 
+   /**
+    * Override this when you need to check for extra reasons to continue.
+    * For example a new block has been mined which invalidates current task
+    */
+   protected boolean isTaskShouldStop() {
+      return false;
+   }
+   
    /**
     * Sets the {@link PagerAbstract} that will govern how results are fed to the {@link IListListener}
     * @param pager

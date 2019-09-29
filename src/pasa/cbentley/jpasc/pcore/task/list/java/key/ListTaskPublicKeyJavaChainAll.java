@@ -97,6 +97,8 @@ public class ListTaskPublicKeyJavaChainAll extends ListTaskPublicKeyJavaAbstract
    }
 
    public void newDataAvailable(List<Account> list) {
+      //#debug
+      toDLog().pData(list.size() + " new accounts ", cache, ListTaskPublicKeyJavaChainAll.class, "newDataAvailable", LVL_05_FINE, true);
       for (Account ac : list) {
          
          //#debug
@@ -120,18 +122,22 @@ public class ListTaskPublicKeyJavaChainAll extends ListTaskPublicKeyJavaAbstract
    public void runAbstract() {
       taskAccount = new ListTaskAccountChain(pc, this);
       if(pagerAccountSub == null) {
+         //this pager will time for the user. 
          Integer numAccounts = pc.getPClient().getBlockCount() * 5;
          PagerAccount pagerAccount = new PagerAccount(pc);
          //this class will operate the pager "manually"
-         pagerAccount.setManualExactPageSize(true);
-         pagerAccount.setPageSize(1000);
          pagerAccount.setLookUpRangeStart(0);
          pagerAccount.setLookUpRangeEnd(numAccounts);
+         pagerAccount.setManualExactPageSize(true);
+         pagerAccount.setTimingEnabled(true);
+         pagerAccount.setPageTimingMin(250);
+         pagerAccount.setPageSize(1);
          pagerAccount.build();
          pagerAccountSub = pagerAccount;
       }
       taskAccount.setPager(pagerAccountSub);
     
+      //now run the default runner
       super.runAbstract();
       //how to stop account task when enough 
    }

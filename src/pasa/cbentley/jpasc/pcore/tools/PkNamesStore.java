@@ -13,6 +13,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import pasa.cbentley.core.src4.ctx.UCtx;
 import pasa.cbentley.core.src4.logging.Dctx;
@@ -42,7 +43,7 @@ public class PkNamesStore implements IStringable {
     * 
     * we don't want to store IDs
     */
-   private Map<String, String> mapKeyToChainID;
+   private Map<String, String> mapKeyToNameAutomatic;
 
    /**
     * Maps encoded public key to names. 
@@ -52,7 +53,7 @@ public class PkNamesStore implements IStringable {
     * <br>
     * Those names are not controlled by the pascal reference wallet.
     */
-   private Map<String, String> mapKeyToNameChain;
+   private Map<String, String> mapKeyToNameUserCustom;
 
    /**
     * At the start of the wallet, the reference wallet public keys and their names are added to this map.
@@ -61,115 +62,51 @@ public class PkNamesStore implements IStringable {
     */
    private Map<String, String> mapKeyToNameWallet;
 
-   private int                 version = 1;
-
    /**
     * 
     */
    protected final PCoreCtx    pc;
 
+   private int                 version = 1;
+
    /**
     * Creates a store for the given {@link PCoreCtx} and its {@link RPCConnection}.
     * 
+    * Upon connection, {@link PCoreCtx} and {@link KeyNameProvider} will synchronize the stores.
+    * 
+    * A {@link PkNamesStore} is not linked to a specific connection.
+    * 
     * @param pcx
     */
-   public PkNamesStore(PCoreCtx pcx) {
-      this.pc = pcx;
+   public PkNamesStore(PCoreCtx pc, String fileName) {
+      this.pc = pc;
       mapKeyToNameWallet = new HashMap<String, String>();
-      mapKeyToNameChain = new HashMap<String, String>();
-      mapKeyToChainID = new HashMap<String, String>();
-      //TODO upon connection we have to update, so we are linked to a connexion ?
+      mapKeyToNameUserCustom = new HashMap<String, String>();
+      mapKeyToNameAutomatic = new HashMap<String, String>();
 
-      fileName = "jpasc_nameskey.state";
+      this.fileName = fileName;
+   }
+
+   public String addAutoName(String pub) {
+      int ownerCount = mapKeyToNameAutomatic.size() + 1;
+      String name = "key#" + String.valueOf(ownerCount);
+      mapKeyToNameAutomatic.put(pub, name);
+      return name;
    }
 
    /**
     * Called by the exit and save commands 
     */
    public void cmdExitSave() {
+      fileWrite();
+   }
+
+   private void fileRead() {
       File f = getFileSettings();
 
       //#debug
-      toDLog().pInit("Saving to " + f.getAbsolutePath(), this, PkNamesStore.class, "cmdExitSave", LVL_05_FINE, false);
+      toDLog().pInit(pc.getC5().toStringFile(f, "state"), this, PkNamesStore.class, "fileRead", LVL_05_FINE, true);
 
-      ObjectOutputStream oos = null;
-      try {
-         FileOutputStream fos = new FileOutputStream(f);
-         oos = new ObjectOutputStream(fos);
-         oos.writeInt(1); //version number
-         oos.writeObject(mapKeyToNameChain);
-         oos.close();
-      } catch (FileNotFoundException e) {
-         e.printStackTrace();
-      } catch (IOException e) {
-         e.printStackTrace();
-      } finally {
-         try {
-            oos.close();
-         } catch (IOException e) {
-            e.printStackTrace();
-         }
-      }
-   }
-
-   public int getVersion() {
-      return version;
-   }
-
-   public String getFileName() {
-      return fileName;
-   }
-
-   public File getFileSettings() {
-      File f = new File(pc.getSettingsPath(), fileName);
-      return f;
-   }
-
-   /**
-    * 
-    * @param pub
-    * @return
-    */
-   public String getKeyName(String pub) {
-      String name = mapKeyToNameWallet.get(pub);
-      if (name == null) {
-         name = mapKeyToNameChain.get(pub);
-         if (name == null) {
-            name = mapKeyToChainID.get(pub);
-            if (name == null) {
-               //add one
-               int ownerCount = mapKeyToChainID.size() + 1;
-               name = String.valueOf(ownerCount);
-               mapKeyToChainID.put(pub, name);
-            }
-         }
-      }
-      return name;
-   }
-
-   /**
-    * The map of encoded keys to names
-    * @return
-    */
-   public Map<String, String> getMappingChain() {
-      return mapKeyToChainID;
-   }
-
-   /**
-    * 
-    * @return
-    */
-   public Map<String, String> getMappingWallet() {
-      return mapKeyToNameChain;
-   }
-
-   @SuppressWarnings("unchecked")
-   public void initialize() {
-
-      //#debug
-      toDLog().pInit("msg", this, PkNamesStore.class, "initialize", LVL_05_FINE, true);
-
-      File f = getFileSettings();
       ObjectInputStream ois = null;
       try {
          FileInputStream fis = new FileInputStream(f);
@@ -177,7 +114,7 @@ public class PkNamesStore implements IStringable {
          version = ois.readInt();
          Object obj = ois.readObject();
          if (obj instanceof Map) {
-            mapKeyToNameChain = (Map) obj;
+            mapKeyToNameUserCustom = (Map) obj;
          }
          ois.close();
       } catch (FileNotFoundException e) {
@@ -195,6 +132,120 @@ public class PkNamesStore implements IStringable {
       }
    }
 
+   private void fileWrite() {
+      File f = getFileSettings();
+
+      //#debug
+      toDLog().pInit("Saving to " + f.getAbsolutePath(), this, PkNamesStore.class, "fileWrite", LVL_05_FINE, false);
+
+      ObjectOutputStream oos = null;
+      try {
+         FileOutputStream fos = new FileOutputStream(f);
+         oos = new ObjectOutputStream(fos);
+         oos.writeInt(1); //version number
+         oos.writeObject(mapKeyToNameUserCustom);
+         oos.close();
+      } catch (FileNotFoundException e) {
+         e.printStackTrace();
+      } catch (IOException e) {
+         e.printStackTrace();
+      } finally {
+         try {
+            oos.close();
+         } catch (IOException e) {
+            e.printStackTrace();
+         }
+      }
+   }
+
+   public String getFileName() {
+      return fileName;
+   }
+
+   public File getFileSettings() {
+      File f = new File(pc.getSettingsPath(), fileName);
+      return f;
+   }
+
+   public boolean hasWalletKey(String encPubKey) {
+      return mapKeyToNameWallet.containsKey(encPubKey);
+   }
+
+   /**
+    * 
+    * @param pub
+    * @return null if none
+    */
+   public String getKeyName(String pub) {
+      String name = mapKeyToNameWallet.get(pub);
+      if (name == null) {
+         name = mapKeyToNameUserCustom.get(pub);
+         if (name == null) {
+            name = mapKeyToNameAutomatic.get(pub);
+         }
+      }
+      return name;
+   }
+
+   public Set<String> getKeys() {
+      return mapKeyToNameUserCustom.keySet();
+   }
+
+   public void populateKeys(Set<String> set) {
+      Set<String> keys = mapKeyToNameUserCustom.keySet();
+      for (String key : keys) {
+         set.add(key);
+      }
+   }
+
+   /**
+    * 
+    * @param pub
+    * @return never null
+    */
+   public String getKeyNameAdd(String pub) {
+      String name = mapKeyToNameWallet.get(pub);
+      if (name == null) {
+         name = mapKeyToNameUserCustom.get(pub);
+         if (name == null) {
+            name = mapKeyToNameAutomatic.get(pub);
+            if (name == null) {
+               //add one
+               name = addAutoName(pub);
+            }
+         }
+      }
+      return name;
+   }
+
+   /**
+    * The map of encoded keys to names
+    * @return
+    */
+   public Map<String, String> getMappingChain() {
+      return mapKeyToNameAutomatic;
+   }
+
+   /**
+    * 
+    * @return
+    */
+   public Map<String, String> getMappingWallet() {
+      return mapKeyToNameUserCustom;
+   }
+
+   public int getVersion() {
+      return version;
+   }
+
+   /**
+    * Reads data from file saved on a previously saved instance
+    */
+   @SuppressWarnings("unchecked")
+   public void initialize() {
+      fileRead();
+   }
+
    /**
     * Called 
     * @param encodedPk
@@ -203,7 +254,7 @@ public class PkNamesStore implements IStringable {
    public void setPkName(String encodedPk, String name) {
       //#debug
       toDLog().pFlow("name=" + name + " - " + encodedPk, this, PkNamesStore.class, "setPkName", LVL_05_FINE, true);
-      mapKeyToNameChain.put(encodedPk, name);
+      mapKeyToNameUserCustom.put(encodedPk, name);
    }
 
    /**
@@ -211,7 +262,7 @@ public class PkNamesStore implements IStringable {
     * @param walletMapping
     */
    public void setWalletMapping(Map<String, String> walletMapping) {
-      mapKeyToNameChain = walletMapping;
+      mapKeyToNameWallet = walletMapping;
    }
 
    //#mdebug
@@ -227,12 +278,10 @@ public class PkNamesStore implements IStringable {
       dc.root(this, "PkNamesStore");
       dc.appendVarWithSpace("version", version);
       dc.appendVarWithSpace("fileName", fileName);
-      dc.nl();
-      
-      pc.getC5().toStringHashMapStringString(dc, mapKeyToNameWallet, "Wallet Key Names",false);
-      pc.getC5().toStringHashMapStringString(dc, mapKeyToNameChain, "Chain Custom Names",false);
-      pc.getC5().toStringHashMapStringString(dc, mapKeyToChainID, "Automatic Generated Names",false);
-      
+      pc.getC5().toStringHashMapStringString(dc.nLevel(), mapKeyToNameWallet, "Wallet Key Names", false);
+      pc.getC5().toStringHashMapStringString(dc.nLevel(), mapKeyToNameUserCustom, "User Custom Names", false);
+      pc.getC5().toStringHashMapStringString(dc.nLevel(), mapKeyToNameAutomatic, "Automatic Generated Names", false);
+
    }
 
    public String toString1Line() {

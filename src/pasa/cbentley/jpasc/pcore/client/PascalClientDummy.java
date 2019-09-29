@@ -114,6 +114,11 @@ public class PascalClientDummy implements IPascalCoinClient {
       return null;
    }
 
+   public List<Operation> getPendings(Integer start, Integer max) {
+      getLog().consoleLog("PascalClientDummy#getPendings" + start + " max=" + max);
+      return null;
+   }
+
    public Integer getPendingsCount() {
       getLog().consoleLog("PascalClientDummy#getPendingsCount");
       return null;
@@ -326,7 +331,7 @@ public class PascalClientDummy implements IPascalCoinClient {
    private IUserLog getLog() {
       return pcc.getLog();
    }
-   
+
    //#mdebug
    public IDLog toDLog() {
       return toStringGetUCtx().toDLog();
@@ -359,7 +364,5 @@ public class PascalClientDummy implements IPascalCoinClient {
    }
 
    //#enddebug
-   
-
 
 }

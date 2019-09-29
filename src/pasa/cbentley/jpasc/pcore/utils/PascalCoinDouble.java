@@ -10,6 +10,9 @@ import pasa.cbentley.jpasc.pcore.ctx.PCoreCtx;
 /**
  * Used when decoding a byte array compressed balance/price value.
  * <br>
+ * 
+ * For mathematical operations use {@link PascalCoinValue}
+ * 
  * @author Charles Bentley
  *
  */

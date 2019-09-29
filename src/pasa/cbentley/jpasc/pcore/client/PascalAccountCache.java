@@ -241,6 +241,10 @@ public class PascalAccountCache implements IPascalCoinClient, IEventConsumer, IS
       return client.getPendings();
    }
 
+   public List<Operation> getPendings(Integer start, Integer max) {
+      return client.getPendings(start, max);
+   }
+
    public Integer getPendingsCount() {
       return client.getPendingsCount();
    }

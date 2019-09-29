@@ -26,7 +26,9 @@ public class ListTaskOperationPending extends ListTaskOperationAbstract {
    }
 
    protected List<Operation> findItems(IPascalCoinClient client, Integer start, Integer max) {
-      return client.getPendings();
+      //the risk here is that the pager wants a given number of operations but
+      //it has changed because a block as been mined. so when a 
+      return client.getPendings(start,max);
    }
 
    protected PagerAbstract<Operation> createPagerDefault() {
@@ -34,8 +36,20 @@ public class ListTaskOperationPending extends ListTaskOperationAbstract {
       int numOperationsPending = pclient.getPendingsCount();
       PagerOperation pageOperation = new PagerOperation(pc);
       pageOperation.setLookUpRangeEnd(numOperationsPending);
+      pageOperation.setPagerToDefaultAdaptive();
       pageOperation.build();
       return pageOperation;
+   }
+   
+   protected boolean isTaskShouldStop() {
+      int numOperationsPending =  pc.getPClient().getPendingsCount();
+      if(numOperationsPending == 0) {
+         return true;
+      }
+      if(numOperationsPending != pager.getLookUpRangeEnd()) {
+         return true;
+      }
+      return false;
    }
 
 }

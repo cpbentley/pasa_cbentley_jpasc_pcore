@@ -47,6 +47,7 @@ import pasa.cbentley.jpasc.pcore.network.RPCConnection;
 import pasa.cbentley.jpasc.pcore.ping.PingParams;
 import pasa.cbentley.jpasc.pcore.safebox.BOPascalChainFirstImpl;
 import pasa.cbentley.jpasc.pcore.services.PasaServices;
+import pasa.cbentley.jpasc.pcore.tools.KeyNameProvider;
 import pasa.cbentley.jpasc.pcore.tools.PkNamesStore;
 import pasa.cbentley.jpasc.pcore.utils.PASCAddressValidation;
 import pasa.cbentley.jpasc.pcore.utils.PascalCoinDouble;
@@ -118,7 +119,6 @@ public class PCoreCtx extends ACtx implements IStringable, ICtx {
 
    private HashMap<String, Integer> mapNamesToAccount;
 
-   private PkNamesStore             namesStore;
 
    private PasaServices             pasaService;
 
@@ -146,7 +146,7 @@ public class PCoreCtx extends ACtx implements IStringable, ICtx {
 
    private DecimalFormat            pascalCoinsFormat = new DecimalFormat("#.####");
 
-   private PascalCoinDouble ZERO;
+   private PascalCoinDouble         ZERO;
 
    public DecimalFormat getPascalCoinsFormat() {
       return pascalCoinsFormat;
@@ -158,7 +158,6 @@ public class PCoreCtx extends ACtx implements IStringable, ICtx {
       ZERO = new PascalCoinDouble(this, 0, 0);
       boc = new BOCtx(uc);
       backgroundExec = Executors.newCachedThreadPool();
-      namesStore = new PkNamesStore(this);
       psvZero = new PascalCoinValue(this, BigDecimal.ZERO);
       rpcConnection = new RPCConnection(this);
       addressValidation = new PASCAddressValidation();
@@ -191,12 +190,15 @@ public class PCoreCtx extends ACtx implements IStringable, ICtx {
 
    public void exit() {
       //make sure db of pk names is saved
-      namesStore.cmdExitSave();
+      if(keyNameProvider != null) {
+         keyNameProvider.cmdSave();
+      }
    }
 
    public PascalCoinDouble getZERO() {
       return ZERO;
    }
+
    /**
     * Pascal access only to private accounts.. blocks will be live from RPC
     * @return
@@ -403,13 +405,22 @@ public class PCoreCtx extends ACtx implements IStringable, ICtx {
       return pingParams;
    }
 
-   /**
-    * Its never null.
-    * 
-    * @return
-    */
-   public PkNamesStore getPkNameStore() {
-      return namesStore;
+
+   private KeyNameProvider keyNameProvider;
+
+   public KeyNameProvider getKeyNameProvider() {
+      if (keyNameProvider == null) {
+         keyNameProvider = new KeyNameProvider(this);
+         keyNameProvider.cmdInitialize();
+      }
+      return keyNameProvider;
+   }
+
+   public void setKeyNameProvider(KeyNameProvider keyNameProvider) {
+      if(keyNameProvider == null) {
+         throw new NullPointerException();
+      }
+      this.keyNameProvider = keyNameProvider;
    }
 
    public IPrefs getPrefs() {
@@ -423,6 +434,12 @@ public class PCoreCtx extends ACtx implements IStringable, ICtx {
 
    public PascalUtils getPU() {
       return pu;
+   }
+
+   public int getLastValidAccount() {
+      int block = getRPCConnection().getLastBlockMinedValue();
+      int account = (block * 5) - 1;
+      return account;
    }
 
    public PublicKeyJavaCache getPublicKeyJavaCache() {

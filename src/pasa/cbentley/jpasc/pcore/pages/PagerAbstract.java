@@ -458,6 +458,14 @@ public abstract class PagerAbstract<T> implements IStringable {
       this.lookUpRangeEnd = lookUpRangeEnd;
    }
 
+   public int getLookUpRangeStart() {
+      return lookUpRangeStart;
+   }
+
+   public int getLookUpRangeEnd() {
+      return lookUpRangeEnd;
+   }
+
    /**
     * Sets the starting position of the book. (inclusive)
     * 
@@ -469,6 +477,10 @@ public abstract class PagerAbstract<T> implements IStringable {
       this.lookUpRangeStart = lookUpRangeStart;
    }
 
+   /**
+    * @see PagerAbstract#isManualExactPageSize
+    * @param isExactPageSize
+    */
    public void setManualExactPageSize(boolean isExactPageSize) {
       this.isManualExactPageSize = isExactPageSize;
    }
@@ -486,6 +498,17 @@ public abstract class PagerAbstract<T> implements IStringable {
 
    public void setPageTimingMax(int pageTimingMax) {
       this.pageTimingMax = pageTimingMax;
+   }
+
+   /**
+    * Pager returns 1 result and if faster, it will increment page size
+    * for a 250 ms second interval
+    */
+   public void setPagerToDefaultAdaptive() {
+      this.setTimingEnabled(true);
+      this.setPageTimingMin(250);
+      this.setManualExactPageSize(false);
+      this.setPageSize(1);
    }
 
    public void setPageTimingMin(int pageTimingMin) {

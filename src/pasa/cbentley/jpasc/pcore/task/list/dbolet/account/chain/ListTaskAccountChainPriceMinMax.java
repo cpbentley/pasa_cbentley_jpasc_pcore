@@ -36,10 +36,7 @@ public class ListTaskAccountChainPriceMinMax extends ListTaskAccountChainFindAcc
       PagerAccount pageAccount = new PagerAccount(pc);
       pageAccount.setLookUpRangeStart(0); //start at beginning of chain
       pageAccount.setLookUpRangeEnd(numAccounts);
-      pageAccount.setTimingEnabled(true);
-      pageAccount.setPageTimingMin(250);
-      pageAccount.setManualExactPageSize(false);
-      pageAccount.setPageSize(1);
+      pageAccount.setPagerToDefaultAdaptive();
       pageAccount.build();
       return pageAccount;
    }
