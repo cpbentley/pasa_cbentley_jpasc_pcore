@@ -66,8 +66,10 @@ public class ListTaskPublicKeyJavaChainAll extends ListTaskPublicKeyJavaAbstract
     * {@link PublicKeyJava#isNew()} and it uses the cache as model for populating
     */
    protected List<PublicKeyJava> findItems(IPascalCoinClient client, Integer start, Integer pageSize) {
-      
       if(keys.size() < pageSize) {
+         //debug the thread
+         //#debug
+         toDLog().pFlow(pc.getC5().toStringThreadCurrent(), null, ListTaskPublicKeyJavaChainAll.class, "findItems", LVL_05_FINE, true);
          //if not enough keys.. get some
          taskAccount.runAbstract();
       }

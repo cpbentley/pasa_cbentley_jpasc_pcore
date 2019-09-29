@@ -104,6 +104,11 @@ public class PkNamesStore implements IStringable {
    private void fileRead() {
       File f = getFileSettings();
 
+      //on first load, file won't exist
+      if(!f.exists()) {
+         return;
+      }
+      
       //#debug
       toDLog().pInit(pc.getC5().toStringFile(f, "state"), this, PkNamesStore.class, "fileRead", LVL_05_FINE, true);
 
@@ -162,8 +167,19 @@ public class PkNamesStore implements IStringable {
       return fileName;
    }
 
+   /**
+    * Makes sure that its exists
+    * @return
+    */
    public File getFileSettings() {
-      File f = new File(pc.getSettingsPath(), fileName);
+      File directoryPath = new File(pc.getSettingsPath());
+      if(!directoryPath.exists()) {
+         boolean success = directoryPath.mkdirs();
+         if(!success) {
+            pc.getUCtx().getUserLog().consoleLogDateRed("Could not create settings directory "+ directoryPath.getAbsolutePath());
+         }
+      }
+      File f = new File(directoryPath, fileName);
       return f;
    }
 

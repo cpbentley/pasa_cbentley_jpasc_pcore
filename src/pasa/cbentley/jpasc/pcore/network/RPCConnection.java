@@ -4,10 +4,11 @@
  */
 package pasa.cbentley.jpasc.pcore.network;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Stack;
 import java.util.Vector;
 
-import com.github.davidbolet.jpascalcoin.api.client.PascalCoinClient;
 import com.github.davidbolet.jpascalcoin.api.constants.PascalCoinConstants;
 import com.github.davidbolet.jpascalcoin.exception.RPCIOException;
 
@@ -60,6 +61,8 @@ public class RPCConnection implements IBlockListener {
       this.pc = pcc;
       pclient = new PascalClientDummy(pcc);
       isConnected = false;
+      mapThreadToRPC = new HashMap<Thread, RPCConnectionThreadSlave>();
+      stackUnused = new Stack<RPCConnectionThreadSlave>();
    }
 
    public void disconnect() {
@@ -71,6 +74,53 @@ public class RPCConnection implements IBlockListener {
       String ipStr = " " + ip + ":" + port;
 
       pc.getLog().consoleLog("Disconnected from Node @ " + ipStr);
+   }
+
+   public String getIP() {
+      return ip;
+   }
+
+   public int getPortAsIntValue() {
+      if (port == null) {
+         return 0;
+      }
+      return port;
+   }
+
+   /**
+    * Called by a thread whenever it wants to access this {@link RPCConnection}.
+    * 
+    * Note we don't use weakreference so the code can be ported to a framework that does not
+    * support this feature.
+    * A thread MUST call {@link RPCConnection#threadClosingDown()} when it is done using the {@link RPCConnection}
+    * 
+    * @return
+    */
+   public RPCConnectionThreadSlave createConnectionForThread() {
+      RPCConnectionThreadSlave con = null;
+      if (stackUnused.isEmpty()) {
+         PascalCoinClientNoLoggerBridge pclient = new PascalCoinClientNoLoggerBridge(pc, ip, port);
+         con = new RPCConnectionThreadSlave(pc, this, pclient);
+      } else {
+         con = stackUnused.pop();
+      }
+      return con;
+   }
+
+   private HashMap<Thread, RPCConnectionThreadSlave> mapThreadToRPC;
+
+   private Stack<RPCConnectionThreadSlave>           stackUnused;
+
+   /**
+    * Called by a thread when it has finished using
+    */
+   public void threadClosingDown() {
+      Thread thread = Thread.currentThread();
+      RPCConnectionThreadSlave slave = mapThreadToRPC.remove(thread);
+      if (slave != null) {
+         //stack is thread safe
+         stackUnused.add(slave);
+      }
    }
 
    /**
@@ -189,12 +239,26 @@ public class RPCConnection implements IBlockListener {
       return lastBlockMinedValue;
    }
 
+   public int getNumConnectionSlaves() {
+      return mapThreadToRPC.size();
+   }
+
    /**
     * The reference should never be stored outside
     * @return
     */
    public IPascalCoinClient getPClient() {
-      return pclient;
+      return getRPCConnectionThreadSlave().getClient();
+   }
+
+   public RPCConnectionThreadSlave getRPCConnectionThreadSlave() {
+      Thread thread = Thread.currentThread();
+      RPCConnectionThreadSlave slave = mapThreadToRPC.get(thread);
+      if (slave == null) {
+         slave = createConnectionForThread();
+         mapThreadToRPC.put(thread, slave);
+      }
+      return slave;
    }
 
    /**
@@ -316,6 +380,7 @@ public class RPCConnection implements IBlockListener {
     * Runs the ping thread if not already running.
     */
    public void startPinging() {
+      //restart the ping ? when disconnected? TODO
       if (pinger == null) {
          pinger = new PingRunnable(pc, this);
          pc.getExecutorService().execute(pinger);
