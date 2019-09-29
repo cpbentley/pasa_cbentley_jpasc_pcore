@@ -394,7 +394,7 @@ public class PCoreCtx extends ACtx implements IStringable, ICtx {
    }
 
    /**
-    * Never null
+    * Never null. Returns a thread local object
     * @return
     */
    public IPascalCoinClient getPClient() {
@@ -484,7 +484,10 @@ public class PCoreCtx extends ACtx implements IStringable, ICtx {
     */
    public String getSettingsPath() {
       if (settingsPathCustom == null) {
-         return System.getProperty("user.home");
+         String path = System.getProperty("user.home");
+         path += System.getProperty("file.separator");
+         path += ".pasa_cbentley_pcore";
+         settingsPathCustom = path;
       }
       return settingsPathCustom;
    }
