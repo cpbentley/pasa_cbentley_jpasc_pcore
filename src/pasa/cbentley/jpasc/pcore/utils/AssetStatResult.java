@@ -10,11 +10,11 @@ public class AssetStatResult implements IStringable {
 
    private int              block         = 0;
 
+   private boolean          isCanUse;
+
    private int              numPublicKeys = 0;
 
    private int              pasa;
-
-   private boolean          isCanUse;
 
    private PascalCoinValue  pasc;
 
@@ -65,8 +65,16 @@ public class AssetStatResult implements IStringable {
       pasa += numAccounts;
    }
 
+   public boolean isCanUse() {
+      return isCanUse;
+   }
+
    public void setBlock(int block) {
       this.block = block;
+   }
+
+   public void setCanUse(boolean isCanUse) {
+      this.isCanUse = isCanUse;
    }
 
    public void setNumPasas(int pasa) {
@@ -110,14 +118,6 @@ public class AssetStatResult implements IStringable {
 
    private void toStringPrivate(Dctx dc) {
 
-   }
-
-   public boolean isCanUse() {
-      return isCanUse;
-   }
-
-   public void setCanUse(boolean isCanUse) {
-      this.isCanUse = isCanUse;
    }
 
    //#enddebug
