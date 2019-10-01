@@ -23,16 +23,18 @@ import pasa.cbentley.jpasc.pcore.interfaces.IBlockListener;
  */
 public class PingLogger implements IBlockListener {
 
+   private boolean  isFirstBlock;
+
    private int      lastSeenBlock;
 
    private PCoreCtx pc;
-   
-   private boolean isFirstBlock;
 
    public PingLogger(PCoreCtx pc) {
       this.pc = pc;
       isFirstBlock = true;
       lastSeenBlock = 0;
+      //we listen on new connections
+      
       pc.getRPCConnection().addBlockListener(this);
    }
 
@@ -50,7 +52,7 @@ public class PingLogger implements IBlockListener {
       } else {
          long minutes = TimeUnit.MILLISECONDS.toMinutes(millis);
          String str = String.format("%d,%d min,sec", minutes, TimeUnit.MILLISECONDS.toSeconds(millis) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millis)));
-         
+
          StringBBuilder sb = new StringBBuilder(pc.getUCtx());
          //TODO introduce sentence for i8n
          sb.append("New Block " + newBlock);
@@ -63,7 +65,7 @@ public class PingLogger implements IBlockListener {
                String feeStr = pc.getUCtx().getStrU().prettyDouble(fee.doubleValue(), 4);
                sb.append("\tfees=" + feeStr);
             }
-            sb.append("\tminer="+block.getPayload());
+            sb.append("\tminer=" + block.getPayload());
          }
          pc.getLog().consoleLogDateGreen(sb.toString());
       }
@@ -115,10 +117,10 @@ public class PingLogger implements IBlockListener {
    public UCtx toStringGetUCtx() {
       return pc.getUCtx();
    }
-   //#enddebug
 
    private void toStringPrivate(Dctx dc) {
 
    }
+   //#enddebug
 
 }

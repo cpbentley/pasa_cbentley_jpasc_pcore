@@ -30,20 +30,25 @@ public interface IEventsPCore extends IEventsCore {
     */
    public static final int EID_1_BLOCK_OPS_1_PASA_TRADE = 1;
 
-   
    /**
     * Pid only valid on {@link PCoreCtx#getEventBusPCore()}
     */
-   public static final int PID_2_PENDING_OPS              = 1;
+   public static final int PID_2_PENDING_OPS            = 1;
 
    /**
     * Generated when any pending op is received
     */
-   public static final int EID_2_PENDING_0_ANY        = 0;
+   public static final int EID_2_PENDING_0_ANY          = 0;
 
    /**
     * Generated when a pending pasa trade is received
     */
-   public static final int EID_2_PENDING_1_PASA_TRADE        = 1;
+   public static final int EID_2_PENDING_1_PASA_TRADE   = 1;
+
+   public static final int PID_3_STATUS                 = 3;
+
+   public static final int EID_3_STATUS_0_ANY           = 0;
+
+   public static final int EID_3_STATUS_1_LOCK          = 1;
 
 }

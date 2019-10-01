@@ -88,7 +88,7 @@ public class PingRunnable extends AbstractBRunnable {
             Integer blockCount = data[0];
             Integer pendingOps = data[1];
             //#debug
-            //pctx.toDLog().pFlow("blockCount="+blockCount + " pendingOps="+pendingOps, this, PingRunnable.class, "runAbstract", IDLog.LVL_04_FINER, true);
+            //pc.toDLog().pFlow("blockCount="+blockCount + " pendingOps="+pendingOps, this, PingRunnable.class, "runAbstract", LVL_04_FINER, true);
             //first send data about new block
             if (blockCount != null) {
                Integer lastBlockMined = blockCount - 1;

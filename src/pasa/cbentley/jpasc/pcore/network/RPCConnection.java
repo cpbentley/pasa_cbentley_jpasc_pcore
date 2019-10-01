@@ -13,11 +13,13 @@ import com.github.davidbolet.jpascalcoin.api.constants.PascalCoinConstants;
 import com.github.davidbolet.jpascalcoin.exception.RPCIOException;
 
 import pasa.cbentley.core.src4.ctx.UCtx;
+import pasa.cbentley.core.src4.event.BusEvent;
 import pasa.cbentley.core.src4.helpers.StringBBuilder;
 import pasa.cbentley.core.src4.logging.Dctx;
 import pasa.cbentley.core.src4.thread.ITechRunnable;
 import pasa.cbentley.jpasc.pcore.client.PascalAccountCache;
 import pasa.cbentley.jpasc.pcore.client.PascalClientDummy;
+import pasa.cbentley.jpasc.pcore.ctx.IEventsPCore;
 import pasa.cbentley.jpasc.pcore.ctx.ITechPCore;
 import pasa.cbentley.jpasc.pcore.ctx.PCoreCtx;
 import pasa.cbentley.jpasc.pcore.dboletbridge.IPascalCoinClient;
@@ -30,7 +32,7 @@ import pasa.cbentley.jpasc.pcore.ping.PingRunnable;
  * @author Charles Bentley
  *
  */
-public class RPCConnection implements IBlockListener {
+public class RPCConnection implements IBlockListener , IEventsPCore {
 
    /**
     *  Thread safe. when accessed by {@link PingRunnable}.
@@ -65,6 +67,11 @@ public class RPCConnection implements IBlockListener {
       stackUnused = new Stack<RPCConnectionThreadSlave>();
    }
 
+   /**
+    * Closes the pinger of this {@link RPCConnection}.
+    * Set state.
+    * Currently executing threads? interrupt them all
+    */
    public void disconnect() {
       if (pinger != null) {
          pinger.requestNewState(ITechRunnable.STATE_3_STOPPED);
@@ -73,6 +80,8 @@ public class RPCConnection implements IBlockListener {
       isConnected = false;
       String ipStr = " " + ip + ":" + port;
 
+      //interrupt all working threads
+      
       pc.getLog().consoleLog("Disconnected from Node @ " + ipStr);
    }
 
@@ -130,9 +139,6 @@ public class RPCConnection implements IBlockListener {
    public boolean connectLocalhostTestNet() {
       Short port = PascalCoinConstants.DEFAULT_TEST_RPC_PORT;
       boolean b = connectLocalhost(port);
-      if (b) {
-         pc.getLog().consoleLogDateGreen("Connected to the test net!");
-      }
       return b;
    }
 
@@ -150,7 +156,8 @@ public class RPCConnection implements IBlockListener {
          if (blockCount != null) {
             isConnected = true;
             boolean wasLocked = pclient.getNodeStatus().getLocked();
-            if (!wasLocked) {
+            boolean isNotLocked = !wasLocked;
+            if (isNotLocked) {
                pc.getLog().consoleLog("Connection to localhost: Wallet is not locked. Configure lock settings");
             }
             //by default, we try to auto lock the wallet
@@ -277,10 +284,29 @@ public class RPCConnection implements IBlockListener {
       return isConnected;
    }
 
+   /**
+    * Our current view of the Lock state might be stale and we want an update.
+    * 
+    * Can be called from any thread?
+    */
+   public void synchLockStatus() {
+      boolean isLockedNewState = getPClient().getNodeStatus().getLocked();
+      if(isLocked != isLockedNewState) {
+         //send a lock update event
+         BusEvent be = pc.getEventBusPCore().createEvent(PID_3_STATUS, EID_3_STATUS_1_LOCK, this);
+         be.createParam().setWasIs(isLocked, isLockedNewState);
+         be.putOnBus();
+      }
+   }
+   
    public boolean isLocked() {
       return isLocked;
    }
 
+   /**
+    * 
+    * @return
+    */
    public boolean isDaemonLocked() {
       return pclient.getNodeStatus().getLocked();
    }
@@ -381,10 +407,12 @@ public class RPCConnection implements IBlockListener {
     */
    public void startPinging() {
       //restart the ping ? when disconnected? TODO
-      if (pinger == null) {
-         pinger = new PingRunnable(pc, this);
-         pc.getExecutorService().execute(pinger);
+      if (pinger != null) {
+         pinger.requestNewState(ITechRunnable.STATE_3_STOPPED);
       }
+      
+      pinger = new PingRunnable(pc, this);
+      pc.getExecutorService().execute(pinger);
    }
 
    //#mdebug

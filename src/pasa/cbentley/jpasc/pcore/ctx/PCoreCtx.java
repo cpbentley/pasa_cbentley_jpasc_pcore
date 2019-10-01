@@ -44,6 +44,7 @@ import pasa.cbentley.jpasc.pcore.domain.tech.ITechAccount;
 import pasa.cbentley.jpasc.pcore.interfaces.IAccessPascal;
 import pasa.cbentley.jpasc.pcore.interfaces.IBOPascalChain;
 import pasa.cbentley.jpasc.pcore.network.RPCConnection;
+import pasa.cbentley.jpasc.pcore.ping.PingLogger;
 import pasa.cbentley.jpasc.pcore.ping.PingParams;
 import pasa.cbentley.jpasc.pcore.safebox.BOPascalChainFirstImpl;
 import pasa.cbentley.jpasc.pcore.services.PasaServices;
@@ -119,7 +120,6 @@ public class PCoreCtx extends ACtx implements IStringable, ICtx {
 
    private HashMap<String, Integer> mapNamesToAccount;
 
-
    private PasaServices             pasaService;
 
    private AccessPascalPrivate      pascalAccessPrivate;
@@ -152,6 +152,13 @@ public class PCoreCtx extends ACtx implements IStringable, ICtx {
       return pascalCoinsFormat;
    }
 
+   /**
+    * You must explicitely try to connect after creating this instance.
+    * 
+    * Dummy {@link RPCConnection} is active until then.
+    * @param uc
+    * @param c5
+    */
    public PCoreCtx(UCtx uc, C5Ctx c5) {
       super(uc);
       this.c5 = c5;
@@ -190,7 +197,7 @@ public class PCoreCtx extends ACtx implements IStringable, ICtx {
 
    public void exit() {
       //make sure db of pk names is saved
-      if(keyNameProvider != null) {
+      if (keyNameProvider != null) {
          keyNameProvider.cmdSave();
       }
    }
@@ -405,8 +412,9 @@ public class PCoreCtx extends ACtx implements IStringable, ICtx {
       return pingParams;
    }
 
-
    private KeyNameProvider keyNameProvider;
+
+   private PingLogger pingerLogger;
 
    public KeyNameProvider getKeyNameProvider() {
       if (keyNameProvider == null) {
@@ -417,7 +425,7 @@ public class PCoreCtx extends ACtx implements IStringable, ICtx {
    }
 
    public void setKeyNameProvider(KeyNameProvider keyNameProvider) {
-      if(keyNameProvider == null) {
+      if (keyNameProvider == null) {
          throw new NullPointerException();
       }
       this.keyNameProvider = keyNameProvider;
@@ -466,11 +474,25 @@ public class PCoreCtx extends ACtx implements IStringable, ICtx {
    }
 
    /**
-    * Never null
+    * Never null.
+    * When program starts, a dummy connection object is created
     * @return
     */
    public RPCConnection getRPCConnection() {
       return rpcConnection;
+   }
+
+   public void setRPCConnection(RPCConnection rpcConnection) {
+      if(rpcConnection == null) {
+         //#debug
+         throw new NullPointerException();
+      }
+      this.rpcConnection = rpcConnection;
+      startPingLogger();
+   }
+   
+   public void startPingLogger() {
+      pingerLogger = new PingLogger(this);
    }
 
    /**
