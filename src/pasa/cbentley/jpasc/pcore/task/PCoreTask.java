@@ -4,6 +4,11 @@
  */
 package pasa.cbentley.jpasc.pcore.task;
 
+import java.io.IOException;
+import java.io.InterruptedIOException;
+
+import com.github.davidbolet.jpascalcoin.exception.RPCIOException;
+
 import pasa.cbentley.core.src4.logging.Dctx;
 import pasa.cbentley.core.src4.logging.IDLog;
 import pasa.cbentley.core.src4.thread.AbstractBRunnable;
@@ -47,6 +52,18 @@ public abstract class PCoreTask extends AbstractBRunnable {
       return super.isContinue();
    }
 
+   protected boolean isExceptionThreadInterrupted(Exception e) {
+      if(e instanceof RPCIOException) {
+         RPCIOException re = (RPCIOException)e;
+         IOException ioException = re.getIOException();
+         if(ioException instanceof InterruptedIOException) {
+            //#debug
+            toDLog().pFlow("InterruptedIOException", this, PCoreTask.class, "isExceptionThreadInterrupted", LVL_05_FINE, true);
+            return true;
+         }
+      }
+      return false;
+   }
    /**
     * Run Task as if it was running sequentially.
     */
