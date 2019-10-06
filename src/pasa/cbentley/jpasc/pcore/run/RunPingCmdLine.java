@@ -88,7 +88,7 @@ public class RunPingCmdLine implements IBlockListener {
       }
       scan.close();
 
-      pc.exit();
+      pc.cmdExit();
 
       pc.getLog().consoleLog("Good bye!");
 

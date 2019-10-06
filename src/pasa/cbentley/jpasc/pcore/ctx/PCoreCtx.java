@@ -195,7 +195,7 @@ public class PCoreCtx extends ACtx implements IStringable, ICtx {
       return new PascalCoinValue(this, d);
    }
 
-   public void exit() {
+   public void cmdExit() {
       //make sure db of pk names is saved
       if (keyNameProvider != null) {
          keyNameProvider.cmdSave();

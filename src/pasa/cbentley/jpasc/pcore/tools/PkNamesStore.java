@@ -202,6 +202,10 @@ public class PkNamesStore implements IStringable {
       }
       return name;
    }
+   
+   public boolean isPrivateWallet(String pub) {
+      return mapKeyToNameWallet.containsKey(pub);
+   }
 
    public Set<String> getKeys() {
       return mapKeyToNameUserCustom.keySet();
