@@ -27,6 +27,14 @@ public class ListTaskAccountWalletPubKey extends ListTaskAccountAbstract {
 
    private String encPubKey;
 
+   public ListTaskAccountWalletPubKey(PCoreCtx pc, IListListener<Account> listener, PublicKey key) {
+      this(pc, listener, key.getEncPubKey());
+   }
+
+   public ListTaskAccountWalletPubKey(PCoreCtx pc, IListListener<Account> listener, PublicKeyJava key) {
+      this(pc, listener, key.getEncPubKey());
+   }
+
    public ListTaskAccountWalletPubKey(PCoreCtx pc, IListListener<Account> listener, String encPubKey) {
       super(pc, listener);
       if (encPubKey == null) {
@@ -45,14 +53,6 @@ public class ListTaskAccountWalletPubKey extends ListTaskAccountAbstract {
       return pageAccount;
    }
 
-   public ListTaskAccountWalletPubKey(PCoreCtx pc, IListListener<Account> listener, PublicKey key) {
-      this(pc, listener, key.getEncPubKey());
-   }
-
-   public ListTaskAccountWalletPubKey(PCoreCtx pc, IListListener<Account> listener, PublicKeyJava key) {
-      this(pc, listener, key.getEncPubKey());
-   }
-
    protected List<Account> findItems(IPascalCoinClient client, Integer start, Integer max) {
       return client.getWalletAccounts(encPubKey, null, start, max);
    }
@@ -64,13 +64,13 @@ public class ListTaskAccountWalletPubKey extends ListTaskAccountAbstract {
       super.toString(dc.sup());
    }
 
-   private void toStringPrivate(Dctx dc) {
-   }
-
    public void toString1Line(Dctx dc) {
       dc.root1Line(this, "ListTaskAccountWalletPubKey");
       toStringPrivate(dc);
       super.toString1Line(dc.sup1Line());
+   }
+
+   private void toStringPrivate(Dctx dc) {
    }
 
    //#enddebug

@@ -8,8 +8,10 @@ import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -30,7 +32,11 @@ import pasa.cbentley.core.src4.logging.Dctx;
 import pasa.cbentley.core.src4.logging.IDLog;
 import pasa.cbentley.core.src4.logging.IStringable;
 import pasa.cbentley.core.src4.logging.IUserLog;
+import pasa.cbentley.core.src5.bundle.Bundler;
+import pasa.cbentley.core.src5.bundle.CombinedResourceBundle;
+import pasa.cbentley.core.src5.bundle.UTF8Control;
 import pasa.cbentley.core.src5.ctx.C5Ctx;
+import pasa.cbentley.core.src5.ctx.ITechPrefsC5;
 import pasa.cbentley.jpasc.pcore.access.AccessPascalPrivate;
 import pasa.cbentley.jpasc.pcore.dboletbridge.IPascalCoinClient;
 import pasa.cbentley.jpasc.pcore.domain.DomainMapper;
@@ -49,7 +55,6 @@ import pasa.cbentley.jpasc.pcore.ping.PingParams;
 import pasa.cbentley.jpasc.pcore.safebox.BOPascalChainFirstImpl;
 import pasa.cbentley.jpasc.pcore.services.PasaServices;
 import pasa.cbentley.jpasc.pcore.tools.KeyNameProvider;
-import pasa.cbentley.jpasc.pcore.tools.PkNamesStore;
 import pasa.cbentley.jpasc.pcore.utils.PASCAddressValidation;
 import pasa.cbentley.jpasc.pcore.utils.PascalCoinDouble;
 import pasa.cbentley.jpasc.pcore.utils.PascalCoinValue;
@@ -148,6 +153,8 @@ public class PCoreCtx extends ACtx implements IStringable, ICtx {
 
    private PascalCoinDouble         ZERO;
 
+   private CoreOperations coreOps;
+
    public DecimalFormat getPascalCoinsFormat() {
       return pascalCoinsFormat;
    }
@@ -174,6 +181,8 @@ public class PCoreCtx extends ACtx implements IStringable, ICtx {
       int[] events = new int[5];
       eventBusPCore = new EventBusArray(uc, this, events);
 
+      coreOps = new CoreOperations(this);
+      
       //#debug
       pd = new PCoreDebug(this);
    }
@@ -414,7 +423,9 @@ public class PCoreCtx extends ACtx implements IStringable, ICtx {
 
    private KeyNameProvider keyNameProvider;
 
-   private PingLogger pingerLogger;
+   private PingLogger      pingerLogger;
+
+   private Bundler         bundler;
 
    public KeyNameProvider getKeyNameProvider() {
       if (keyNameProvider == null) {
@@ -438,6 +449,24 @@ public class PCoreCtx extends ACtx implements IStringable, ICtx {
          uc.getUserLog().consoleLogError("Warning: PCore User Preferences file not initialized.");
       }
       return prefsUser;
+   }
+
+   public Bundler getBundler() {
+      if (bundler == null) {
+         bundler = new Bundler(c5, getPrefs());
+
+         List<String> bundleNames = new ArrayList<String>(1);
+         this.addI18NKey(bundleNames);
+         bundler.setBundleList(bundleNames);
+         String language = "en";
+         String country = "US";
+
+         country = getPrefs().get(ITechPrefsC5.PREF_LOCALE_COUNTRY, "US");
+         language = getPrefs().get(ITechPrefsC5.PREF_LOCALE_LANG, "en");
+         Locale currentLocale = new Locale(language, country);
+         bundler.setLocale(currentLocale);
+      }
+      return bundler;
    }
 
    public PascalUtils getPU() {
@@ -470,7 +499,7 @@ public class PCoreCtx extends ACtx implements IStringable, ICtx {
     * @return
     */
    public String getResString(String string) {
-      return string;
+      return getBundler().getResString(string);
    }
 
    /**
@@ -483,14 +512,14 @@ public class PCoreCtx extends ACtx implements IStringable, ICtx {
    }
 
    public void setRPCConnection(RPCConnection rpcConnection) {
-      if(rpcConnection == null) {
+      if (rpcConnection == null) {
          //#debug
          throw new NullPointerException();
       }
       this.rpcConnection = rpcConnection;
       startPingLogger();
    }
-   
+
    public void startPingLogger() {
       pingerLogger = new PingLogger(this);
    }
@@ -576,5 +605,9 @@ public class PCoreCtx extends ACtx implements IStringable, ICtx {
       return uc;
    }
    //#enddebug
+
+   public CoreOperations getOps() {
+      return coreOps;
+   }
 
 }

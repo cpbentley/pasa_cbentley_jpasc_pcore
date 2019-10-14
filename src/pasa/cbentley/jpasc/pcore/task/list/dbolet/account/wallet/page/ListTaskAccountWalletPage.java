@@ -16,7 +16,7 @@ import pasa.cbentley.jpasc.pcore.domain.java.PublicKeyJava;
 import pasa.cbentley.jpasc.pcore.listlisteners.IListListener;
 import pasa.cbentley.jpasc.pcore.listlisteners.ListenerHolder;
 import pasa.cbentley.jpasc.pcore.pages.PagerPublicKey;
-import pasa.cbentley.jpasc.pcore.pages.PagerWalletAccount;
+import pasa.cbentley.jpasc.pcore.pages.PagerAccountWallet;
 import pasa.cbentley.jpasc.pcore.task.list.dbolet.account.ListTaskAccountAbstract;
 import pasa.cbentley.jpasc.pcore.task.list.dbolet.account.wallet.ListTaskAccountWalletPubKey;
 import pasa.cbentley.jpasc.pcore.task.list.dbolet.key.ListTaskPublicKeyWalletCanUse;
@@ -37,23 +37,21 @@ public class ListTaskAccountWalletPage extends ListTaskAccountAbstract implement
 
   
    public void runAbstract() {
-      PagerWalletAccount pagerMain = (PagerWalletAccount) getPager();
-      if(pagerMain.getPagerKey() == null) {
-         //start a new key task 
-         ListTaskPublicKeyWalletCanUse task = new ListTaskPublicKeyWalletCanUse(pc, this);
-         task.setPager(pagerMain.getPagerKey());
-         task.runAsSubTaskOf(this);
-      } else {
-         PublicKey pk = pagerMain.getKeyCurrent();
-         if(pk != null) {
-            //
-            ListTaskAccountWalletPubKey accountPubKeyListTask = new ListTaskAccountWalletPubKey(pc, getListener(), pk);
-            accountPubKeyListTask.setFilterSetAccount(this.filterSetAccount);
-            accountPubKeyListTask.runAsSubTaskOf(this);
-         }
-      }
-   
-      
+//      PagerAccountWallet pagerMain = (PagerAccountWallet) getPager();
+//      if(pagerMain.getPagerKey() == null) {
+//         //start a new key task 
+//         ListTaskPublicKeyWalletCanUse task = new ListTaskPublicKeyWalletCanUse(pc, this);
+//         task.setPager(pagerMain.getPagerKey());
+//         task.runAsSubTaskOf(this);
+//      } else {
+//         PublicKey pk = pagerMain.getKeyCurrent();
+//         if(pk != null) {
+//            //
+//            ListTaskAccountWalletPubKey accountPubKeyListTask = new ListTaskAccountWalletPubKey(pc, getListener(), pk);
+//            accountPubKeyListTask.setFilterSetAccount(this.filterSetAccount);
+//            accountPubKeyListTask.runAsSubTaskOf(this);
+//         }
+//      }
    }
    
    private void runAbstractForKey(IPascalCoinClient pclient, PublicKey pubKey) {
@@ -84,8 +82,8 @@ public class ListTaskAccountWalletPage extends ListTaskAccountAbstract implement
          }
          //list accounts of those keys. use a sub task
          ListTaskAccountWalletPubKeyPage accountPubKeyListTask = new ListTaskAccountWalletPubKeyPage(pc, getListener(), pubKey);
-         PagerWalletAccount pagerMain = (PagerWalletAccount) getPager();
-         accountPubKeyListTask.setPager(pagerMain.getPagerAccount());
+         PagerAccountWallet pagerMain = (PagerAccountWallet) getPager();
+         //accountPubKeyListTask.setPager(pagerMain.getPagerAccount());
          accountPubKeyListTask.setFilterSetAccount(this.filterSetAccount);
          accountPubKeyListTask.runAsSubTaskOf(this);
       }

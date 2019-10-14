@@ -81,7 +81,7 @@ public abstract class ListTaskPage<T> extends ListTask<T> {
     */
    public void runAbstract(PagerAbstract<T> pager) {
       //#debug
-      toDLog().pFlow("Start of Method", this, ListTaskPage.class, "runAbstract", LVL_04_FINER, true);
+      toDLog().pFlow("Start of Method", this, ListTaskPage.class, "runAbstract", LVL_03_FINEST, true);
 
       IPascalCoinClient pclient = pc.getPClient();
       List<T> listProcessed = null;
@@ -112,7 +112,7 @@ public abstract class ListTaskPage<T> extends ListTask<T> {
       } while (hasMoreDataPages && isContinue() && !isTaskShouldStop());
 
       //#debug
-      toDLog().pFlow("End of Method", this, ListTaskPage.class, "runAbstract", LVL_04_FINER, true);
+      toDLog().pFlow("End of Method", this, ListTaskPage.class, "runAbstract", LVL_03_FINEST, true);
    }
 
    /**

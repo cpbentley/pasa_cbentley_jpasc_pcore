@@ -24,9 +24,9 @@ public class ListenerPrinterAccount implements IListListener<Account> {
 
    public void newDataAvailable(List<Account> list) {
       //#debug
-      toDLog().pTest(list.size() + "\t new objects", null, ListenerPrinterAccount.class, "newDataAvailable", LVL_05_FINE, true);
+      toDLog().pTest(list.size() + "\t Listing Accounts in newly fed list", null, ListenerPrinterAccount.class, "newDataAvailable", LVL_05_FINE, true);
       for (Account object : list) {
-         String str = counter + "\t" + object.getAccount() + " " + object.getName();
+         String str = counter + "\t\t" + object.getAccount() + " " + object.getName();
          //#debug
          toDLog().pTest(str, null, ListenerPrinterAccount.class, "newDataAvailable", LVL_05_FINE, true);
          counter++;

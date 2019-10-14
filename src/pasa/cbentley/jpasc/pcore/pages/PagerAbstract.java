@@ -114,6 +114,8 @@ public abstract class PagerAbstract<T> implements IStringable {
 
    private long       timing;
 
+   private Integer    pageSizeMax;
+
    public PagerAbstract(PCoreCtx pc) {
       this.pc = pc;
    }
@@ -141,7 +143,7 @@ public abstract class PagerAbstract<T> implements IStringable {
          pageSizeRoot = pc.getDefaultPageSizeRoot();
       }
 
-      pageSizeActive = pageSizeRoot;
+      setPageSizeActive(pageSizeRoot);
       if (isFitRange) {
          if (lookUpRangeStart == null) {
             throw new NullPointerException();
@@ -155,7 +157,7 @@ public abstract class PagerAbstract<T> implements IStringable {
             rangeSize += 1;
          }
          if (pageSizeActive > rangeSize) {
-            pageSizeActive = rangeSize; //active page size could be zero here..
+            setPageSizeActive(rangeSize); //active page size could be zero here..
             //some api calls support this
          }
       }
@@ -248,12 +250,25 @@ public abstract class PagerAbstract<T> implements IStringable {
          if (lookUpRemainder <= 0) {
             return false;
          } else {
-            pageSizeActive = Math.min(lookUpRemainder, pageSizeActive);
+            setPageSizeActive(Math.min(lookUpRemainder, pageSizeActive));
             return true;
          }
       } else {
          //since we don't know the total number... we will stop
          //once the list is empty or null
+         return true;
+      }
+   }
+
+   public boolean isLookUpRemaining() {
+      if (lookUpRangeEnd != null) {
+         if (isAscending()) {
+            lookUpRemainder = lookUpRangeEnd - lookUpPointer;
+         } else {
+            lookUpRemainder = lookUpPointer - lookUpRangeStart;
+         }
+         return lookUpRemainder > 0;
+      } else {
          return true;
       }
    }
@@ -320,6 +335,9 @@ public abstract class PagerAbstract<T> implements IStringable {
             int itemSpotCountLeftInPage = pageSizeActive - countPageItemsPublished;
             int sizeItemsUnpublished = listItemsUnPublished.size();
             int index = Math.min(itemSpotCountLeftInPage, sizeItemsUnpublished);
+            if (index < 0) {
+               System.out.println(index);
+            }
             listReturn = listItemsUnPublished.subList(0, index);
             listLeftOver = listItemsUnPublished.subList(index, listItemsUnPublished.size());
             //we need to reset this counter here
@@ -493,7 +511,18 @@ public abstract class PagerAbstract<T> implements IStringable {
     * @param pageSize
     */
    public void setPageSize(Integer pageSize) {
-      this.pageSizeRoot = pageSize;
+      if (pageSize < 0) {
+         throw new IllegalArgumentException();
+      }
+      if (pageSizeMax != null) {
+         this.pageSizeRoot = Math.min(pageSizeMax, pageSize);
+      } else {
+         this.pageSizeRoot = pageSize;
+      }
+   }
+
+   public void setPageSizeMax(Integer pageSizeMax) {
+      this.pageSizeMax = pageSizeMax;
    }
 
    public void setPageTimingMax(int pageTimingMax) {
@@ -523,6 +552,17 @@ public abstract class PagerAbstract<T> implements IStringable {
       this.isTimingEnabled = isTimingEnable;
    }
 
+   protected void setPageSizeActive(int pageSizeActive) {
+      if (pageSizeActive < 0) {
+         throw new IllegalArgumentException();
+      }
+      if(pageSizeMax != null) {
+         this.pageSizeActive = Math.min(pageSizeMax, pageSizeActive);
+      } else {
+         this.pageSizeActive = pageSizeActive;
+      }
+   }
+
    /**
     * If timing is enabled, updates the page size based on the time it took to complete the previous page.
     * 
@@ -539,13 +579,14 @@ public abstract class PagerAbstract<T> implements IStringable {
             String msg = "Increasing PageSize from " + pageSizeActive + " to " + (pageSizeActive * 2) + " time=" + diff;
             //#debug
             toDLog().pWork(msg, this, PagerAbstract.class, "timingChecks", LVL_05_FINE, true);
-            pageSizeActive *= 2;
+            setPageSizeActive(pageSizeActive * 2); //it can overflow
+
          } else if (diff > pageTimingMax) {
             //#debug
             String msg = "Decreasing PageSize from " + pageSizeActive + " to " + ((pageSizeActive * 2 / 3) + 1) + " time=" + diff;
             //#debug
             toDLog().pWork(msg, this, PagerAbstract.class, "timingChecks", LVL_05_FINE, true);
-            pageSizeActive = (pageSizeActive * 2 / 3) + 1; //+1 to avoid zero
+            setPageSizeActive((pageSizeActive * 2 / 3) + 1); //+1 to avoid zero
          }
          timing = now;
       }

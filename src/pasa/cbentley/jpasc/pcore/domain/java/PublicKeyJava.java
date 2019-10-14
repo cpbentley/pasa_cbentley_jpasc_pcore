@@ -46,6 +46,8 @@ public class PublicKeyJava implements Serializable, IStringable {
 
    private boolean            isNew;
 
+   private boolean            isWildcard;
+
    private boolean            isWalletKey;
 
    /**
@@ -158,6 +160,10 @@ public class PublicKeyJava implements Serializable, IStringable {
 
    public Boolean getCanUse() {
       return canUse;
+   }
+   
+   public boolean isWellFormed() {
+      return canUse != null;
    }
 
    public String getEncPubKeyOrFetch() {
@@ -327,6 +333,14 @@ public class PublicKeyJava implements Serializable, IStringable {
       dc.appendVarWithSpace("numAccounts", numAccounts);
       dc.appendVarWithSpace("numCoins", numCoins);
       dc.appendVarWithSpace("keyType", keyType);
+   }
+
+   public boolean isWildcard() {
+      return isWildcard;
+   }
+
+   public void setWildcard(boolean isWildcard) {
+      this.isWildcard = isWildcard;
    }
 
    //#enddebug

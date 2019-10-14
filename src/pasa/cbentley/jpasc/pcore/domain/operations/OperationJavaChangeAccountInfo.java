@@ -30,25 +30,17 @@ import pasa.cbentley.jpasc.pcore.ctx.PCoreCtx;
  */
 public class OperationJavaChangeAccountInfo extends OperationJavaAbstract {
 
-   private Integer                 accountSigner   = null;
+   private Integer accountSigner = null;
 
-   private Integer                 accountTarget   = null;
+   private Integer accountTarget = null;
 
-   private Double                  fee             = null;
+   private String  newB58PubKey  = null;
 
-   private String                  newB58PubKey    = null;
+   private String  newEncPubKey  = null;
 
-   private String                  newEncPubKey    = null;
+   private String  newName       = null;
 
-   private String                  newName         = null;
-
-   private Short                   newType         = null;
-
-   private byte[]                  payloadData     = null;
-
-   private PayLoadEncryptionMethod payloadMethod   = null;
-
-   private String                  payloadPassword = null;
+   private Short   newType       = null;
 
    /**
     * At min
@@ -58,24 +50,13 @@ public class OperationJavaChangeAccountInfo extends OperationJavaAbstract {
       super(pc);
    }
 
-   /**
-    * Same thread
-    */
-   public boolean execute() {
-      try {
-         Operation op = getClient().changeAccountInfo(accountTarget, accountSigner, newEncPubKey, newB58PubKey, newName, newType, fee, payloadData, payloadMethod, payloadPassword);
-         if (op != null) {
-            pc.getLog().consoleLogGreen("changeAccountInfo operation successfull newName=" + newName + " newType=" + newType + " newEncPubKey=" + newEncPubKey);
-            pc.getPasaServices().registerAccountInPendingOperations(op);
-            return true;
-         } else {
-            pc.getLog().consoleLogError("changeAccountInfo operation failed. Null Returned");
-         }
-      } catch (RPCApiException e) {
-         e.printStackTrace();
-         pc.getLog().consoleLogError("RPCApiException: changeAccountInfo operation failed " + e.getMessage());
-      }
-      return false;
+
+   protected void executeOperation() {
+      op = getClient().changeAccountInfo(accountTarget, accountSigner, newEncPubKey, newB58PubKey, newName, newType, fee, payload, payloadMethod, pwd);
+   }
+
+   protected void executePostSuccess() {
+      pc.getPasaServices().registerAccountInPendingOperations(op);
    }
 
    public Integer getAccountSigner() {
@@ -106,16 +87,8 @@ public class OperationJavaChangeAccountInfo extends OperationJavaAbstract {
       return newType;
    }
 
-   public byte[] getPayloadData() {
-      return payloadData;
-   }
-
    public PayLoadEncryptionMethod getPayloadMethod() {
       return payloadMethod;
-   }
-
-   public String getPayloadPassword() {
-      return payloadPassword;
    }
 
    public void setAccountSigner(Integer accountSigner) {
@@ -124,10 +97,6 @@ public class OperationJavaChangeAccountInfo extends OperationJavaAbstract {
 
    public void setAccountTarget(Integer accountTarget) {
       this.accountTarget = accountTarget;
-   }
-
-   public void setFee(Double fee) {
-      this.fee = fee;
    }
 
    public void setNewB58PubKey(String newB58PubKey) {
@@ -146,16 +115,8 @@ public class OperationJavaChangeAccountInfo extends OperationJavaAbstract {
       this.newType = newType;
    }
 
-   public void setPayloadData(byte[] payloadData) {
-      this.payloadData = payloadData;
-   }
-
-   public void setPayloadMethod(PayLoadEncryptionMethod payloadMethod) {
-      this.payloadMethod = payloadMethod;
-   }
-
-   public void setPayloadPassword(String payloadPassword) {
-      this.payloadPassword = payloadPassword;
+   protected String getMessage() {
+      return "newName=" + newName + " newType=" + newType + " newEncPubKey=" + newEncPubKey;
    }
 
 }
