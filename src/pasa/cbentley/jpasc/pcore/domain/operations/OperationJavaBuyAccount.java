@@ -5,16 +5,11 @@
 package pasa.cbentley.jpasc.pcore.domain.operations;
 
 import com.github.davidbolet.jpascalcoin.api.model.Account;
-import com.github.davidbolet.jpascalcoin.api.model.Operation;
-import com.github.davidbolet.jpascalcoin.api.model.PayLoadEncryptionMethod;
 import com.github.davidbolet.jpascalcoin.api.model.PublicKey;
-import com.github.davidbolet.jpascalcoin.exception.RPCApiException;
 
 import pasa.cbentley.core.src4.logging.Dctx;
 import pasa.cbentley.core.src4.logging.ITechLvl;
-import pasa.cbentley.jpasc.pcore.ctx.CoreOperations;
 import pasa.cbentley.jpasc.pcore.ctx.PCoreCtx;
-import pasa.cbentley.jpasc.pcore.domain.ipc.IPayload;
 
 /**
  * Represents the RPC call sendTo
@@ -33,37 +28,36 @@ import pasa.cbentley.jpasc.pcore.domain.ipc.IPayload;
  */
 public class OperationJavaBuyAccount extends OperationJavaAbstract {
 
-   private Integer buyerAccount;
-
-   private Integer accountToPurchase;
-
-   private Double  price;
-
-   private Double  amount;
-
-   private Integer sellerAccount;
-
-   private String  newEncPubKey;
-
-   private String  newB58PubKey;
+   private Account accountBought;
 
    private Account accountBuyer;
 
-   private Account accountBought;
+   private Integer accountToPurchase;
 
-   
+   private Double  amount;
+
+   private Integer buyerAccount;
+
+   private String  newB58PubKey;
+
+   private String  newEncPubKey;
+
+   private Double  price;
+
+   private Integer sellerAccount;
+
    public OperationJavaBuyAccount(PCoreCtx pc) {
       super(pc);
    }
 
-   
    public void doValidateParam(PublicKey pkNew, Account buyer, Account bought, Double priceAndFunding, Double fee) {
-      
+
       this.accountBuyer = buyer;
       this.accountBought = bought;
-      //#debug
-      toDLog().pTest(toString(pkNew, buyer, bought, fee), null, OperationJavaBuyAccount.class, "doValidateParam", ITechLvl.LVL_08_INFO, true);
       
+      //#debug
+      toDLog().pFlow(toString(pkNew, buyer, bought, fee), null, OperationJavaBuyAccount.class, "doValidateParam", ITechLvl.LVL_08_INFO, true);
+
       newEncPubKey = pkNew.getEncPubKey();
       buyerAccount = buyer.getAccount();
       amount = priceAndFunding;
@@ -71,66 +65,74 @@ public class OperationJavaBuyAccount extends OperationJavaAbstract {
       sellerAccount = bought.getSellerAccount();
       accountToPurchase = bought.getAccount();
       
+      this.setFee(fee);
+      
+      if(newEncPubKey == null) {
+         throw new NullPointerException("newEncPubKey");
+      }
+      if(price == null) {
+         throw new NullPointerException("price");
+      }
+      if(fee == null) {
+         throw new NullPointerException("fee");
+      }
+      if(buyerAccount == null) {
+         throw new NullPointerException("buyerAccount");
+      }
       setPreValidation();
    }
 
    protected void executeOperation() {
       op = pc.getPClient().buyAccount(buyerAccount, accountToPurchase, price, sellerAccount, newB58PubKey, newEncPubKey, amount, fee, payload, payloadMethod, pwd);
    }
-   
+
    protected void executePostSuccess() {
       pc.getPasaServices().registerAccountInPendingOperations(op);
    }
-   
-   public String getMessage() {
-      if(op != null) {
-         return "Buy transaction of " + accountToPurchase + " sent successfull " + op.getTypeDescriptor();
-      } else {
-         return "sendTo operation failed. Null Returned";
-      }
-   }
-   
-   public Double getAmount() {
-      return amount;
-   }
-
-   public void setAmount(Double amount) {
-      this.amount = amount;
-   }
-
-
-   //#mdebug
-   public void toString(Dctx dc) {
-      dc.root(this, "SendToOperation");
-      toStringPrivate(dc);
-      super.toString(dc.sup());
-   }
-
-   private void toStringPrivate(Dctx dc) {
-      dc.appendVarWithSpace("amount", amount);
-      dc.appendVarWithSpace("fee", fee);
-      dc.appendVarWithSpace("pwd", pwd);
-   }
-
-   public void toString1Line(Dctx dc) {
-      dc.root1Line(this, "SendToOperation");
-      toStringPrivate(dc);
-      super.toString1Line(dc.sup1Line());
-   }
-   //#enddebug
-
-   public int getPayloadEncryptionMethod() {
-      return payloadEncryptionMethod;
-   }
-
 
    public Account getAccountBought() {
       return accountBought;
    }
 
-
    public Account getAccountBuyer() {
       return accountBuyer;
    }
+
+   public Double getAmount() {
+      return amount;
+   }
+
+   public String getMessage() {
+      if (op != null) {
+         return "Buy transaction of " + accountToPurchase + " sent successfully " + op.getTypeDescriptor();
+      } else {
+         return "sendTo operation failed. Null Returned";
+      }
+   }
+
+
+   //#mdebug
+   public void toString(Dctx dc) {
+      dc.root(this, "OperationJavaBuyAccount");
+      super.toString(dc.sup());
+      toStringPrivate(dc);
+      dc.nl();
+      dc.appendVarWithSpace("buyerAccount", buyerAccount);
+      dc.appendVarWithSpace("sellerAccount", sellerAccount);
+      dc.nl();
+      dc.appendVarWithSpace("newEncPubKey", newEncPubKey);
+   }
+
+   public void toString1Line(Dctx dc) {
+      dc.root1Line(this, "OperationJavaBuyAccount");
+      toStringPrivate(dc);
+      super.toString1Line(dc.sup1Line());
+   }
+
+   private void toStringPrivate(Dctx dc) {
+      dc.appendVarWithSpace("price", price);
+      dc.appendVarWithSpace("accountToPurchase", accountToPurchase);
+   }
+   //#enddebug
 
 }

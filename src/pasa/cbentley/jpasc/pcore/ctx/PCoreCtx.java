@@ -32,6 +32,7 @@ import pasa.cbentley.core.src4.logging.Dctx;
 import pasa.cbentley.core.src4.logging.IDLog;
 import pasa.cbentley.core.src4.logging.IStringable;
 import pasa.cbentley.core.src4.logging.IUserLog;
+import pasa.cbentley.core.src4.thread.WorkerThread;
 import pasa.cbentley.core.src5.bundle.Bundler;
 import pasa.cbentley.core.src5.bundle.CombinedResourceBundle;
 import pasa.cbentley.core.src5.bundle.UTF8Control;
@@ -154,6 +155,8 @@ public class PCoreCtx extends ACtx implements IStringable, ICtx {
    private PascalCoinDouble         ZERO;
 
    private CoreOperations coreOps;
+
+   private WorkerThread workerThread;
 
    public DecimalFormat getPascalCoinsFormat() {
       return pascalCoinsFormat;
@@ -344,6 +347,17 @@ public class PCoreCtx extends ACtx implements IStringable, ICtx {
       return backgroundExec;
    }
 
+   /**
+    * The thread used for queue operations when you want seriality
+    * over a given set of operations
+    * @return
+    */
+   public WorkerThread getWorkerThreadOperation() {
+      if(workerThread == null) {
+         workerThread = new WorkerThread(uc);
+      }
+      return workerThread;
+   }
    /**
     * "YYYY/MM/dd - HH:mm:ss" for formating timestamps
     * @return

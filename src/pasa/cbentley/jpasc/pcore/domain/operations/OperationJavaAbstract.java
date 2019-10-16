@@ -158,6 +158,19 @@ public abstract class OperationJavaAbstract implements IStringable {
    public void toString(Dctx dc) {
       dc.root(this, "OperationJava");
       toStringPrivate(dc);
+      
+      dc.nl();
+      dc.appendVarWithSpace("fee", fee);
+      if(payload == null) {
+         dc.appendWithSpace("No payload");
+      } else {
+         dc.nl();
+         dc.appendVarWithSpace("Payload", toStringPayloadEncryptionMethod(payloadEncryptionMethod));
+         dc.appendVarWithSpace("pwd", pwd);
+         String str = pc.getUCtx().getBU().toStringBytes(payload, 16);
+         dc.nl();
+         dc.append(str);
+      }
    }
 
    public String toString1Line() {
@@ -165,7 +178,24 @@ public abstract class OperationJavaAbstract implements IStringable {
    }
 
    private void toStringPrivate(Dctx dc) {
-
+      dc.appendVarWithSpace("hasRun", hasRun);
+      dc.appendVarWithSpace("isSuccess", isSuccess);
+      dc.appendVarWithSpace("isParamValidated", isParamValidated);
+   }
+   
+   public String toStringPayloadEncryptionMethod(int type) {
+      switch (type) {
+         case IPayload.PAYLOAD_ENCRYPTION_00_NONE:
+           return "None";
+         case IPayload.PAYLOAD_ENCRYPTION_01_DEST:
+            return "Dest Key";
+         case IPayload.PAYLOAD_ENCRYPTION_02_SENDER:
+            return "Sender Key";
+         case IPayload.PAYLOAD_ENCRYPTION_03_AES:
+            return "Password";
+         default:
+            return "Unknown"+type;
+      }
    }
 
    public String toString(PublicKey pkNew, Account buyer, Account bought, Double fee) {
