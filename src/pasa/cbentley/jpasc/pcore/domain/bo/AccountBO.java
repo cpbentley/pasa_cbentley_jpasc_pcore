@@ -4,9 +4,9 @@
  */
 package pasa.cbentley.jpasc.pcore.domain.bo;
 
-import pasa.cbentley.byteobjects.core.ByteObject;
-import pasa.cbentley.byteobjects.ctx.BOCtx;
-import pasa.cbentley.byteobjects.ctx.IBOTypesBOC;
+import pasa.cbentley.byteobjects.src4.core.ByteObject;
+import pasa.cbentley.byteobjects.src4.ctx.BOCtx;
+import pasa.cbentley.byteobjects.src4.ctx.IBOTypesBOC;
 import pasa.cbentley.jpasc.pcore.ctx.PCoreCtx;
 import pasa.cbentley.jpasc.pcore.domain.ipc.IPCAccount;
 import pasa.cbentley.jpasc.pcore.domain.ipc.IPCAccountMutable;

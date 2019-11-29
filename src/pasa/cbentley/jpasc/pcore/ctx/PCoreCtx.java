@@ -19,8 +19,8 @@ import com.github.davidbolet.jpascalcoin.api.model.Account;
 import com.github.davidbolet.jpascalcoin.api.model.AccountState;
 import com.github.davidbolet.jpascalcoin.api.model.PublicKey;
 
-import pasa.cbentley.byteobjects.core.ByteObject;
-import pasa.cbentley.byteobjects.ctx.BOCtx;
+import pasa.cbentley.byteobjects.src4.core.ByteObject;
+import pasa.cbentley.byteobjects.src4.ctx.BOCtx;
 import pasa.cbentley.core.src4.ctx.ACtx;
 import pasa.cbentley.core.src4.ctx.ICtx;
 import pasa.cbentley.core.src4.ctx.UCtx;

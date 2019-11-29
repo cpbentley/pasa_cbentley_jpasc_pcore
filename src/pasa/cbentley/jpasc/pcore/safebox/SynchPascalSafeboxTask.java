@@ -9,7 +9,7 @@ import java.util.List;
 import com.github.davidbolet.jpascalcoin.api.client.PascalCoinClient;
 import com.github.davidbolet.jpascalcoin.api.model.Account;
 
-import pasa.cbentley.byteobjects.core.ByteObjectManaged;
+import pasa.cbentley.byteobjects.src4.core.ByteObjectManaged;
 import pasa.cbentley.core.src4.io.BAByteOS;
 import pasa.cbentley.core.src4.io.BADataOS;
 import pasa.cbentley.jpasc.pcore.ctx.PCoreCtx;

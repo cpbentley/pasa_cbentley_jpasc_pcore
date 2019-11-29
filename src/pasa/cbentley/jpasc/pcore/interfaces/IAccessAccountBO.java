@@ -4,7 +4,7 @@
  */
 package pasa.cbentley.jpasc.pcore.interfaces;
 
-import pasa.cbentley.byteobjects.core.ByteObject;
+import pasa.cbentley.byteobjects.src4.core.ByteObject;
 import pasa.cbentley.jpasc.pcore.domain.bo.AccountBO;
 import pasa.cbentley.jpasc.pcore.domain.bo.PublicKeyBO;
 

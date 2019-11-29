@@ -4,7 +4,7 @@
  */
 package pasa.cbentley.jpasc.pcore.domain.bo;
 
-import pasa.cbentley.byteobjects.ctx.BOCtx;
+import pasa.cbentley.byteobjects.src4.ctx.BOCtx;
 import pasa.cbentley.core.src4.structs.IntBuffer;
 import pasa.cbentley.jpasc.pcore.ctx.PCoreCtx;
 

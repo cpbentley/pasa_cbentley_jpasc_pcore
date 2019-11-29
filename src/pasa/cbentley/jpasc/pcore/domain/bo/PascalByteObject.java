@@ -4,8 +4,8 @@
  */
 package pasa.cbentley.jpasc.pcore.domain.bo;
 
-import pasa.cbentley.byteobjects.core.ByteObject;
-import pasa.cbentley.byteobjects.ctx.BOCtx;
+import pasa.cbentley.byteobjects.src4.core.ByteObject;
+import pasa.cbentley.byteobjects.src4.ctx.BOCtx;
 
 public class PascalByteObject extends ByteObject {
 
