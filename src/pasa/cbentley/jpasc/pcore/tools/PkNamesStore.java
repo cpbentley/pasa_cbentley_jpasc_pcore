@@ -298,9 +298,9 @@ public class PkNamesStore implements IStringable {
       dc.root(this, "PkNamesStore");
       dc.appendVarWithSpace("version", version);
       dc.appendVarWithSpace("fileName", fileName);
-      pc.getC5().toStringHashMapStringString(dc.nLevel(), mapKeyToNameWallet, "Wallet Key Names", false);
-      pc.getC5().toStringHashMapStringString(dc.nLevel(), mapKeyToNameUserCustom, "User Custom Names", false);
-      pc.getC5().toStringHashMapStringString(dc.nLevel(), mapKeyToNameAutomatic, "Automatic Generated Names", false);
+      pc.getC5().toStringHashMapStringString(dc.newLevel(), mapKeyToNameWallet, "Wallet Key Names", false);
+      pc.getC5().toStringHashMapStringString(dc.newLevel(), mapKeyToNameUserCustom, "User Custom Names", false);
+      pc.getC5().toStringHashMapStringString(dc.newLevel(), mapKeyToNameAutomatic, "Automatic Generated Names", false);
 
    }
 

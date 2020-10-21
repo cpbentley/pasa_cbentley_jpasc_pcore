@@ -32,7 +32,7 @@ public class OperationTaskAbstract extends PCoreTask {
       toStringPrivate(dc);
       super.toString(dc.sup());
       dc.nlLvl("OperationJavaAbstract", operation);
-      dc.nlLvlNoTitle("IListenerOperation", listenerOperation);
+      dc.nlLvlNullTitle("IListenerOperation", listenerOperation);
    }
 
    private void toStringPrivate(Dctx dc) {
@@ -42,7 +42,7 @@ public class OperationTaskAbstract extends PCoreTask {
    public void toString1Line(Dctx dc) {
       dc.root1Line(this, "OperationTaskAbstract");
       toStringPrivate(dc);
-      dc.nlLvlOneLine(operation, "OperationJavaAbstract");
+      dc.nlLvl1Line(operation, "OperationJavaAbstract");
       super.toString1Line(dc.sup1Line());
    }
 

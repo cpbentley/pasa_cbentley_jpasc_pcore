@@ -57,7 +57,7 @@ public abstract class ListTask<T> extends PCoreTask {
       toStringPrivate(dc);
       super.toString(dc.sup());
       if(listener != null) {
-         dc.nlLvlOneLine("IListListener",listener);
+         dc.nlLvl1Line(listener,"IListListener");
       } else {
          dc.append("IListListner is null");
       }

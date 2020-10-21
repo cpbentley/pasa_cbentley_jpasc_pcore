@@ -77,7 +77,7 @@ public abstract class ListTaskBlockAbstract extends ListTaskPage<Block> {
       dc.root1Line(this, "ListTaskBlockAbstract");
       toStringPrivate(dc);
       super.toString1Line(dc.sup1Line());
-      dc.nlLvlOneLine(filterBlock, "IFilterBlock");
+      dc.nlLvl1Line(filterBlock, "IFilterBlock");
    }
 
    private void toStringPrivate(Dctx dc) {

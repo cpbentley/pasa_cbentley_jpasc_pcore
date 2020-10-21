@@ -134,7 +134,7 @@ public class PCoreDebug {
             dc.append(counter);
             dc.append("\t");
             if (is instanceof IStringable) {
-               dc.nlLvlOneLine((IStringable) is);
+               dc.nlLvl1Line((IStringable) is);
             } else if (is instanceof Account) {
                d1((Account) is, dc);
             } else {

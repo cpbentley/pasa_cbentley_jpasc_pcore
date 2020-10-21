@@ -247,6 +247,12 @@ public class AccountJava implements IPCAccount, Serializable, IPCAccountMutable 
    public void toString(Dctx dc) {
       dc.root(this, "AccountJava");
       toStringPrivate(dc);
+      dc.appendVarWithSpace("account", account);
+      dc.appendVarWithSpace("encPubkey", encPubkey);
+      dc.appendVarWithSpace("isPrivateSale", isPrivateSale);
+      dc.appendVarWithSpace("nOperation", nOperation);
+      dc.appendVarWithSpace("type", type);
+      dc.appendVarWithSpace("state", state);
    }
 
    public String toString1Line() {

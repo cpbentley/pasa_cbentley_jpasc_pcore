@@ -58,7 +58,7 @@ public class PublicKeyJavaNamer implements INameable<PublicKeyJava> {
    public void toString1Line(Dctx dc) {
       dc.root1Line(this, "PublicKeyJavaNamer");
       toStringPrivate(dc);
-      dc.nlLvlOneLine(key);
+      dc.nlLvl1Line(key);
    }
 
    public UCtx toStringGetUCtx() {

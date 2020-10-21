@@ -144,7 +144,7 @@ public abstract class ListTaskPage<T> extends ListTask<T> {
       dc.root1Line(this, "ListTaskPage");
       toStringPrivate(dc);
       super.toString1Line(dc.sup1Line());
-      dc.nlLvlOneLine(pager, "Pager");
+      dc.nlLvl1Line(pager, "Pager");
    }
 
    private void toStringPrivate(Dctx dc) {
