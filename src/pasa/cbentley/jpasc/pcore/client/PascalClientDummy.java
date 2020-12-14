@@ -44,10 +44,6 @@ public class PascalClientDummy implements IPascalCoinClient {
       return null;
    }
 
-   public List<Account> findAccounts(String name, String nameSearchType, Integer type, String statusType, Double minBalance, Double maxBalance, Integer start, Integer max) {
-      return null;
-   }
-
    public Integer addNode(String nodes) {
       //#debug
       getLog().consoleLog("PascalClientDummy#addNode " + nodes);
@@ -123,6 +119,10 @@ public class PascalClientDummy implements IPascalCoinClient {
    public List<Account> findAccounts(String name, Integer type, Integer start, Integer max) {
       //#debug
       getLog().consoleLog("PascalClientDummy#findAccounts");
+      return null;
+   }
+
+   public List<Account> findAccounts(String name, String nameSearchType, Integer type, String statusType, Double minBalance, Double maxBalance, Integer start, Integer max) {
       return null;
    }
 
@@ -422,6 +422,7 @@ public class PascalClientDummy implements IPascalCoinClient {
    private void toStringPrivate(Dctx dc) {
 
    }
+   //#enddebug
 
    public Boolean unlock(String pwd) {
       //#debug
@@ -434,7 +435,5 @@ public class PascalClientDummy implements IPascalCoinClient {
       getLog().consoleLog("PascalClientDummy#verifySign");
       return null;
    }
-
-   //#enddebug
 
 }

@@ -2,16 +2,11 @@ package pasa.cbentley.jpasc.pcore.rpc.model;
 
 import java.io.Serializable;
 
-import pasa.cbentley.core.src4.ctx.UCtx;
 import pasa.cbentley.core.src4.logging.Dctx;
 import pasa.cbentley.jpasc.pcore.ctx.ObjectPCore;
 import pasa.cbentley.jpasc.pcore.ctx.PCoreCtx;
 
 public class Account extends ObjectPCore implements Serializable {
-
-   public Account(PCoreCtx pc) {
-      super(pc);
-   }
 
    /**
     * 
@@ -24,16 +19,6 @@ public class Account extends ObjectPCore implements Serializable {
    private Integer           account;
 
    /**
-    * json=type
-    */
-   private Integer           type;
-
-   /**
-    * json=name
-    */
-   private String            name;
-
-   /**
     * json=amount_to_swap
     */
    private Double            amountToSwap;
@@ -42,41 +27,6 @@ public class Account extends ObjectPCore implements Serializable {
     * json=amount_to_swap_s
     */
    private String            amountToSwapString;
-
-   /**
-    * json=hashed_secret
-    */
-   private String            hashedSecret;
-
-   /**
-    * json=receiver_swap_account
-    */
-   private Integer           receiverSwapAccount;
-
-   /**
-    * json=state 
-    */
-   private AccountState      state;
-
-   /**
-    * json=private_sale
-    */
-   private Boolean           privateSale;
-
-   /**
-    * json=new_enc_pubkey
-    */
-   private String            newEncPubkey;
-
-   /**
-    * json=locked_until_block
-    */
-   private Integer           lockedUntilBlock;
-
-   /**
-    * json=enc_pubkey
-    */
-   private String            encPubkey;
 
    /**
     * json=balance 
@@ -88,6 +38,8 @@ public class Account extends ObjectPCore implements Serializable {
     */
    private String            balanceString;
 
+   private transient Integer cacheBlock;
+
    /**
     * json=data 
     * 
@@ -96,9 +48,76 @@ public class Account extends ObjectPCore implements Serializable {
    private String            data;
 
    /**
+    * json=enc_pubkey
+    */
+   private String            encPubkey;
+
+   /**
+    * json=hashed_secret
+    */
+   private String            hashedSecret;
+
+   /**
+    * json=locked_until_block
+    */
+   private Integer           lockedUntilBlock;
+
+   /**
+    * json=name
+    */
+   private String            name;
+
+   /**
+    * json=new_enc_pubkey
+    */
+   private String            newEncPubkey;
+
+   /**
     * json=n_operation 
     */
    private Integer           nOperation;
+
+   private Object objectSupport;
+
+   /**
+    * json=price 
+    */
+   private Double            price;
+
+   /**
+    * json=price_s 
+    */
+   private String            priceString;
+
+   /**
+    * json=private_sale
+    */
+   private Boolean           privateSale;
+
+   /**
+    * json=receiver_swap_account
+    */
+   private Integer           receiverSwapAccount;
+
+   /**
+    * json=seal
+    */
+   private String            seal;
+
+   /**
+    * json=seller_account 
+    */
+   private Integer           sellerAccount;
+
+   /**
+    * json=state 
+    */
+   private AccountState      state;
+
+   /**
+    * json=type
+    */
+   private Integer           type;
 
    /**
     * json=updated_b 
@@ -115,25 +134,9 @@ public class Account extends ObjectPCore implements Serializable {
     */
    private Integer           updatedBlockPassive;
 
-   /**
-    * json=seller_account 
-    */
-   private Integer           sellerAccount;
-
-   /**
-    * json=price 
-    */
-   private Double            price;
-
-   /**
-    * json=price_s 
-    */
-   private String            priceString;
-
-   /**
-    * json=seal
-    */
-   private String            seal;
+   public Account(PCoreCtx pc) {
+      super(pc);
+   }
 
    /**
     * Account number
@@ -143,95 +146,12 @@ public class Account extends ObjectPCore implements Serializable {
       return account;
    }
 
-   public void setAccount(Integer account) {
-      this.account = account;
+   public Double getAmountToSwap() {
+      return amountToSwap;
    }
 
-   /**
-    * Account Type
-    * @return Integer
-    */
-   public Integer getType() {
-      return type;
-   }
-
-   public void setType(Integer type) {
-      this.type = type;
-   }
-
-   /**
-    * Account name in PascalCoin64 Encoding - abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&amp;*()-+{}[]_:"|&lt;&gt;,.?/~
-    * First char cannot start with number
-    * Must empty/null or 3..64 characters in length
-    * @return String
-    */
-   public String getName() {
-      return name;
-   }
-
-   public void setName(String name) {
-      this.name = name;
-   }
-
-   /**
-    * Account State
-    * @return AccountState (Normal or listed)
-    */
-   public AccountState getState() {
-      return state;
-   }
-
-   public void setState(AccountState state) {
-      this.state = state;
-   }
-
-   /**
-    * For Listed accounts, this indicates whether it's private or public sale
-    * @return Boolean
-    */
-   public Boolean getPrivateSale() {
-      return privateSale;
-   }
-
-   public void setPrivateSale(Boolean privateSale) {
-      this.privateSale = privateSale;
-   }
-
-   /**
-    * Only for listed accounts for PrivateSale. This indicates the buyers public key
-    * @return String
-    */
-   public String getNewEncPubkey() {
-      return newEncPubkey;
-   }
-
-   public void setNewEncPubkey(String newEncPubkey) {
-      this.newEncPubkey = newEncPubkey;
-   }
-
-   /**
-    * Only if the account is listed
-    * Account locked until this blocknumber is reached 
-    * @return Integer
-    */
-   public Integer getLockedUntilBlock() {
-      return lockedUntilBlock;
-   }
-
-   public void setLockedUntilBlock(Integer lockedUntilBlock) {
-      this.lockedUntilBlock = lockedUntilBlock;
-   }
-
-   /**
-    * Encoded public key value (hexastring)
-    * @return String with the encoded public key
-    */
-   public String getEncPubkey() {
-      return encPubkey;
-   }
-
-   public void setEncPubkey(String encPubkey) {
-      this.encPubkey = encPubkey;
+   public String getAmountToSwapString() {
+      return amountToSwapString;
    }
 
    /**
@@ -246,12 +166,51 @@ public class Account extends ObjectPCore implements Serializable {
       return balanceString;
    }
 
-   public void setBalance(Double balance) {
-      this.balance = balance;
+   public Integer getCacheBlock() {
+      return cacheBlock;
    }
 
-   public void setBalanceString(String balance) {
-      this.balanceString = balance;
+   public String getData() {
+      return data;
+   }
+
+   /**
+    * Encoded public key value (hexastring)
+    * @return String with the encoded public key
+    */
+   public String getEncPubkey() {
+      return encPubkey;
+   }
+
+   public String getHashedSecret() {
+      return hashedSecret;
+   }
+
+   /**
+    * Only if the account is listed
+    * Account locked until this blocknumber is reached 
+    * @return Integer
+    */
+   public Integer getLockedUntilBlock() {
+      return lockedUntilBlock;
+   }
+
+   /**
+    * Account name in PascalCoin64 Encoding - abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&amp;*()-+{}[]_:"|&lt;&gt;,.?/~
+    * First char cannot start with number
+    * Must empty/null or 3..64 characters in length
+    * @return String
+    */
+   public String getName() {
+      return name;
+   }
+
+   /**
+    * Only for listed accounts for PrivateSale. This indicates the buyers public key
+    * @return String
+    */
+   public String getNewEncPubkey() {
+      return newEncPubkey;
    }
 
    /**
@@ -262,8 +221,64 @@ public class Account extends ObjectPCore implements Serializable {
       return nOperation;
    }
 
-   public void setnOperation(Integer nOperation) {
-      this.nOperation = nOperation;
+   /**
+    * Gets the support Object. 
+    * @return null if none set
+    */
+   public Object getObjectSupport() {
+      return objectSupport;
+   }
+
+   /**
+    * Account price if account is listed
+    * @return Double
+    */
+   public Double getPrice() {
+      return price;
+   }
+
+   public String getPriceString() {
+      return priceString;
+   }
+
+   /**
+    * For Listed accounts, this indicates whether it's private or public sale
+    * @return Boolean
+    */
+   public Boolean getPrivateSale() {
+      return privateSale;
+   }
+
+   public Integer getReceiverSwapAccount() {
+      return receiverSwapAccount;
+   }
+
+   public String getSeal() {
+      return seal;
+   }
+
+   /**
+    * Account Seller if account is listed
+    * @return Integer
+    */
+   public Integer getSellerAccount() {
+      return sellerAccount;
+   }
+
+   /**
+    * Account State
+    * @return AccountState (Normal or listed)
+    */
+   public AccountState getState() {
+      return state;
+   }
+
+   /**
+    * Account Type
+    * @return Integer
+    */
+   public Integer getType() {
+      return type;
    }
 
    /**
@@ -275,38 +290,32 @@ public class Account extends ObjectPCore implements Serializable {
       return updatedB;
    }
 
-   public void setUpdatedB(Integer updatedB) {
-      this.updatedB = updatedB;
+   public Integer getUpdatedBlockActive() {
+      return updatedBlockActive;
    }
 
-   /**
-    * Account Seller if account is listed
-    * @return Integer
-    */
-   public Integer getSellerAccount() {
-      return sellerAccount;
+   public Integer getUpdatedBlockPassive() {
+      return updatedBlockPassive;
    }
 
-   public void setSellerAccount(Integer sellerAccount) {
-      this.sellerAccount = sellerAccount;
+   public void setAccount(Integer account) {
+      this.account = account;
    }
 
-   /**
-    * Account price if account is listed
-    * @return Double
-    */
-   public Double getPrice() {
-      return price;
+   public void setAmountToSwap(Double amountToSwap) {
+      this.amountToSwap = amountToSwap;
    }
 
-   public void setPrice(Double price) {
-      this.price = price;
+   public void setAmountToSwapString(String amountToSwapString) {
+      this.amountToSwapString = amountToSwapString;
    }
 
-   private transient Integer cacheBlock;
+   public void setBalance(Double balance) {
+      this.balance = balance;
+   }
 
-   public Integer getCacheBlock() {
-      return cacheBlock;
+   public void setBalanceString(String balance) {
+      this.balanceString = balance;
    }
 
    /**
@@ -319,14 +328,32 @@ public class Account extends ObjectPCore implements Serializable {
       this.cacheBlock = cacheBlock;
    }
 
-   private Object objectSupport;
+   public void setData(String data) {
+      this.data = data;
+   }
 
-   /**
-    * Gets the support Object. 
-    * @return null if none set
-    */
-   public Object getObjectSupport() {
-      return objectSupport;
+   public void setEncPubkey(String encPubkey) {
+      this.encPubkey = encPubkey;
+   }
+
+   public void setHashedSecret(String hashedSecret) {
+      this.hashedSecret = hashedSecret;
+   }
+
+   public void setLockedUntilBlock(Integer lockedUntilBlock) {
+      this.lockedUntilBlock = lockedUntilBlock;
+   }
+
+   public void setName(String name) {
+      this.name = name;
+   }
+
+   public void setNewEncPubkey(String newEncPubkey) {
+      this.newEncPubkey = newEncPubkey;
+   }
+
+   public void setnOperation(Integer nOperation) {
+      this.nOperation = nOperation;
    }
 
    /**
@@ -337,44 +364,48 @@ public class Account extends ObjectPCore implements Serializable {
       this.objectSupport = objectSupport;
    }
 
-   public String getSeal() {
-      return seal;
-   }
-
-   public void setSeal(String seal) {
-      this.seal = seal;
-   }
-
-   public String getPriceString() {
-      return priceString;
+   public void setPrice(Double price) {
+      this.price = price;
    }
 
    public void setPriceString(String priceString) {
       this.priceString = priceString;
    }
 
-   public Integer getUpdatedBlockActive() {
-      return updatedBlockActive;
+   public void setPrivateSale(Boolean privateSale) {
+      this.privateSale = privateSale;
+   }
+
+   public void setReceiverSwapAccount(Integer receiverSwapAccount) {
+      this.receiverSwapAccount = receiverSwapAccount;
+   }
+
+   public void setSeal(String seal) {
+      this.seal = seal;
+   }
+
+   public void setSellerAccount(Integer sellerAccount) {
+      this.sellerAccount = sellerAccount;
+   }
+
+   public void setState(AccountState state) {
+      this.state = state;
+   }
+
+   public void setType(Integer type) {
+      this.type = type;
+   }
+
+   public void setUpdatedB(Integer updatedB) {
+      this.updatedB = updatedB;
    }
 
    public void setUpdatedBlockActive(Integer updatedBlockActive) {
       this.updatedBlockActive = updatedBlockActive;
    }
 
-   public Integer getUpdatedBlockPassive() {
-      return updatedBlockPassive;
-   }
-
    public void setUpdatedBlockPassive(Integer updatedBlockPassive) {
       this.updatedBlockPassive = updatedBlockPassive;
-   }
-
-   public String getData() {
-      return data;
-   }
-
-   public void setData(String data) {
-      this.data = data;
    }
 
    //#mdebug
@@ -415,46 +446,14 @@ public class Account extends ObjectPCore implements Serializable {
       dc.nlLvlO(objectSupport, "objectSupport");
    }
 
-   private void toStringPrivate(Dctx dc) {
-
-   }
-
    public void toString1Line(Dctx dc) {
       dc.root1Line(this, Account.class);
       toStringPrivate(dc);
       super.toString1Line(dc.sup1Line());
    }
 
-   public Double getAmountToSwap() {
-      return amountToSwap;
-   }
+   private void toStringPrivate(Dctx dc) {
 
-   public void setAmountToSwap(Double amountToSwap) {
-      this.amountToSwap = amountToSwap;
-   }
-
-   public String getAmountToSwapString() {
-      return amountToSwapString;
-   }
-
-   public void setAmountToSwapString(String amountToSwapString) {
-      this.amountToSwapString = amountToSwapString;
-   }
-
-   public String getHashedSecret() {
-      return hashedSecret;
-   }
-
-   public void setHashedSecret(String hashedSecret) {
-      this.hashedSecret = hashedSecret;
-   }
-
-   public Integer getReceiverSwapAccount() {
-      return receiverSwapAccount;
-   }
-
-   public void setReceiverSwapAccount(Integer receiverSwapAccount) {
-      this.receiverSwapAccount = receiverSwapAccount;
    }
 
    //#enddebug

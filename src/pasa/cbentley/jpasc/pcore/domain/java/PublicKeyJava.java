@@ -45,9 +45,9 @@ public class PublicKeyJava implements Serializable, IStringable {
 
    private boolean            isNew;
 
-   private boolean            isWildcard;
-
    private boolean            isWalletKey;
+
+   private boolean            isWildcard;
 
    /**
    *Indicates which EC type is used (EC_NID)
@@ -160,19 +160,15 @@ public class PublicKeyJava implements Serializable, IStringable {
    public Boolean getCanUse() {
       return canUse;
    }
-   
-   public boolean isWellFormed() {
-      return canUse != null;
+
+   public String getEncPubKey() {
+      return encPubKey;
    }
 
    public String getEncPubKeyOrFetch() {
       if (encPubKey == null) {
 
       }
-      return encPubKey;
-   }
-
-   public String getEncPubKey() {
       return encPubKey;
    }
 
@@ -237,6 +233,14 @@ public class PublicKeyJava implements Serializable, IStringable {
       return isWalletKey;
    }
 
+   public boolean isWellFormed() {
+      return canUse != null;
+   }
+
+   public boolean isWildcard() {
+      return isWildcard;
+   }
+
    public void setBase58PubKey(String base58PubKey) {
       this.base58PubKey = base58PubKey;
    }
@@ -286,6 +290,10 @@ public class PublicKeyJava implements Serializable, IStringable {
       this.isWalletKey = isWalletKey;
    }
 
+   public void setWildcard(boolean isWildcard) {
+      this.isWildcard = isWildcard;
+   }
+
    public void setX(String x) {
       this.x = x;
    }
@@ -332,14 +340,6 @@ public class PublicKeyJava implements Serializable, IStringable {
       dc.appendVarWithSpace("numAccounts", numAccounts);
       dc.appendVarWithSpace("numCoins", numCoins);
       dc.appendVarWithSpace("keyType", keyType);
-   }
-
-   public boolean isWildcard() {
-      return isWildcard;
-   }
-
-   public void setWildcard(boolean isWildcard) {
-      this.isWildcard = isWildcard;
    }
 
    //#enddebug
