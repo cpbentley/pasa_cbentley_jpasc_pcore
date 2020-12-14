@@ -6,9 +6,8 @@ package pasa.cbentley.jpasc.pcore.services;
 
 import java.util.List;
 
-import com.github.davidbolet.jpascalcoin.api.model.Operation;
-
 import pasa.cbentley.jpasc.pcore.ctx.PCoreCtx;
+import pasa.cbentley.jpasc.pcore.rpc.model.Operation;
 
 /**
  * Provides services when operating on pasas.

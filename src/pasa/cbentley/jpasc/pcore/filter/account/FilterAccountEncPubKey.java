@@ -4,9 +4,8 @@
  */
 package pasa.cbentley.jpasc.pcore.filter.account;
 
-import com.github.davidbolet.jpascalcoin.api.model.Account;
-
 import pasa.cbentley.jpasc.pcore.ctx.PCoreCtx;
+import pasa.cbentley.jpasc.pcore.rpc.model.Account;
 
 public class FilterAccountEncPubKey extends FilterAccountAbstract {
 

@@ -4,9 +4,8 @@
  */
 package pasa.cbentley.jpasc.pcore.filter;
 
-import com.github.davidbolet.jpascalcoin.api.model.Block;
-
 import pasa.cbentley.core.src4.logging.IStringable;
+import pasa.cbentley.jpasc.pcore.rpc.model.Block;
 
 public interface IFilterBlock extends IStringable  {
    public boolean filterBlock(Block block);

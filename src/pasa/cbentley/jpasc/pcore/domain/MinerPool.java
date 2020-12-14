@@ -6,7 +6,7 @@ package pasa.cbentley.jpasc.pcore.domain;
 
 import java.util.ArrayList;
 
-import com.github.davidbolet.jpascalcoin.api.model.Block;
+import pasa.cbentley.jpasc.pcore.rpc.model.Block;
 
 /**
  * Class for computing statistics of miners as their appear in the block Miner Payload.

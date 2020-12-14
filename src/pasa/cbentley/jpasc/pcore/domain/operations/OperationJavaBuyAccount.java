@@ -4,12 +4,11 @@
  */
 package pasa.cbentley.jpasc.pcore.domain.operations;
 
-import com.github.davidbolet.jpascalcoin.api.model.Account;
-import com.github.davidbolet.jpascalcoin.api.model.PublicKey;
-
 import pasa.cbentley.core.src4.logging.Dctx;
 import pasa.cbentley.core.src4.logging.ITechLvl;
 import pasa.cbentley.jpasc.pcore.ctx.PCoreCtx;
+import pasa.cbentley.jpasc.pcore.rpc.model.Account;
+import pasa.cbentley.jpasc.pcore.rpc.model.PublicKey;
 
 /**
  * Represents the RPC call sendTo

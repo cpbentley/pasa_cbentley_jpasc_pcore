@@ -15,10 +15,6 @@ import java.util.Locale;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import com.github.davidbolet.jpascalcoin.api.model.Account;
-import com.github.davidbolet.jpascalcoin.api.model.AccountState;
-import com.github.davidbolet.jpascalcoin.api.model.PublicKey;
-
 import pasa.cbentley.byteobjects.src4.core.ByteObject;
 import pasa.cbentley.byteobjects.src4.ctx.BOCtx;
 import pasa.cbentley.core.src4.ctx.ACtx;
@@ -34,12 +30,11 @@ import pasa.cbentley.core.src4.logging.IStringable;
 import pasa.cbentley.core.src4.logging.IUserLog;
 import pasa.cbentley.core.src4.thread.WorkerThread;
 import pasa.cbentley.core.src5.bundle.Bundler;
-import pasa.cbentley.core.src5.bundle.CombinedResourceBundle;
-import pasa.cbentley.core.src5.bundle.UTF8Control;
 import pasa.cbentley.core.src5.ctx.C5Ctx;
 import pasa.cbentley.core.src5.ctx.ITechPrefsC5;
 import pasa.cbentley.jpasc.pcore.access.AccessPascalPrivate;
-import pasa.cbentley.jpasc.pcore.dboletbridge.IPascalCoinClient;
+import pasa.cbentley.jpasc.pcore.client.IPascalCoinClient;
+import pasa.cbentley.jpasc.pcore.client.IPascalCoinClientReader;
 import pasa.cbentley.jpasc.pcore.domain.DomainMapper;
 import pasa.cbentley.jpasc.pcore.domain.PublicKeyJavaManager;
 import pasa.cbentley.jpasc.pcore.domain.bo.AccountBO;
@@ -53,6 +48,9 @@ import pasa.cbentley.jpasc.pcore.interfaces.IBOPascalChain;
 import pasa.cbentley.jpasc.pcore.network.RPCConnection;
 import pasa.cbentley.jpasc.pcore.ping.PingLogger;
 import pasa.cbentley.jpasc.pcore.ping.PingParams;
+import pasa.cbentley.jpasc.pcore.rpc.model.Account;
+import pasa.cbentley.jpasc.pcore.rpc.model.AccountState;
+import pasa.cbentley.jpasc.pcore.rpc.model.PublicKey;
 import pasa.cbentley.jpasc.pcore.safebox.BOPascalChainFirstImpl;
 import pasa.cbentley.jpasc.pcore.services.PasaServices;
 import pasa.cbentley.jpasc.pcore.tools.KeyNameProvider;
@@ -106,6 +104,8 @@ import pasa.cbentley.jpasc.pcore.utils.PublicKeyJavaCache;
  */
 public class PCoreCtx extends ACtx implements IStringable, ICtx {
 
+   public static final int          CTX_ID            = 5001;
+
    private HashMap<Integer, String> accountToKey;
 
    private PASCAddressValidation    addressValidation;
@@ -116,7 +116,11 @@ public class PCoreCtx extends ACtx implements IStringable, ICtx {
 
    private IBOPascalChain           boPascalChain;
 
+   private Bundler                  bundler;
+
    protected final C5Ctx            c5;
+
+   private CoreOperations           coreOps;
 
    private SimpleDateFormat         df;
 
@@ -124,15 +128,23 @@ public class PCoreCtx extends ACtx implements IStringable, ICtx {
 
    private EventBusArray            eventBusPCore;
 
+   private KeyNameProvider          keyNameProvider;
+
    private HashMap<String, Integer> mapNamesToAccount;
 
    private PasaServices             pasaService;
 
    private AccessPascalPrivate      pascalAccessPrivate;
 
+   private IPascalCoinClientFactory pascalCoinClientFactory;
+
+   private DecimalFormat            pascalCoinsFormat = new DecimalFormat("#.####");
+
    private String                   payloadEncoding   = "UTF-8";
 
    private PCoreDebug               pd;
+
+   private PingLogger               pingerLogger;
 
    private PingParams               pingParams;
 
@@ -150,17 +162,9 @@ public class PCoreCtx extends ACtx implements IStringable, ICtx {
 
    private String                   settingsPathCustom;
 
-   private DecimalFormat            pascalCoinsFormat = new DecimalFormat("#.####");
+   private WorkerThread             workerThread;
 
    private PascalCoinDouble         ZERO;
-
-   private CoreOperations coreOps;
-
-   private WorkerThread workerThread;
-
-   public DecimalFormat getPascalCoinsFormat() {
-      return pascalCoinsFormat;
-   }
 
    /**
     * You must explicitely try to connect after creating this instance.
@@ -185,7 +189,7 @@ public class PCoreCtx extends ACtx implements IStringable, ICtx {
       eventBusPCore = new EventBusArray(uc, this, events);
 
       coreOps = new CoreOperations(this);
-      
+
       //#debug
       pd = new PCoreDebug(this);
    }
@@ -203,10 +207,6 @@ public class PCoreCtx extends ACtx implements IStringable, ICtx {
       return (((account) * 101) % 89) + 10;
    }
 
-   public PascalCoinValue create(Double d) {
-      return new PascalCoinValue(this, d);
-   }
-
    public void cmdExit() {
       //make sure db of pk names is saved
       if (keyNameProvider != null) {
@@ -214,8 +214,15 @@ public class PCoreCtx extends ACtx implements IStringable, ICtx {
       }
    }
 
-   public PascalCoinDouble getZERO() {
-      return ZERO;
+   public PascalCoinValue create(Double d) {
+      return new PascalCoinValue(this, d);
+   }
+
+   public IPascalCoinClient createInstance(String address, int port) {
+      if (pascalCoinClientFactory == null) {
+         throw new IllegalStateException("Cannot call createInstance before setting a client factory");
+      }
+      return pascalCoinClientFactory.createClient(this, address, port);
    }
 
    /**
@@ -286,8 +293,30 @@ public class PCoreCtx extends ACtx implements IStringable, ICtx {
       return boPascalChain;
    }
 
+   public Bundler getBundler() {
+      if (bundler == null) {
+         bundler = new Bundler(c5, getPrefs());
+
+         List<String> bundleNames = new ArrayList<String>(1);
+         this.addI18NKey(bundleNames);
+         bundler.setBundleList(bundleNames);
+         String language = "en";
+         String country = "US";
+
+         country = getPrefs().get(ITechPrefsC5.PREF_LOCALE_COUNTRY, "US");
+         language = getPrefs().get(ITechPrefsC5.PREF_LOCALE_LANG, "en");
+         Locale currentLocale = new Locale(language, country);
+         bundler.setLocale(currentLocale);
+      }
+      return bundler;
+   }
+
    public C5Ctx getC5() {
       return c5;
+   }
+
+   public int getCtxID() {
+      return CTX_ID;
    }
 
    /**
@@ -348,17 +377,6 @@ public class PCoreCtx extends ACtx implements IStringable, ICtx {
    }
 
    /**
-    * The thread used for queue operations when you want seriality
-    * over a given set of operations
-    * @return
-    */
-   public WorkerThread getWorkerThreadOperation() {
-      if(workerThread == null) {
-         workerThread = new WorkerThread(uc);
-      }
-      return workerThread;
-   }
-   /**
     * "YYYY/MM/dd - HH:mm:ss" for formating timestamps
     * @return
     */
@@ -367,6 +385,20 @@ public class PCoreCtx extends ACtx implements IStringable, ICtx {
          df = new SimpleDateFormat("YYYY/MM/dd - HH:mm:ss");
       }
       return df;
+   }
+
+   public KeyNameProvider getKeyNameProvider() {
+      if (keyNameProvider == null) {
+         keyNameProvider = new KeyNameProvider(this);
+         keyNameProvider.cmdInitialize();
+      }
+      return keyNameProvider;
+   }
+
+   public int getLastValidAccount() {
+      int block = getRPCConnection().getLastBlockMinedValue();
+      int account = (block * 5) - 1;
+      return account;
    }
 
    /**
@@ -396,6 +428,10 @@ public class PCoreCtx extends ACtx implements IStringable, ICtx {
       return accountToKey;
    }
 
+   public CoreOperations getOps() {
+      return coreOps;
+   }
+
    /**
     * TODO make it configurable in 
     * @return
@@ -409,6 +445,14 @@ public class PCoreCtx extends ACtx implements IStringable, ICtx {
          pasaService = new PasaServices(this);
       }
       return pasaService;
+   }
+
+   public IPascalCoinClientFactory getPascalCoinClientFactory() {
+      return pascalCoinClientFactory;
+   }
+
+   public DecimalFormat getPascalCoinsFormat() {
+      return pascalCoinsFormat;
    }
 
    public PascalCoinValue getPascValue(String val) {
@@ -431,29 +475,9 @@ public class PCoreCtx extends ACtx implements IStringable, ICtx {
       return rpcConnection.getPClient();
    }
 
+
    public PingParams getPingParams() {
       return pingParams;
-   }
-
-   private KeyNameProvider keyNameProvider;
-
-   private PingLogger      pingerLogger;
-
-   private Bundler         bundler;
-
-   public KeyNameProvider getKeyNameProvider() {
-      if (keyNameProvider == null) {
-         keyNameProvider = new KeyNameProvider(this);
-         keyNameProvider.cmdInitialize();
-      }
-      return keyNameProvider;
-   }
-
-   public void setKeyNameProvider(KeyNameProvider keyNameProvider) {
-      if (keyNameProvider == null) {
-         throw new NullPointerException();
-      }
-      this.keyNameProvider = keyNameProvider;
    }
 
    public IPrefs getPrefs() {
@@ -465,32 +489,8 @@ public class PCoreCtx extends ACtx implements IStringable, ICtx {
       return prefsUser;
    }
 
-   public Bundler getBundler() {
-      if (bundler == null) {
-         bundler = new Bundler(c5, getPrefs());
-
-         List<String> bundleNames = new ArrayList<String>(1);
-         this.addI18NKey(bundleNames);
-         bundler.setBundleList(bundleNames);
-         String language = "en";
-         String country = "US";
-
-         country = getPrefs().get(ITechPrefsC5.PREF_LOCALE_COUNTRY, "US");
-         language = getPrefs().get(ITechPrefsC5.PREF_LOCALE_LANG, "en");
-         Locale currentLocale = new Locale(language, country);
-         bundler.setLocale(currentLocale);
-      }
-      return bundler;
-   }
-
    public PascalUtils getPU() {
       return pu;
-   }
-
-   public int getLastValidAccount() {
-      int block = getRPCConnection().getLastBlockMinedValue();
-      int account = (block * 5) - 1;
-      return account;
    }
 
    public PublicKeyJavaCache getPublicKeyJavaCache() {
@@ -523,19 +523,6 @@ public class PCoreCtx extends ACtx implements IStringable, ICtx {
     */
    public RPCConnection getRPCConnection() {
       return rpcConnection;
-   }
-
-   public void setRPCConnection(RPCConnection rpcConnection) {
-      if (rpcConnection == null) {
-         //#debug
-         throw new NullPointerException();
-      }
-      this.rpcConnection = rpcConnection;
-      startPingLogger();
-   }
-
-   public void startPingLogger() {
-      pingerLogger = new PingLogger(this);
    }
 
    /**
@@ -574,8 +561,35 @@ public class PCoreCtx extends ACtx implements IStringable, ICtx {
       return getMapWalletAccountToKey().get(account);
    }
 
+   /**
+    * The thread used for queue operations when you want seriality
+    * over a given set of operations
+    * @return
+    */
+   public WorkerThread getWorkerThreadOperation() {
+      if (workerThread == null) {
+         workerThread = new WorkerThread(uc);
+      }
+      return workerThread;
+   }
+
    public PascalCoinValue getZero() {
       return psvZero;
+   }
+
+   public PascalCoinDouble getZERO() {
+      return ZERO;
+   }
+
+   public void setKeyNameProvider(KeyNameProvider keyNameProvider) {
+      if (keyNameProvider == null) {
+         throw new NullPointerException();
+      }
+      this.keyNameProvider = keyNameProvider;
+   }
+
+   public void setPascalCoinClientFactory(IPascalCoinClientFactory pascalCoinClientFactory) {
+      this.pascalCoinClientFactory = pascalCoinClientFactory;
    }
 
    public void setPingParams(PingParams pingParams) {
@@ -586,8 +600,21 @@ public class PCoreCtx extends ACtx implements IStringable, ICtx {
       this.prefsUser = prefs;
    }
 
+   public void setRPCConnection(RPCConnection rpcConnection) {
+      if (rpcConnection == null) {
+         //#debug
+         throw new NullPointerException();
+      }
+      this.rpcConnection = rpcConnection;
+      startPingLogger();
+   }
+
    public void setSettingsPathCustom(String settingsPathCustom) {
       this.settingsPathCustom = settingsPathCustom;
+   }
+
+   public void startPingLogger() {
+      pingerLogger = new PingLogger(this);
    }
 
    //#mdebug
@@ -619,12 +646,4 @@ public class PCoreCtx extends ACtx implements IStringable, ICtx {
       return uc;
    }
    //#enddebug
-
-   public CoreOperations getOps() {
-      return coreOps;
-   }
-
-   public int getCtxID() {
-      return 433;
-   }
 }

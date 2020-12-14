@@ -4,12 +4,11 @@
  */
 package pasa.cbentley.jpasc.pcore.task.list.dbolet.block;
 
-import com.github.davidbolet.jpascalcoin.api.client.PascalCoinClient;
-import com.github.davidbolet.jpascalcoin.api.model.Block;
-
+import pasa.cbentley.jpasc.pcore.client.IPascalCoinClient;
 import pasa.cbentley.jpasc.pcore.ctx.PCoreCtx;
 import pasa.cbentley.jpasc.pcore.filter.predicates.BlockPredicate;
 import pasa.cbentley.jpasc.pcore.interfaces.IObjectListener;
+import pasa.cbentley.jpasc.pcore.rpc.model.Block;
 import pasa.cbentley.jpasc.pcore.task.PCoreTask;
 
 /**
@@ -54,7 +53,7 @@ public class BlockFinderTask extends PCoreTask {
    }
 
    public void runAbstract() {
-      PascalCoinClient pclient = pc.getPClient();
+      IPascalCoinClient pclient = pc.getPClient();
       Integer blockInteger = null;
       while (isContinue() && (blockInteger = getNextBlock()) != null) {
 

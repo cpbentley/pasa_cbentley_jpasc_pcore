@@ -4,12 +4,11 @@
  */
 package pasa.cbentley.jpasc.pcore.filter.publickey;
 
-import com.github.davidbolet.jpascalcoin.api.model.PublicKey;
-
 import pasa.cbentley.core.src4.logging.Dctx;
 import pasa.cbentley.jpasc.pcore.ctx.PCoreCtx;
 import pasa.cbentley.jpasc.pcore.filter.FilterAbstract;
 import pasa.cbentley.jpasc.pcore.filter.IFilterPublicKey;
+import pasa.cbentley.jpasc.pcore.rpc.model.PublicKey;
 
 public class FilterKeyCanUse extends FilterAbstract implements IFilterPublicKey {
 

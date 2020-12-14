@@ -6,11 +6,10 @@ package pasa.cbentley.jpasc.pcore.listlisteners;
 
 import java.util.List;
 
-import com.github.davidbolet.jpascalcoin.api.model.Block;
-
 import pasa.cbentley.core.src4.logging.Dctx;
 import pasa.cbentley.jpasc.pcore.ctx.PCoreCtx;
 import pasa.cbentley.jpasc.pcore.interfaces.IListenerBlock;
+import pasa.cbentley.jpasc.pcore.rpc.model.Block;
 
 public class ListenerBlocks extends ListListenerAbstract implements IListListener<Block> {
 

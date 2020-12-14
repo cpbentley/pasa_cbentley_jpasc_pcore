@@ -7,14 +7,13 @@ package pasa.cbentley.jpasc.pcore.ctx;
 import java.util.Date;
 import java.util.List;
 
-import com.github.davidbolet.jpascalcoin.api.model.Account;
-import com.github.davidbolet.jpascalcoin.api.model.Block;
-import com.github.davidbolet.jpascalcoin.api.model.Operation;
-import com.github.davidbolet.jpascalcoin.api.model.PublicKey;
-
 import pasa.cbentley.core.src4.logging.Dctx;
 import pasa.cbentley.core.src4.logging.IStringable;
 import pasa.cbentley.jpasc.pcore.domain.java.PublicKeyJava;
+import pasa.cbentley.jpasc.pcore.rpc.model.Account;
+import pasa.cbentley.jpasc.pcore.rpc.model.Block;
+import pasa.cbentley.jpasc.pcore.rpc.model.Operation;
+import pasa.cbentley.jpasc.pcore.rpc.model.PublicKey;
 import pasa.cbentley.jpasc.pcore.utils.PascalUtils;
 
 public class PCoreDebug {

@@ -6,13 +6,12 @@ package pasa.cbentley.jpasc.pcore.task.list.dbolet.key;
 
 import java.util.List;
 
-import com.github.davidbolet.jpascalcoin.api.model.PublicKey;
-
 import pasa.cbentley.core.src4.logging.Dctx;
+import pasa.cbentley.jpasc.pcore.client.IPascalCoinClient;
 import pasa.cbentley.jpasc.pcore.ctx.PCoreCtx;
-import pasa.cbentley.jpasc.pcore.dboletbridge.IPascalCoinClient;
 import pasa.cbentley.jpasc.pcore.filter.publickey.FilterKeyCanUse;
 import pasa.cbentley.jpasc.pcore.listlisteners.IListListener;
+import pasa.cbentley.jpasc.pcore.rpc.model.PublicKey;
 
 /**
  * Task for listing PublicKey that can be operated on by the Wallet.

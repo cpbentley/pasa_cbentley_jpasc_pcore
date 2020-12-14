@@ -7,14 +7,13 @@ package pasa.cbentley.jpasc.pcore.task.list.dbolet.key;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.github.davidbolet.jpascalcoin.api.model.PublicKey;
-
 import pasa.cbentley.core.src4.logging.Dctx;
 import pasa.cbentley.jpasc.pcore.ctx.PCoreCtx;
 import pasa.cbentley.jpasc.pcore.filter.IFilterPublicKey;
 import pasa.cbentley.jpasc.pcore.listlisteners.IListListener;
 import pasa.cbentley.jpasc.pcore.pages.PagerAbstract;
 import pasa.cbentley.jpasc.pcore.pages.PagerPublicKey;
+import pasa.cbentley.jpasc.pcore.rpc.model.PublicKey;
 import pasa.cbentley.jpasc.pcore.task.ListTaskPage;
 
 /**

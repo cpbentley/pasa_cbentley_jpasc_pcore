@@ -4,13 +4,12 @@
  */
 package pasa.cbentley.jpasc.pcore.task.list.dbolet.account.chain;
 
-import com.github.davidbolet.jpascalcoin.api.model.Account;
-
 import pasa.cbentley.core.src4.logging.Dctx;
 import pasa.cbentley.jpasc.pcore.ctx.PCoreCtx;
 import pasa.cbentley.jpasc.pcore.listlisteners.IListListener;
 import pasa.cbentley.jpasc.pcore.pages.PagerAbstract;
 import pasa.cbentley.jpasc.pcore.pages.PagerAccount;
+import pasa.cbentley.jpasc.pcore.rpc.model.Account;
 
 /**
  * Task for listing all accounts on chain inside a range

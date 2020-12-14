@@ -10,7 +10,7 @@ import pasa.cbentley.core.src4.ctx.UCtx;
 import pasa.cbentley.core.src4.logging.Dctx;
 import pasa.cbentley.core.src4.logging.IDLog;
 import pasa.cbentley.jpasc.pcore.ctx.PCoreCtx;
-import com.github.davidbolet.jpascalcoin.api.model.Account;
+import pasa.cbentley.jpasc.pcore.rpc.model.Account;
 
 public class ListenerPrinterAccount implements IListListener<Account> {
 

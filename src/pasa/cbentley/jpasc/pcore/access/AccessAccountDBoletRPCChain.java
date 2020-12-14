@@ -6,13 +6,12 @@ package pasa.cbentley.jpasc.pcore.access;
 
 import java.util.List;
 
-import com.github.davidbolet.jpascalcoin.api.model.Account;
-
 import pasa.cbentley.core.src4.ctx.UCtx;
 import pasa.cbentley.core.src4.logging.Dctx;
 import pasa.cbentley.core.src4.logging.IDLog;
+import pasa.cbentley.jpasc.pcore.client.IPascalCoinClient;
+import pasa.cbentley.jpasc.pcore.ctx.ITechPascRPC;
 import pasa.cbentley.jpasc.pcore.ctx.PCoreCtx;
-import pasa.cbentley.jpasc.pcore.dboletbridge.IPascalCoinClient;
 import pasa.cbentley.jpasc.pcore.domain.java.PublicKeyJava;
 import pasa.cbentley.jpasc.pcore.filter.IFilterAccount;
 import pasa.cbentley.jpasc.pcore.filter.IFilterAccountT;
@@ -20,6 +19,7 @@ import pasa.cbentley.jpasc.pcore.interfaces.IAccessAccountDBolet;
 import pasa.cbentley.jpasc.pcore.listlisteners.ListenerHolderAccount;
 import pasa.cbentley.jpasc.pcore.network.RPCConnection;
 import pasa.cbentley.jpasc.pcore.pages.PagerAbstract;
+import pasa.cbentley.jpasc.pcore.rpc.model.Account;
 import pasa.cbentley.jpasc.pcore.task.list.dbolet.account.ListTaskAccountAbstract;
 import pasa.cbentley.jpasc.pcore.task.list.dbolet.account.chain.ListTaskAccountChainAge;
 import pasa.cbentley.jpasc.pcore.task.list.dbolet.account.chain.ListTaskAccountChainBalanceMinMax;
@@ -111,7 +111,7 @@ public class AccessAccountDBoletRPCChain implements IAccessAccountDBolet {
          taskNull.setPager(page);
          taskNull.runAbstract();
       } else {
-         ListTaskAccountChainName taskName = new ListTaskAccountChainName(pc, list, str, false);
+         ListTaskAccountChainName taskName = new ListTaskAccountChainName(pc, list, str, ITechPascRPC.NAMESEARCHTYPE_CONTAINS);
          taskName.setPager(page);
          taskName.runAbstract();
       }

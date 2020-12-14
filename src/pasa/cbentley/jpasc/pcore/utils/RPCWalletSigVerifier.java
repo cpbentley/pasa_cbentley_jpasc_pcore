@@ -4,10 +4,9 @@
  */
 package pasa.cbentley.jpasc.pcore.utils;
 
-import com.github.davidbolet.jpascalcoin.api.model.SignResult;
-
 import pasa.cbentley.jpasc.pcore.ctx.PCoreCtx;
 import pasa.cbentley.jpasc.pcore.interfaces.ISignVerifier;
+import pasa.cbentley.jpasc.pcore.rpc.model.SignResult;
 
 public class RPCWalletSigVerifier implements ISignVerifier {
 

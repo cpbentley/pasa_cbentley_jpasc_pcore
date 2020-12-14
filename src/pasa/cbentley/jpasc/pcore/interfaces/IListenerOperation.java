@@ -4,7 +4,7 @@
  */
 package pasa.cbentley.jpasc.pcore.interfaces;
 
-import com.github.davidbolet.jpascalcoin.api.model.Operation;
+import pasa.cbentley.jpasc.pcore.rpc.model.Operation;
 
 public interface IListenerOperation {
 

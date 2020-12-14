@@ -6,15 +6,13 @@ package pasa.cbentley.jpasc.pcore.task.list.dbolet.account.chain;
 
 import java.util.List;
 
-import com.github.davidbolet.jpascalcoin.api.client.PascalCoinClient;
-import com.github.davidbolet.jpascalcoin.api.model.Account;
-
 import pasa.cbentley.core.src4.ctx.UCtx;
 import pasa.cbentley.core.src4.logging.Dctx;
 import pasa.cbentley.jpasc.pcore.ctx.PCoreCtx;
 import pasa.cbentley.jpasc.pcore.filter.account.FilterAccountAge;
 import pasa.cbentley.jpasc.pcore.listlisteners.IListListener;
 import pasa.cbentley.jpasc.pcore.pages.PagerAbstract;
+import pasa.cbentley.jpasc.pcore.rpc.model.Account;
 
 /**
  * Task for listing accounts on chain with an age filter

@@ -6,10 +6,9 @@ package pasa.cbentley.jpasc.pcore.pages;
 
 import java.util.List;
 
-import com.github.davidbolet.jpascalcoin.api.model.PublicKey;
-
 import pasa.cbentley.jpasc.pcore.ctx.PCoreCtx;
 import pasa.cbentley.jpasc.pcore.domain.java.PublicKeyJava;
+import pasa.cbentley.jpasc.pcore.rpc.model.PublicKey;
 
 public class PagerPublicKeyJava extends PagerAbstract<PublicKeyJava> {
 

@@ -4,11 +4,10 @@
  */
 package pasa.cbentley.jpasc.pcore.domain;
 
-import com.github.davidbolet.jpascalcoin.api.model.PublicKey;
-
 import pasa.cbentley.jpasc.pcore.ctx.PCoreCtx;
 import pasa.cbentley.jpasc.pcore.domain.java.AccountJava;
 import pasa.cbentley.jpasc.pcore.domain.java.PublicKeyJava;
+import pasa.cbentley.jpasc.pcore.rpc.model.PublicKey;
 
 /**
  * Maps davidbolet classes to {@link AccountJava} classes
@@ -34,7 +33,7 @@ public class DomainMapper {
       if (publicKeyJava == null) {
          return null;
       }
-      PublicKey pk = new PublicKey();
+      PublicKey pk = new PublicKey(pc);
       pk.setCanUse(publicKeyJava.getCanUse());
       pk.setName(publicKeyJava.getName());
       pk.setKeyType(publicKeyJava.getKeyType());

@@ -1,25 +1,19 @@
-/*
- * (c) 2018-2019 Charles-Philip Bentley
- * This code is licensed under MIT license (see LICENSE.txt for details)
- */
-package pasa.cbentley.jpasc.pcore.dboletbridge;
-
-import com.github.davidbolet.jpascalcoin.api.client.PascalCoinClientNoLogger;
+package pasa.cbentley.jpasc.pcore.ctx;
 
 import pasa.cbentley.core.src4.ctx.UCtx;
 import pasa.cbentley.core.src4.logging.Dctx;
 import pasa.cbentley.core.src4.logging.IDLog;
-import pasa.cbentley.jpasc.pcore.ctx.PCoreCtx;
+import pasa.cbentley.core.src4.logging.IStringable;
 
-public class PascalCoinClientNoLoggerBridge extends PascalCoinClientNoLogger implements IPascalCoinClient {
+public class ObjectPCore implements IStringable {
 
    protected final PCoreCtx pc;
 
-   public PascalCoinClientNoLoggerBridge(PCoreCtx pc,String server, Short port) {
-      super(server,port);
+   public ObjectPCore(PCoreCtx pc) {
       this.pc = pc;
+
    }
-   
+
    //#mdebug
    public IDLog toDLog() {
       return toStringGetUCtx().toDLog();
@@ -30,7 +24,7 @@ public class PascalCoinClientNoLoggerBridge extends PascalCoinClientNoLogger imp
    }
 
    public void toString(Dctx dc) {
-      dc.root(this, "PascalCoinClientBridge");
+      dc.root(this, ObjectPCore.class, "@line5");
       toStringPrivate(dc);
    }
 
@@ -43,7 +37,7 @@ public class PascalCoinClientNoLoggerBridge extends PascalCoinClientNoLogger imp
    }
 
    public void toString1Line(Dctx dc) {
-      dc.root1Line(this, "PascalCoinClientBridge");
+      dc.root1Line(this, ObjectPCore.class);
       toStringPrivate(dc);
    }
 
@@ -52,6 +46,5 @@ public class PascalCoinClientNoLoggerBridge extends PascalCoinClientNoLogger imp
    }
 
    //#enddebug
-   
 
 }

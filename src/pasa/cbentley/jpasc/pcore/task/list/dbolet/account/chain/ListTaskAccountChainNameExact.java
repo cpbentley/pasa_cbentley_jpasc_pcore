@@ -4,12 +4,12 @@
  */
 package pasa.cbentley.jpasc.pcore.task.list.dbolet.account.chain;
 
-import com.github.davidbolet.jpascalcoin.api.model.Account;
-
 import pasa.cbentley.core.src4.ctx.UCtx;
 import pasa.cbentley.core.src4.logging.Dctx;
+import pasa.cbentley.jpasc.pcore.ctx.ITechPascRPC;
 import pasa.cbentley.jpasc.pcore.ctx.PCoreCtx;
 import pasa.cbentley.jpasc.pcore.listlisteners.IListListener;
+import pasa.cbentley.jpasc.pcore.rpc.model.Account;
 
 /**
  * Task for searching chain for 1 account with a exactly the name
@@ -20,7 +20,7 @@ public class ListTaskAccountChainNameExact extends ListTaskAccountChainName  {
 
 
    public ListTaskAccountChainNameExact(PCoreCtx pc, IListListener<Account> listener, String name) {
-      super(pc, listener, name, true);
+      super(pc, listener, name, ITechPascRPC.NAMESEARCHTYPE_EXACT);
    }
 
    //#mdebug

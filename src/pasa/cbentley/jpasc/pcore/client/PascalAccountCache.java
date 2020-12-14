@@ -8,25 +8,6 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.github.davidbolet.jpascalcoin.api.client.PascalCoinClient;
-import com.github.davidbolet.jpascalcoin.api.model.Account;
-import com.github.davidbolet.jpascalcoin.api.model.AccountKey;
-import com.github.davidbolet.jpascalcoin.api.model.Block;
-import com.github.davidbolet.jpascalcoin.api.model.Connection;
-import com.github.davidbolet.jpascalcoin.api.model.DecodeOpHashResult;
-import com.github.davidbolet.jpascalcoin.api.model.DecryptedPayload;
-import com.github.davidbolet.jpascalcoin.api.model.KeyType;
-import com.github.davidbolet.jpascalcoin.api.model.MultiOperation;
-import com.github.davidbolet.jpascalcoin.api.model.NodeStatus;
-import com.github.davidbolet.jpascalcoin.api.model.OpChanger;
-import com.github.davidbolet.jpascalcoin.api.model.OpReceiver;
-import com.github.davidbolet.jpascalcoin.api.model.OpSender;
-import com.github.davidbolet.jpascalcoin.api.model.Operation;
-import com.github.davidbolet.jpascalcoin.api.model.PayLoadEncryptionMethod;
-import com.github.davidbolet.jpascalcoin.api.model.PublicKey;
-import com.github.davidbolet.jpascalcoin.api.model.RawOperation;
-import com.github.davidbolet.jpascalcoin.api.model.SignResult;
-
 import pasa.cbentley.core.src4.ctx.IEventsCore;
 import pasa.cbentley.core.src4.ctx.UCtx;
 import pasa.cbentley.core.src4.event.BusEvent;
@@ -34,7 +15,23 @@ import pasa.cbentley.core.src4.event.IEventConsumer;
 import pasa.cbentley.core.src4.logging.Dctx;
 import pasa.cbentley.core.src4.logging.IStringable;
 import pasa.cbentley.jpasc.pcore.ctx.PCoreCtx;
-import pasa.cbentley.jpasc.pcore.dboletbridge.IPascalCoinClient;
+import pasa.cbentley.jpasc.pcore.rpc.model.Account;
+import pasa.cbentley.jpasc.pcore.rpc.model.AccountKey;
+import pasa.cbentley.jpasc.pcore.rpc.model.Block;
+import pasa.cbentley.jpasc.pcore.rpc.model.Connection;
+import pasa.cbentley.jpasc.pcore.rpc.model.DecodeOpHashResult;
+import pasa.cbentley.jpasc.pcore.rpc.model.DecryptedPayload;
+import pasa.cbentley.jpasc.pcore.rpc.model.KeyType;
+import pasa.cbentley.jpasc.pcore.rpc.model.MultiOperation;
+import pasa.cbentley.jpasc.pcore.rpc.model.NodeStatus;
+import pasa.cbentley.jpasc.pcore.rpc.model.OpChanger;
+import pasa.cbentley.jpasc.pcore.rpc.model.OpReceiver;
+import pasa.cbentley.jpasc.pcore.rpc.model.OpSender;
+import pasa.cbentley.jpasc.pcore.rpc.model.Operation;
+import pasa.cbentley.jpasc.pcore.rpc.model.PayLoadEncryptionMethod;
+import pasa.cbentley.jpasc.pcore.rpc.model.PublicKey;
+import pasa.cbentley.jpasc.pcore.rpc.model.RawOperation;
+import pasa.cbentley.jpasc.pcore.rpc.model.SignResult;
 
 /**
  * Cache between {@link IDataAccess} and the {@link PascalCoinClient}.
@@ -58,24 +55,24 @@ import pasa.cbentley.jpasc.pcore.dboletbridge.IPascalCoinClient;
  */
 public class PascalAccountCache implements IPascalCoinClient, IEventConsumer, IStringable {
 
-   private IPascalCoinClient  client;
+   private ArrayList<Account> accounts          = new ArrayList<>();
 
-   private PCoreCtx           pc;
+   private LinkedList<Block>  blocks            = new LinkedList<>();
+
+   private IPascalCoinClient  client;
 
    private boolean            isCaching;
 
-   private ArrayList<Account> accounts          = new ArrayList<>();
+   private boolean            isWalletCacheFull = false;
+
+   private ArrayList<Block>   lonelyBlocks      = new ArrayList<>();
+
+   private PCoreCtx           pc;
 
    /**
     * Do not return this client. always return a copy
     */
    private ArrayList<Account> walletAccounts    = null;
-
-   private LinkedList<Block>  blocks            = new LinkedList<>();
-
-   private ArrayList<Block>   lonelyBlocks      = new ArrayList<>();
-
-   private boolean            isWalletCacheFull = false;
 
    public PascalAccountCache(PCoreCtx pc, IPascalCoinClient client) {
       this.pc = pc;
@@ -86,12 +83,17 @@ public class PascalAccountCache implements IPascalCoinClient, IEventConsumer, IS
 
    }
 
-   public void cacheEnable(boolean b) {
-      isCaching = b;
+   public PublicKey addNewKey(KeyType ecNid, String name) {
+      return client.addNewKey(ecNid, name);
    }
 
    public Integer addNode(String nodes) {
       return client.addNode(nodes);
+   }
+
+   public Operation buyAccount(Integer buyerAccount, Integer accountToPurchase, Double price, Integer sellerAccount, String newB58PubKey, String newEncPubKey, Double amount, Double fee, byte[] payload, PayLoadEncryptionMethod payloadMethod, String pwd) {
+
+      return client.buyAccount(buyerAccount, accountToPurchase, price, sellerAccount, newB58PubKey, newEncPubKey, amount, fee, payload, payloadMethod, pwd);
    }
 
    public void cacheClear() {
@@ -100,23 +102,15 @@ public class PascalAccountCache implements IPascalCoinClient, IEventConsumer, IS
       }
    }
 
+   public void cacheEnable(boolean b) {
+      isCaching = b;
+   }
+
    /**
     * Force the cache to update
     */
    public void cacheForceUpdate(boolean v) {
       this.isCaching = v;
-   }
-
-   private List<Account> cacheGetWalletAccounts(String encPubKey, String b58PubKey, Integer start, Integer max) {
-      List<Account> accounts = null;
-      Integer block = pc.getRPCConnection().getLastBlockMined();
-      if (isCaching) {
-         accounts = client.getWalletAccounts(encPubKey, b58PubKey, start, max);
-      }
-
-      accounts = client.getWalletAccounts(encPubKey, b58PubKey, start, max);
-
-      return accounts;
    }
 
    private Account cacheGetAccount(Integer account) {
@@ -132,28 +126,98 @@ public class PascalAccountCache implements IPascalCoinClient, IEventConsumer, IS
       return ac;
    }
 
+   private List<Account> cacheGetWalletAccounts(String encPubKey, String b58PubKey, Integer start, Integer max) {
+      List<Account> accounts = null;
+      Integer block = pc.getRPCConnection().getLastBlockMined();
+      if (isCaching) {
+         accounts = client.getWalletAccounts(encPubKey, b58PubKey, start, max);
+      }
+
+      accounts = client.getWalletAccounts(encPubKey, b58PubKey, start, max);
+
+      return accounts;
+   }
+
+   public Operation changeAccountInfo(Integer accountTarget, Integer accountSigner, String newEncPubKey, String newB58PubKey, String newName, Short newType, Double fee, byte[] payload, PayLoadEncryptionMethod payloadMethod, String pwd) {
+
+      return client.changeAccountInfo(accountTarget, accountSigner, newEncPubKey, newB58PubKey, newName, newType, fee, payload, payloadMethod, pwd);
+   }
+
+   public Operation changeKey(Integer account, Integer accountSigner, String newEncPubKey, String newB58PubKey, Double fee, byte[] payload, PayLoadEncryptionMethod payloadMethod, String pwd) {
+      return client.changeKey(account, accountSigner, newEncPubKey, newB58PubKey, fee, payload, payloadMethod, pwd);
+   }
+
+   public List<Operation> changeKeys(String accounts, String newEncPubKey, String newB58PubKey, Double fee, byte[] payload, PayLoadEncryptionMethod payloadMethod, String pwd) {
+      return client.changeKeys(accounts, newEncPubKey, newB58PubKey, fee, payload, payloadMethod, pwd);
+   }
+
+   public void consumeEvent(BusEvent e) {
+      e.checkSanity(pc.getUCtx(), IEventsCore.PID_3_MEMORY, IEventsCore.PID_3_MEMORY_0_ANY);
+
+      cacheClear();
+      accounts = new ArrayList<>();
+
+      e.setActed();
+   }
+
+   public DecodeOpHashResult decodeOpHash(String ophash) {
+      return client.decodeOpHash(ophash);
+   }
+
+   public PublicKey decodePubKey(String encPubKey, String b58PubKey) {
+      return client.decodePubKey(encPubKey, b58PubKey);
+   }
+
+   public Operation delistAccountForSale(Integer accountTarget, Integer accountSigner, Double fee, byte[] payload, PayLoadEncryptionMethod payloadMethod, String pwd) {
+      return client.delistAccountForSale(accountTarget, accountSigner, fee, payload, payloadMethod, pwd);
+   }
+
+   public String encodePubKey(KeyType ecNid, String x, String y) {
+      return client.encodePubKey(ecNid, x, y);
+   }
+
+   public List<Operation> executeOperations(String rawOperations) {
+      return client.executeOperations(rawOperations);
+   }
+
+   public List<Account> findAccounts(String name, Boolean exact, Integer type, Boolean listed, Double minBalance, Double maxBalance, Integer start, Integer max) {
+      if (isCaching) {
+
+      }
+      return client.findAccounts(name, exact, type, listed, minBalance, maxBalance, start, max);
+   }
+
+   public List<Account> findAccounts(String name, Integer type, Integer start, Integer max) {
+      return client.findAccounts(name, type, start, max);
+   }
+
+   public List<Account> findAccountsByName(String name, String searchType, Integer start, Integer max) {
+      // TODO Auto-generated method stub
+      return null;
+   }
+
+   public Operation findNOperation(Integer account, Integer nOperation) {
+      return client.findNOperation(account, nOperation);
+   }
+
+   public List<Operation> findNOperations(Integer account, Integer nOperationMin, Integer nOperationMax, Integer startBlock) {
+      return client.findNOperations(account, nOperationMin, nOperationMax, startBlock);
+   }
+
+   public Operation findOperation(String ophash) {
+      return client.findOperation(ophash);
+   }
+
    public Account getAccount(Integer account) {
       return cacheGetAccount(account);
    }
 
-   public List<Account> getWalletAccounts(String encPubKey, String b58PubKey, Integer start, Integer max) {
-      return client.getWalletAccounts(encPubKey, b58PubKey, start, max);
+   public List<Operation> getAccountOperations(Integer account, Integer depth, Integer start, Integer max) {
+      return client.getAccountOperations(account, depth, start, max);
    }
 
-   public Integer getWalletAccountsCount(String encPubKey, String b58PubKey) {
-      return client.getWalletAccountsCount(encPubKey, b58PubKey);
-   }
-
-   public List<PublicKey> getWalletPubKeys(Integer start, Integer max) {
-      return client.getWalletPubKeys(start, max);
-   }
-
-   public PublicKey getWalletPubKey(String encPubKey, String b58PubKey) {
-      return client.getWalletPubKey(encPubKey, b58PubKey);
-   }
-
-   public Double getWalletCoins(String encPubKey, String b58PubKey) {
-      return client.getWalletCoins(encPubKey, b58PubKey);
+   public List<Operation> getAccountOperations(Integer account, Integer startblock, Integer depth, Integer start, Integer max) {
+      return client.getAccountOperations(account, startblock, depth, start, max);
    }
 
    public Block getBlock(Integer block) {
@@ -189,6 +253,18 @@ public class PascalAccountCache implements IPascalCoinClient, IEventConsumer, IS
       }
    }
 
+   public Integer getBlockCount() {
+      return client.getBlockCount();
+   }
+
+   public Operation getBlockOperation(Integer block, Integer opblock) {
+      return client.getBlockOperation(block, opblock);
+   }
+
+   public List<Operation> getBlockOperations(Integer block, Integer start, Integer max) {
+      return client.getBlockOperations(block, start, max);
+   }
+
    public List<Block> getBlocks(Integer last, Integer start, Integer end) {
       if (isCaching) {
          //do we update last? or trust our current block?
@@ -217,24 +293,12 @@ public class PascalAccountCache implements IPascalCoinClient, IEventConsumer, IS
       return client.getBlocks(last, start, end);
    }
 
-   public Integer getBlockCount() {
-      return client.getBlockCount();
+   public List<Connection> getConnections() {
+      return client.getConnections();
    }
 
-   public Operation getBlockOperation(Integer block, Integer opblock) {
-      return client.getBlockOperation(block, opblock);
-   }
-
-   public List<Operation> getBlockOperations(Integer block, Integer start, Integer max) {
-      return client.getBlockOperations(block, start, max);
-   }
-
-   public List<Operation> getAccountOperations(Integer account, Integer depth, Integer start, Integer max) {
-      return client.getAccountOperations(account, depth, start, max);
-   }
-
-   public List<Operation> getAccountOperations(Integer account, Integer startblock, Integer depth, Integer start, Integer max) {
-      return client.getAccountOperations(account, startblock, depth, start, max);
+   public NodeStatus getNodeStatus() {
+      return client.getNodeStatus();
    }
 
    public List<Operation> getPendings() {
@@ -249,79 +313,68 @@ public class PascalAccountCache implements IPascalCoinClient, IEventConsumer, IS
       return client.getPendingsCount();
    }
 
-   public Operation findOperation(String ophash) {
-      return client.findOperation(ophash);
+   public List<Account> getWalletAccounts(String encPubKey, String b58PubKey, Integer start, Integer max) {
+      return client.getWalletAccounts(encPubKey, b58PubKey, start, max);
    }
 
-   public Operation findNOperation(Integer account, Integer nOperation) {
-      return client.findNOperation(account, nOperation);
+   public Integer getWalletAccountsCount(String encPubKey, String b58PubKey) {
+      return client.getWalletAccountsCount(encPubKey, b58PubKey);
    }
 
-   public List<Operation> findNOperations(Integer account, Integer nOperationMin, Integer nOperationMax, Integer startBlock) {
-      return client.findNOperations(account, nOperationMin, nOperationMax, startBlock);
+   public Double getWalletCoins(String encPubKey, String b58PubKey) {
+      return client.getWalletCoins(encPubKey, b58PubKey);
    }
 
-   public List<Account> findAccounts(String name, Integer type, Integer start, Integer max) {
-      return client.findAccounts(name, type, start, max);
+   public PublicKey getWalletPubKey(String encPubKey, String b58PubKey) {
+      return client.getWalletPubKey(encPubKey, b58PubKey);
    }
 
-   public List<Account> findAccounts(String name, Boolean exact, Integer type, Boolean listed, Double minBalance, Double maxBalance, Integer start, Integer max) {
-      if (isCaching) {
-
-      }
-      return client.findAccounts(name, exact, type, listed, minBalance, maxBalance, start, max);
-   }
-
-   public Operation sendTo(Integer sender, Integer target, Double amount, Double fee, byte[] payload, PayLoadEncryptionMethod payloadMethod, String pwd) {
-      return client.sendTo(sender, target, amount, fee, payload, payloadMethod, pwd);
-   }
-
-   public Operation changeKey(Integer account, Integer accountSigner, String newEncPubKey, String newB58PubKey, Double fee, byte[] payload, PayLoadEncryptionMethod payloadMethod, String pwd) {
-      return client.changeKey(account, accountSigner, newEncPubKey, newB58PubKey, fee, payload, payloadMethod, pwd);
-   }
-
-   public List<Operation> changeKeys(String accounts, String newEncPubKey, String newB58PubKey, Double fee, byte[] payload, PayLoadEncryptionMethod payloadMethod, String pwd) {
-      return client.changeKeys(accounts, newEncPubKey, newB58PubKey, fee, payload, payloadMethod, pwd);
+   public List<PublicKey> getWalletPubKeys(Integer start, Integer max) {
+      return client.getWalletPubKeys(start, max);
    }
 
    public Operation listAccountForSale(Integer accountTarget, Integer accountSigner, Double price, Integer sellerAccount, String newB58PubKey, String newEncPubKey, Integer lockedUntilBlock, Double fee, byte[] payload, PayLoadEncryptionMethod payloadMethod, String pwd) {
       return client.listAccountForSale(accountTarget, accountSigner, price, sellerAccount, newB58PubKey, newEncPubKey, lockedUntilBlock, fee, payload, payloadMethod, pwd);
    }
 
-   public Operation delistAccountForSale(Integer accountTarget, Integer accountSigner, Double fee, byte[] payload, PayLoadEncryptionMethod payloadMethod, String pwd) {
-      return client.delistAccountForSale(accountTarget, accountSigner, fee, payload, payloadMethod, pwd);
+   public Boolean lock() {
+      return client.lock();
    }
 
-   public Operation buyAccount(Integer buyerAccount, Integer accountToPurchase, Double price, Integer sellerAccount, String newB58PubKey, String newEncPubKey, Double amount, Double fee, byte[] payload, PayLoadEncryptionMethod payloadMethod, String pwd) {
-
-      return client.buyAccount(buyerAccount, accountToPurchase, price, sellerAccount, newB58PubKey, newEncPubKey, amount, fee, payload, payloadMethod, pwd);
+   public MultiOperation multiOperationAddOperation(String rawoperations, Boolean autoNOperation, List<OpSender> senders, List<OpReceiver> receivers, List<OpChanger> changers) {
+      return client.multiOperationAddOperation(rawoperations, autoNOperation, senders, receivers, changers);
    }
 
-   public Operation changeAccountInfo(Integer accountTarget, Integer accountSigner, String newEncPubKey, String newB58PubKey, String newName, Short newType, Double fee, byte[] payload, PayLoadEncryptionMethod payloadMethod, String pwd) {
-
-      return client.changeAccountInfo(accountTarget, accountSigner, newEncPubKey, newB58PubKey, newName, newType, fee, payload, payloadMethod, pwd);
+   public MultiOperation multiOperationDeleteOperation(String rawoperations, Integer index) {
+      return client.multiOperationDeleteOperation(rawoperations, index);
    }
 
-   public RawOperation signSendTo(Integer senderAccount, Integer targetAccount, String senderEncPubKey, String senderB58PubKey, String targetEncPubKey, String targetB58PubKey, Integer lastNOperation, Double amount, Double fee, byte[] payload, PayLoadEncryptionMethod payloadMethod, String pwd,
-         String rawoperations) {
-
-      return client.signSendTo(senderAccount, targetAccount, senderEncPubKey, senderB58PubKey, targetEncPubKey, targetB58PubKey, lastNOperation, amount, fee, payload, payloadMethod, pwd, rawoperations);
+   public MultiOperation multiOperationSignOffline(String rawoperations, List<AccountKey> signers) {
+      return client.multiOperationSignOffline(rawoperations, signers);
    }
 
-   public RawOperation signChangeKey(Integer account, Integer accountSigner, String oldEncPubKey, String oldB58PubKey, String newEncPubKey, String newB58PubKey, Integer lastNOperation, Double fee, byte[] payload, PayLoadEncryptionMethod payloadMethod, String pwd, String rawOperations) {
-
-      return client.signChangeKey(account, accountSigner, oldEncPubKey, oldB58PubKey, newEncPubKey, newB58PubKey, lastNOperation, fee, payload, payloadMethod, pwd, rawOperations);
+   public MultiOperation multiOperationSignOnline(String rawoperations) {
+      return client.multiOperationSignOnline(rawoperations);
    }
 
-   public RawOperation signListAccountForSale(Integer accountTarget, Integer accountSigner, Double price, Integer sellerAccount, String newB58PubKey, String newEncPubKey, Integer lockedUntilBlock, Integer lastNOperation, Double fee, byte[] payload, PayLoadEncryptionMethod payloadMethod, String pwd,
-         String signerB58PubKey, String signerEncPubKey, String rawOperations) {
-
-      return client.signListAccountForSale(accountTarget, accountSigner, price, sellerAccount, newB58PubKey, newEncPubKey, lockedUntilBlock, lastNOperation, fee, payload, payloadMethod, pwd, signerB58PubKey, signerEncPubKey, rawOperations);
+   public List<Operation> operationsInfo(String rawOperations) {
+      return client.operationsInfo(rawOperations);
    }
 
-   public RawOperation signDelistAccountForSale(Integer accountTarget, Integer accountSigner, Integer lastNOperation, Double fee, byte[] payload, PayLoadEncryptionMethod payloadMethod, String pwd, String signerB58PubKey, String signerEncPubKey, String rawOperations) {
+   public DecryptedPayload payloadDecrypt(String payload, String[] pwds) {
+      return client.payloadDecrypt(payload, pwds);
+   }
 
-      return client.signDelistAccountForSale(accountTarget, accountSigner, lastNOperation, fee, payload, payloadMethod, pwd, signerB58PubKey, signerEncPubKey, rawOperations);
+   public String payloadEncrypt(String payload, String payloadMethod, String pwd, String encPubKey, String b58PubKey) {
+      return client.payloadEncrypt(payload, payloadMethod, pwd, encPubKey, b58PubKey);
+   }
+
+   public Operation sendTo(Integer sender, Integer target, Double amount, Double fee, byte[] payload, PayLoadEncryptionMethod payloadMethod, String pwd) {
+      return client.sendTo(sender, target, amount, fee, payload, payloadMethod, pwd);
+   }
+
+   public Boolean setWalletPassword(String pwd) {
+      return client.setWalletPassword(pwd);
    }
 
    public RawOperation signBuyAccount(Integer buyerAccount, Integer accountToPurchase, Double price, Integer sellerAccount, String newB58PubKey, String newEncPubKey, Double amount, Integer lastNOperation, Double fee, byte[] payload, PayLoadEncryptionMethod payloadMethod, String pwd,
@@ -336,101 +389,38 @@ public class PascalAccountCache implements IPascalCoinClient, IEventConsumer, IS
       return client.signChangeAccountInfo(accountTarget, accountSigner, newEncPubkey, newB58PubKey, newName, newType, lastNOperation, fee, payload, payloadMethod, pwd, signerB58PubKey, signerEncPubKey, rawOperations);
    }
 
-   public List<Operation> operationsInfo(String rawOperations) {
-      return client.operationsInfo(rawOperations);
+   public RawOperation signChangeKey(Integer account, Integer accountSigner, String oldEncPubKey, String oldB58PubKey, String newEncPubKey, String newB58PubKey, Integer lastNOperation, Double fee, byte[] payload, PayLoadEncryptionMethod payloadMethod, String pwd, String rawOperations) {
+
+      return client.signChangeKey(account, accountSigner, oldEncPubKey, oldB58PubKey, newEncPubKey, newB58PubKey, lastNOperation, fee, payload, payloadMethod, pwd, rawOperations);
    }
 
-   public List<Operation> executeOperations(String rawOperations) {
-      return client.executeOperations(rawOperations);
+   public RawOperation signDelistAccountForSale(Integer accountTarget, Integer accountSigner, Integer lastNOperation, Double fee, byte[] payload, PayLoadEncryptionMethod payloadMethod, String pwd, String signerB58PubKey, String signerEncPubKey, String rawOperations) {
+
+      return client.signDelistAccountForSale(accountTarget, accountSigner, lastNOperation, fee, payload, payloadMethod, pwd, signerB58PubKey, signerEncPubKey, rawOperations);
    }
 
-   public NodeStatus getNodeStatus() {
-      return client.getNodeStatus();
-   }
+   public RawOperation signListAccountForSale(Integer accountTarget, Integer accountSigner, Double price, Integer sellerAccount, String newB58PubKey, String newEncPubKey, Integer lockedUntilBlock, Integer lastNOperation, Double fee, byte[] payload, PayLoadEncryptionMethod payloadMethod, String pwd,
+         String signerB58PubKey, String signerEncPubKey, String rawOperations) {
 
-   public String encodePubKey(KeyType ecNid, String x, String y) {
-      return client.encodePubKey(ecNid, x, y);
-   }
-
-   public PublicKey decodePubKey(String encPubKey, String b58PubKey) {
-      return client.decodePubKey(encPubKey, b58PubKey);
-   }
-
-   public String payloadEncrypt(String payload, String payloadMethod, String pwd, String encPubKey, String b58PubKey) {
-      return client.payloadEncrypt(payload, payloadMethod, pwd, encPubKey, b58PubKey);
-   }
-
-   public DecryptedPayload payloadDecrypt(String payload, String[] pwds) {
-      return client.payloadDecrypt(payload, pwds);
-   }
-
-   public List<Connection> getConnections() {
-      return client.getConnections();
-   }
-
-   public PublicKey addNewKey(KeyType ecNid, String name) {
-      return client.addNewKey(ecNid, name);
-   }
-
-   public Boolean lock() {
-      return client.lock();
-   }
-
-   public Boolean unlock(String pwd) {
-      return client.unlock(pwd);
-   }
-
-   public Boolean setWalletPassword(String pwd) {
-      return client.setWalletPassword(pwd);
-   }
-
-   public Boolean stopNode() {
-      return client.stopNode();
-   }
-
-   public Boolean startNode() {
-      return client.startNode();
-   }
-
-   public DecodeOpHashResult decodeOpHash(String ophash) {
-      return client.decodeOpHash(ophash);
+      return client.signListAccountForSale(accountTarget, accountSigner, price, sellerAccount, newB58PubKey, newEncPubKey, lockedUntilBlock, lastNOperation, fee, payload, payloadMethod, pwd, signerB58PubKey, signerEncPubKey, rawOperations);
    }
 
    public SignResult signMessage(String digest, String encPubKey, String b58PubKey) {
       return client.signMessage(digest, encPubKey, b58PubKey);
    }
 
-   public SignResult verifySign(String digest, String encPubKey, String signature) {
-      return client.verifySign(digest, encPubKey, signature);
+   public RawOperation signSendTo(Integer senderAccount, Integer targetAccount, String senderEncPubKey, String senderB58PubKey, String targetEncPubKey, String targetB58PubKey, Integer lastNOperation, Double amount, Double fee, byte[] payload, PayLoadEncryptionMethod payloadMethod, String pwd,
+         String rawoperations) {
+
+      return client.signSendTo(senderAccount, targetAccount, senderEncPubKey, senderB58PubKey, targetEncPubKey, targetB58PubKey, lastNOperation, amount, fee, payload, payloadMethod, pwd, rawoperations);
    }
 
-   public Integer calculateChecksum(Integer account) {
-      return client.calculateChecksum(account);
+   public Boolean startNode() {
+      return client.startNode();
    }
 
-   public MultiOperation multiOperationAddOperation(String rawoperations, Boolean autoNOperation, List<OpSender> senders, List<OpReceiver> receivers, List<OpChanger> changers) {
-      return client.multiOperationAddOperation(rawoperations, autoNOperation, senders, receivers, changers);
-   }
-
-   public MultiOperation multiOperationSignOffline(String rawoperations, List<AccountKey> signers) {
-      return client.multiOperationSignOffline(rawoperations, signers);
-   }
-
-   public MultiOperation multiOperationSignOnline(String rawoperations) {
-      return client.multiOperationSignOnline(rawoperations);
-   }
-
-   public MultiOperation multiOperationDeleteOperation(String rawoperations, Integer index) {
-      return client.multiOperationDeleteOperation(rawoperations, index);
-   }
-
-   public void consumeEvent(BusEvent e) {
-      e.checkSanity(pc.getUCtx(), IEventsCore.PID_3_MEMORY, IEventsCore.PID_3_MEMORY_0_ANY);
-
-      cacheClear();
-      accounts = new ArrayList<>();
-
-      e.setActed();
+   public Boolean stopNode() {
+      return client.stopNode();
    }
 
    //#mdebug
@@ -455,5 +445,18 @@ public class PascalAccountCache implements IPascalCoinClient, IEventConsumer, IS
       return pc.getUCtx();
    }
    //#enddebug
+
+   public Boolean unlock(String pwd) {
+      return client.unlock(pwd);
+   }
+
+   public SignResult verifySign(String digest, String encPubKey, String signature) {
+      return client.verifySign(digest, encPubKey, signature);
+   }
+
+   public List<Account> findAccounts(String name, String nameSearchType, Integer type, String statusType, Double minBalance, Double maxBalance, Integer start, Integer max) {
+      // TODO Auto-generated method stub
+      return null;
+   }
 
 }

@@ -4,11 +4,10 @@
  */
 package pasa.cbentley.jpasc.pcore.task.list.dbolet.account.wallet;
 
-import com.github.davidbolet.jpascalcoin.api.model.Account;
-
 import pasa.cbentley.jpasc.pcore.ctx.PCoreCtx;
 import pasa.cbentley.jpasc.pcore.filter.IFilterAccount;
 import pasa.cbentley.jpasc.pcore.listlisteners.IListListener;
+import pasa.cbentley.jpasc.pcore.rpc.model.Account;
 
 /**
  * Task for searching wallet accounts without a name

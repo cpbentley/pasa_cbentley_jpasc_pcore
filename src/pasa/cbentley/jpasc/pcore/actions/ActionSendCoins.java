@@ -4,12 +4,11 @@
  */
 package pasa.cbentley.jpasc.pcore.actions;
 
-import com.github.davidbolet.jpascalcoin.api.model.Account;
-
 import pasa.cbentley.jpasc.pcore.ctx.PCoreCtx;
 import pasa.cbentley.jpasc.pcore.domain.ipc.IPayload;
 import pasa.cbentley.jpasc.pcore.domain.java.PayloadJava;
 import pasa.cbentley.jpasc.pcore.domain.operations.OperationJavaSendTo;
+import pasa.cbentley.jpasc.pcore.rpc.model.Account;
 import pasa.cbentley.jpasc.pcore.utils.PascalCoinValue;
 
 /**

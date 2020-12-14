@@ -6,15 +6,13 @@ package pasa.cbentley.jpasc.pcore.safebox;
 
 import java.util.List;
 
-import com.github.davidbolet.jpascalcoin.api.client.PascalCoinClient;
-import com.github.davidbolet.jpascalcoin.api.model.Account;
-
 import pasa.cbentley.byteobjects.src4.core.ByteObjectManaged;
 import pasa.cbentley.core.src4.io.BAByteOS;
 import pasa.cbentley.core.src4.io.BADataOS;
+import pasa.cbentley.jpasc.pcore.client.IPascalCoinClient;
 import pasa.cbentley.jpasc.pcore.ctx.PCoreCtx;
-import pasa.cbentley.jpasc.pcore.dboletbridge.IPascalCoinClient;
 import pasa.cbentley.jpasc.pcore.listlisteners.IListListener;
+import pasa.cbentley.jpasc.pcore.rpc.model.Account;
 import pasa.cbentley.jpasc.pcore.task.PCoreTask;
 import pasa.cbentley.jpasc.pcore.task.list.dbolet.account.chain.ListTaskAccountChain;
 

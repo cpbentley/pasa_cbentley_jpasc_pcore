@@ -6,11 +6,8 @@ package pasa.cbentley.jpasc.pcore.task.list.dbolet.operation;
 
 import java.util.List;
 
-import com.github.davidbolet.jpascalcoin.api.model.Block;
-import com.github.davidbolet.jpascalcoin.api.model.Operation;
-
+import pasa.cbentley.jpasc.pcore.client.IPascalCoinClient;
 import pasa.cbentley.jpasc.pcore.ctx.PCoreCtx;
-import pasa.cbentley.jpasc.pcore.dboletbridge.IPascalCoinClient;
 import pasa.cbentley.jpasc.pcore.filter.IFilterOperation;
 import pasa.cbentley.jpasc.pcore.interfaces.IListenerBlock;
 import pasa.cbentley.jpasc.pcore.interfaces.IListenerOperation;
@@ -18,6 +15,8 @@ import pasa.cbentley.jpasc.pcore.listlisteners.IListListener;
 import pasa.cbentley.jpasc.pcore.listlisteners.ListenerBlocks;
 import pasa.cbentley.jpasc.pcore.listlisteners.ListenerOperations;
 import pasa.cbentley.jpasc.pcore.pages.PagerAbstract;
+import pasa.cbentley.jpasc.pcore.rpc.model.Block;
+import pasa.cbentley.jpasc.pcore.rpc.model.Operation;
 import pasa.cbentley.jpasc.pcore.task.ListTask;
 import pasa.cbentley.jpasc.pcore.task.list.dbolet.block.ListTaskBlockAbstract;
 

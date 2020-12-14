@@ -8,9 +8,6 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.HashMap;
 
-import com.github.davidbolet.jpascalcoin.api.model.Account;
-import com.github.davidbolet.jpascalcoin.api.model.AccountState;
-
 import pasa.cbentley.core.src4.ctx.UCtx;
 import pasa.cbentley.core.src4.io.BADataOS;
 import pasa.cbentley.core.src4.logging.Dctx;
@@ -18,6 +15,8 @@ import pasa.cbentley.core.src4.utils.BitUtils;
 import pasa.cbentley.jpasc.pcore.ctx.PCoreCtx;
 import pasa.cbentley.jpasc.pcore.domain.bo.AccountBO;
 import pasa.cbentley.jpasc.pcore.domain.tech.ITechAccountVariableFullBO;
+import pasa.cbentley.jpasc.pcore.rpc.model.Account;
+import pasa.cbentley.jpasc.pcore.rpc.model.AccountState;
 import pasa.cbentley.jpasc.pcore.utils.PascalUtils;
 
 /**

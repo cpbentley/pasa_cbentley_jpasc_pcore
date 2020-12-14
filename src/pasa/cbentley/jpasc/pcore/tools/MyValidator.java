@@ -4,12 +4,11 @@
  */
 package pasa.cbentley.jpasc.pcore.tools;
 
-import com.github.davidbolet.jpascalcoin.api.model.Account;
-
 import pasa.cbentley.jpasc.pcore.ctx.PCoreCtx;
 import pasa.cbentley.jpasc.pcore.domain.java.AccountJava;
 import pasa.cbentley.jpasc.pcore.interfaces.IAccessAccountDBolet;
 import pasa.cbentley.jpasc.pcore.interfaces.IAccountValidator;
+import pasa.cbentley.jpasc.pcore.rpc.model.Account;
 
 /**
  * 

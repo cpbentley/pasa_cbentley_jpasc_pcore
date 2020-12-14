@@ -4,11 +4,10 @@
  */
 package pasa.cbentley.jpasc.pcore.domain.operations;
 
-import com.github.davidbolet.jpascalcoin.api.model.Operation;
-import com.github.davidbolet.jpascalcoin.api.model.PayLoadEncryptionMethod;
-import com.github.davidbolet.jpascalcoin.exception.RPCApiException;
-
 import pasa.cbentley.jpasc.pcore.ctx.PCoreCtx;
+import pasa.cbentley.jpasc.pcore.rpc.exception.RPCApiException;
+import pasa.cbentley.jpasc.pcore.rpc.model.Operation;
+import pasa.cbentley.jpasc.pcore.rpc.model.PayLoadEncryptionMethod;
 
 /**
  * For

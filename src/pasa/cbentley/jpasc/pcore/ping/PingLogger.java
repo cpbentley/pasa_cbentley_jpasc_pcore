@@ -6,14 +6,13 @@ package pasa.cbentley.jpasc.pcore.ping;
 
 import java.util.concurrent.TimeUnit;
 
-import com.github.davidbolet.jpascalcoin.api.model.Block;
-
 import pasa.cbentley.core.src4.ctx.UCtx;
 import pasa.cbentley.core.src4.helpers.StringBBuilder;
 import pasa.cbentley.core.src4.logging.Dctx;
 import pasa.cbentley.core.src4.logging.IUserLog;
 import pasa.cbentley.jpasc.pcore.ctx.PCoreCtx;
 import pasa.cbentley.jpasc.pcore.interfaces.IBlockListener;
+import pasa.cbentley.jpasc.pcore.rpc.model.Block;
 
 /**
  * Log ping calls to {@link IUserLog}

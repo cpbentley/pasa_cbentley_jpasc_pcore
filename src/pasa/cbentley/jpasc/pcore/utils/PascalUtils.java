@@ -7,46 +7,17 @@ package pasa.cbentley.jpasc.pcore.utils;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 
-import com.github.davidbolet.jpascalcoin.api.model.OperationSubType;
-import com.github.davidbolet.jpascalcoin.api.model.OperationType;
-
 import pasa.cbentley.core.src4.helpers.StringBBuilder;
 import pasa.cbentley.core.src4.utils.BitUtils;
 import pasa.cbentley.core.src4.utils.IntUtils;
+import pasa.cbentley.jpasc.pcore.ctx.ITechPasc;
 import pasa.cbentley.jpasc.pcore.ctx.PCoreCtx;
+import pasa.cbentley.jpasc.pcore.rpc.model.OperationSubType;
+import pasa.cbentley.jpasc.pcore.rpc.model.OperationType;
 
 public class PascalUtils {
 
-   public static final int     BLOCKS_3_YEAR           = 290304;
-
-   public static final int     BLOCKS_3_YEARS_11_MONTH = 379188;
-
-   public static final int     BLOCKS_3_YEARS_9_MONTH  = 363060;
-
-   public static final int     BLOCKS_DAY              = 288;
-
-   public static final int     BLOCKS_MONTH            = 8064;
-
-   public static final int     BLOCKS_WEEK             = 2016;
-
-   public static final int     BLOCKS_YEAR             = 96768;
-
    private final static char[] hexArray                = "0123456789ABCDEF".toCharArray();
-
-   /**
-    * double \\ escape.. be careful in copy pasting 
-    * 
-    */
-   public static final String  PASCAL64_CHARS          = "abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()-+{}[]_:\\\"|<>,.?/~";
-
-   /**
-    * 
-    * @param c
-    * @return -1 if none
-    */
-   public static int getIndexValue(char c) {
-      return PASCAL64_CHARS.indexOf(c);
-   }
 
    public static int getBitValue(char c) {
       switch (c) {
@@ -128,6 +99,15 @@ public class PascalUtils {
       }
    }
 
+   /**
+    * 
+    * @param c
+    * @return -1 if none
+    */
+   public static int getIndexValue(char c) {
+      return ITechPasc.PASCAL64_CHARS.indexOf(c);
+   }
+
    public static String getOperationSubTypeUserString(OperationSubType ot) {
       if (ot == OperationSubType.BUYACCONT_TARGET) {
          return "BuyAccountTarget";
@@ -191,7 +171,7 @@ public class PascalUtils {
    public static int hasInvalidIndex(String str) {
       for (int i = 0; i < str.length(); i++) {
          char c = str.charAt(i);
-         if (PASCAL64_CHARS.indexOf(c) == -1) {
+         if (ITechPasc.PASCAL64_CHARS.indexOf(c) == -1) {
             return i;
          }
       }
@@ -211,91 +191,6 @@ public class PascalUtils {
 
    public PascalUtils(PCoreCtx pc) {
       this.pc = pc;
-   }
-
-   /**
-    * Reads an encoded Pascal64 string at offset
-    * Will bomb is invalid data
-    * @param data
-    * @param offset
-    * @param numchars
-    * @return
-    * @throws ArrayIndexOutOfBoundsException if data is corrupted or offset invalid
-    */
-   public String pascal64StringDecode(byte[] data, int offset) {
-      int numChars = data[offset++];
-      char[] array = new char[numChars];
-      for (int i = 0; i < array.length;) {
-         //read minLeftBytes. at least one
-         int minLeftBytes = Math.min(3, array.length - i);
-         //let built the 24 bits template
-         int template = 0;
-         if (minLeftBytes == 1) {
-            template = (data[offset++] & 0xFF) << 0;
-         } else if (minLeftBytes == 3) {
-            template = (data[offset++] & 0xFF) << 16;
-            template |= (data[offset++] & 0xFF) << 8;
-            template |= (data[offset++] & 0xFF) << 0;
-         } else if (minLeftBytes == 2) {
-            template |= (data[offset++] & 0xFF) << 8;
-            template |= (data[offset++] & 0xFF) << 0;
-         } 
-         //iterate 
-         int numCharIteration = Math.min(4, array.length - i);
-         for (int j = 0; j < numCharIteration; j++) {
-            int bitShift = j * 6;
-            int charCodedValue = (template >> bitShift) & BitUtils.MASK_06_BITS;
-            char c = PASCAL64_CHARS.charAt(charCodedValue);
-            array[i++] = c;
-         }
-      }
-      return new String(array);
-   }
-
-   public byte[] pascal64StringEncode(String string, int offset, int len) {
-      return pascal64StringEncode(string.substring(offset, len));
-   }
-   /**
-    * 
-    * @param string
-    * @return non null byte array, a PascalCoin64 encoded byte representation 
-    * @throws IllegalArgumentException if length of string is bigger than 63
-    * @throws IllegalArgumentException if string contains invalida characters
-    */
-   public byte[] pascal64StringEncode(String string) {
-      if (string.length() > 63) {
-         throw new IllegalArgumentException(string);
-      }
-      int lengthBits = 8 + string.length() * 6;
-      int lengthBytes = IntUtils.divideCeil(lengthBits, 8);
-      byte[] data = new byte[lengthBytes];
-      //first byte is for the number of characters
-      data[0] = (byte) string.length();
-
-      //for speed, we will write by chunks of 4. that's 24 bits. and in * 
-      //we write 4 letters, we write 3 bytes
-      int indexData = 1;
-      for (int i = 0; i < string.length();) {
-         int template = 0;
-         int templateSize = Math.min(3, string.length() - i);
-         int charIteration = Math.min(4, string.length() - i);
-         for (int j = 0; j < charIteration; j++) {
-            char c = string.charAt(i++);
-            int v = getIndexValue(c);
-            if(v == -1) {
-               throw new IllegalArgumentException(string);
-            }
-            int shiftSize = j * 6;
-            int shiftedValue = v << shiftSize;
-            template = (template + shiftedValue);
-         }
-         //go in reverse so as to write first the byte data of the first char
-         for (int j = templateSize - 1; j >= 0; j--) {
-            int shiftSize = j * 8;
-            data[indexData++] = (byte) ((template >> shiftSize) & 0xFF);
-         }
-      }
-      return data;
    }
 
    /**
@@ -375,6 +270,92 @@ public class PascalUtils {
 
    public boolean isValidChar(char c) {
       return false;
+   }
+
+   /**
+    * Reads an encoded Pascal64 string at offset
+    * Will bomb is invalid data
+    * @param data
+    * @param offset
+    * @param numchars
+    * @return
+    * @throws ArrayIndexOutOfBoundsException if data is corrupted or offset invalid
+    */
+   public String pascal64StringDecode(byte[] data, int offset) {
+      int numChars = data[offset++];
+      char[] array = new char[numChars];
+      for (int i = 0; i < array.length;) {
+         //read minLeftBytes. at least one
+         int minLeftBytes = Math.min(3, array.length - i);
+         //let built the 24 bits template
+         int template = 0;
+         if (minLeftBytes == 1) {
+            template = (data[offset++] & 0xFF) << 0;
+         } else if (minLeftBytes == 3) {
+            template = (data[offset++] & 0xFF) << 16;
+            template |= (data[offset++] & 0xFF) << 8;
+            template |= (data[offset++] & 0xFF) << 0;
+         } else if (minLeftBytes == 2) {
+            template |= (data[offset++] & 0xFF) << 8;
+            template |= (data[offset++] & 0xFF) << 0;
+         }
+         //iterate 
+         int numCharIteration = Math.min(4, array.length - i);
+         for (int j = 0; j < numCharIteration; j++) {
+            int bitShift = j * 6;
+            int charCodedValue = (template >> bitShift) & BitUtils.MASK_06_BITS;
+            char c = ITechPasc.PASCAL64_CHARS.charAt(charCodedValue);
+            array[i++] = c;
+         }
+      }
+      return new String(array);
+   }
+
+   /**
+    * 
+    * @param string
+    * @return non null byte array, a PascalCoin64 encoded byte representation 
+    * @throws IllegalArgumentException if length of string is bigger than 63
+    * @throws IllegalArgumentException if string contains invalida characters
+    */
+   public byte[] pascal64StringEncode(String string) {
+      if (string.length() > 63) {
+         throw new IllegalArgumentException(string);
+      }
+      int lengthBits = 8 + string.length() * 6;
+      int lengthBytes = IntUtils.divideCeil(lengthBits, 8);
+      byte[] data = new byte[lengthBytes];
+      //first byte is for the number of characters
+      data[0] = (byte) string.length();
+
+      //for speed, we will write by chunks of 4. that's 24 bits. and in * 
+      //we write 4 letters, we write 3 bytes
+      int indexData = 1;
+      for (int i = 0; i < string.length();) {
+         int template = 0;
+         int templateSize = Math.min(3, string.length() - i);
+         int charIteration = Math.min(4, string.length() - i);
+         for (int j = 0; j < charIteration; j++) {
+            char c = string.charAt(i++);
+            int v = getIndexValue(c);
+            if (v == -1) {
+               throw new IllegalArgumentException(string);
+            }
+            int shiftSize = j * 6;
+            int shiftedValue = v << shiftSize;
+            template = (template + shiftedValue);
+         }
+         //go in reverse so as to write first the byte data of the first char
+         for (int j = templateSize - 1; j >= 0; j--) {
+            int shiftSize = j * 8;
+            data[indexData++] = (byte) ((template >> shiftSize) & 0xFF);
+         }
+      }
+      return data;
+   }
+
+   public byte[] pascal64StringEncode(String string, int offset, int len) {
+      return pascal64StringEncode(string.substring(offset, len));
    }
 
 }

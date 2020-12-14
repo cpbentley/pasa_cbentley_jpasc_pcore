@@ -6,10 +6,9 @@ package pasa.cbentley.jpasc.pcore.pages;
 
 import java.util.List;
 
-import com.github.davidbolet.jpascalcoin.api.model.Operation;
-
 import pasa.cbentley.core.src4.logging.Dctx;
 import pasa.cbentley.jpasc.pcore.ctx.PCoreCtx;
+import pasa.cbentley.jpasc.pcore.rpc.model.Operation;
 
 /**
  * Pager when listing operations from blocks

@@ -4,9 +4,8 @@
  */
 package pasa.cbentley.jpasc.pcore.listlisteners;
 
-import com.github.davidbolet.jpascalcoin.api.model.Operation;
-
 import pasa.cbentley.jpasc.pcore.ctx.PCoreCtx;
+import pasa.cbentley.jpasc.pcore.rpc.model.Operation;
 
 public class ListenerHolderOperation extends ListenerHolder<Operation> {
 

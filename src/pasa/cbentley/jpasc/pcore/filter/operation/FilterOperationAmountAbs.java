@@ -4,11 +4,10 @@
  */
 package pasa.cbentley.jpasc.pcore.filter.operation;
 
-import com.github.davidbolet.jpascalcoin.api.model.Operation;
-
 import pasa.cbentley.core.src4.ctx.UCtx;
 import pasa.cbentley.core.src4.logging.Dctx;
 import pasa.cbentley.jpasc.pcore.ctx.PCoreCtx;
+import pasa.cbentley.jpasc.pcore.rpc.model.Operation;
 
 public class FilterOperationAmountAbs extends FilterOperationAbstract {
 

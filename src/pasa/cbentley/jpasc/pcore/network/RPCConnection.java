@@ -9,23 +9,21 @@ import java.util.List;
 import java.util.Stack;
 import java.util.Vector;
 
-import com.github.davidbolet.jpascalcoin.api.constants.PascalCoinConstants;
-import com.github.davidbolet.jpascalcoin.exception.RPCIOException;
-
 import pasa.cbentley.core.src4.ctx.UCtx;
 import pasa.cbentley.core.src4.event.BusEvent;
 import pasa.cbentley.core.src4.helpers.StringBBuilder;
 import pasa.cbentley.core.src4.logging.Dctx;
 import pasa.cbentley.core.src4.thread.ITechRunnable;
+import pasa.cbentley.jpasc.pcore.client.IPascalCoinClient;
 import pasa.cbentley.jpasc.pcore.client.PascalAccountCache;
 import pasa.cbentley.jpasc.pcore.client.PascalClientDummy;
 import pasa.cbentley.jpasc.pcore.ctx.IEventsPCore;
+import pasa.cbentley.jpasc.pcore.ctx.ITechPasc;
 import pasa.cbentley.jpasc.pcore.ctx.ITechPCore;
 import pasa.cbentley.jpasc.pcore.ctx.PCoreCtx;
-import pasa.cbentley.jpasc.pcore.dboletbridge.IPascalCoinClient;
-import pasa.cbentley.jpasc.pcore.dboletbridge.PascalCoinClientNoLoggerBridge;
 import pasa.cbentley.jpasc.pcore.interfaces.IBlockListener;
 import pasa.cbentley.jpasc.pcore.ping.PingRunnable;
+import pasa.cbentley.jpasc.pcore.rpc.exception.RPCIOException;
 
 /**
  * 
@@ -108,7 +106,7 @@ public class RPCConnection implements IBlockListener , IEventsPCore {
    public RPCConnectionThreadSlave createConnectionForThread() {
       RPCConnectionThreadSlave con = null;
       if (stackUnused.isEmpty()) {
-         PascalCoinClientNoLoggerBridge pclient = new PascalCoinClientNoLoggerBridge(pc, ip, port);
+         IPascalCoinClient pclient = pc.createInstance(ip, port);
          con = new RPCConnectionThreadSlave(pc, this, pclient);
       } else {
          con = stackUnused.pop();
@@ -137,7 +135,7 @@ public class RPCConnection implements IBlockListener , IEventsPCore {
     * @return
     */
    public boolean connectLocalhostTestNet() {
-      Short port = PascalCoinConstants.DEFAULT_TEST_RPC_PORT;
+      Short port = ITechPasc.DEFAULT_TEST_RPC_PORT;
       boolean b = connectLocalhost(port);
       return b;
    }
@@ -146,8 +144,7 @@ public class RPCConnection implements IBlockListener , IEventsPCore {
       String ip = "127.0.0.1";
       this.ip = ip;
       this.port = port;
-      //TODO introduce client factory
-      pclient = new PascalCoinClientNoLoggerBridge(pc, ip, port);
+      pclient = pc.createInstance(ip, port);
 
       String ipStr = " " + ip + ":" + port;
       try {
@@ -209,7 +206,7 @@ public class RPCConnection implements IBlockListener , IEventsPCore {
     * @return true if connection was successful
     */
    public boolean connectLocalhost() {
-      Short port = PascalCoinConstants.DEFAULT_MAINNET_RPC_PORT;
+      Short port = ITechPasc.DEFAULT_MAINNET_RPC_PORT;
       return connectLocalhost(port);
    }
 

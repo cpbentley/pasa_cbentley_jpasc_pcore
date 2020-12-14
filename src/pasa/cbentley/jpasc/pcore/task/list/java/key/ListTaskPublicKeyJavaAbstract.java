@@ -7,13 +7,12 @@ package pasa.cbentley.jpasc.pcore.task.list.java.key;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.github.davidbolet.jpascalcoin.api.model.PublicKey;
-
 import pasa.cbentley.jpasc.pcore.ctx.PCoreCtx;
 import pasa.cbentley.jpasc.pcore.domain.java.PublicKeyJava;
 import pasa.cbentley.jpasc.pcore.filter.IFilterPublicKey;
 import pasa.cbentley.jpasc.pcore.filter.IFilterPublicKeyJava;
 import pasa.cbentley.jpasc.pcore.listlisteners.IListListener;
+import pasa.cbentley.jpasc.pcore.rpc.model.PublicKey;
 import pasa.cbentley.jpasc.pcore.task.ListTask;
 import pasa.cbentley.jpasc.pcore.task.ListTaskPage;
 

@@ -6,13 +6,12 @@ package pasa.cbentley.jpasc.pcore.task.list.dbolet.account.chain;
 
 import java.util.List;
 
-import com.github.davidbolet.jpascalcoin.api.model.Account;
-
 import pasa.cbentley.core.src4.ctx.UCtx;
 import pasa.cbentley.core.src4.logging.Dctx;
+import pasa.cbentley.jpasc.pcore.client.IPascalCoinClient;
 import pasa.cbentley.jpasc.pcore.ctx.PCoreCtx;
-import pasa.cbentley.jpasc.pcore.dboletbridge.IPascalCoinClient;
 import pasa.cbentley.jpasc.pcore.listlisteners.IListListener;
+import pasa.cbentley.jpasc.pcore.rpc.model.Account;
 import pasa.cbentley.jpasc.pcore.task.list.dbolet.account.ListTaskAccountAbstract;
 
 /**
@@ -25,11 +24,11 @@ public class ListTaskAccountChainFindAccounts8 extends ListTaskAccountAbstract {
 
    protected String  name;
 
-   protected Boolean isExactMatch;
+   protected String  nameSearchType;
 
    protected Integer type = null;
 
-   protected Boolean isListedForSale;
+   protected String  statusType;
 
    protected Double  balanceMin;
 
@@ -45,7 +44,7 @@ public class ListTaskAccountChainFindAccounts8 extends ListTaskAccountAbstract {
    }
 
    protected List<Account> findItems(IPascalCoinClient client, Integer start, Integer max) {
-      return client.findAccounts(name, isExactMatch, type, isListedForSale, balanceMin, balanceMax, start, max);
+      return client.findAccounts(name, nameSearchType, type, statusType, balanceMin, balanceMax, start, max);
    }
 
    //#mdebug

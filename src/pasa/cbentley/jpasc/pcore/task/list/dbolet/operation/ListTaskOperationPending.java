@@ -6,13 +6,12 @@ package pasa.cbentley.jpasc.pcore.task.list.dbolet.operation;
 
 import java.util.List;
 
-import com.github.davidbolet.jpascalcoin.api.model.Operation;
-
+import pasa.cbentley.jpasc.pcore.client.IPascalCoinClient;
 import pasa.cbentley.jpasc.pcore.ctx.PCoreCtx;
-import pasa.cbentley.jpasc.pcore.dboletbridge.IPascalCoinClient;
 import pasa.cbentley.jpasc.pcore.listlisteners.IListListener;
 import pasa.cbentley.jpasc.pcore.pages.PagerAbstract;
 import pasa.cbentley.jpasc.pcore.pages.PagerOperation;
+import pasa.cbentley.jpasc.pcore.rpc.model.Operation;
 
 /**
  * Task

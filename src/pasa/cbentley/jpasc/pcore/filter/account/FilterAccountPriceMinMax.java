@@ -4,10 +4,9 @@
  */
 package pasa.cbentley.jpasc.pcore.filter.account;
 
-import com.github.davidbolet.jpascalcoin.api.model.Account;
-
 import pasa.cbentley.core.src4.logging.Dctx;
 import pasa.cbentley.jpasc.pcore.ctx.PCoreCtx;
+import pasa.cbentley.jpasc.pcore.rpc.model.Account;
 
 /**
  * True if price is included in the price range inclusive.

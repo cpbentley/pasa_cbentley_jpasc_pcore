@@ -7,12 +7,11 @@ package pasa.cbentley.jpasc.pcore.task;
 import java.io.IOException;
 import java.io.InterruptedIOException;
 
-import com.github.davidbolet.jpascalcoin.exception.RPCIOException;
-
 import pasa.cbentley.core.src4.logging.Dctx;
 import pasa.cbentley.core.src4.logging.IDLog;
 import pasa.cbentley.core.src4.thread.AbstractBRunnable;
 import pasa.cbentley.jpasc.pcore.ctx.PCoreCtx;
+import pasa.cbentley.jpasc.pcore.rpc.exception.RPCIOException;
 
 /**
  * Base class for all background tasks within the {@link PCoreCtx}

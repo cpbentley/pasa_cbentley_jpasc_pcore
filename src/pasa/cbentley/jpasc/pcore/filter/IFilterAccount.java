@@ -4,7 +4,7 @@
  */
 package pasa.cbentley.jpasc.pcore.filter;
 
-import com.github.davidbolet.jpascalcoin.api.model.Account;
+import pasa.cbentley.jpasc.pcore.rpc.model.Account;
 
 public interface IFilterAccount extends IFilterAccountT<Account> {
 

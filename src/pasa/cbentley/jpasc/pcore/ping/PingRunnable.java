@@ -4,15 +4,13 @@
  */
 package pasa.cbentley.jpasc.pcore.ping;
 
-import com.github.davidbolet.jpascalcoin.api.client.PascalCoinClient;
-import com.github.davidbolet.jpascalcoin.exception.RPCApiException;
-
 import pasa.cbentley.core.src4.logging.Dctx;
 import pasa.cbentley.core.src4.logging.ITechLvl;
 import pasa.cbentley.core.src4.thread.AbstractBRunnable;
 import pasa.cbentley.jpasc.pcore.ctx.PCoreCtx;
 import pasa.cbentley.jpasc.pcore.interfaces.IBlockListener;
 import pasa.cbentley.jpasc.pcore.network.RPCConnection;
+import pasa.cbentley.jpasc.pcore.rpc.exception.RPCApiException;
 
 /**
  * Pings the Pascal deamon encapsulated in a {@link PascalCoinClient} for new info such as

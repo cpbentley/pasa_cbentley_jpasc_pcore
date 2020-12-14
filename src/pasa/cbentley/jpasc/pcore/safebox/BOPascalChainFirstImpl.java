@@ -6,15 +6,14 @@ package pasa.cbentley.jpasc.pcore.safebox;
 
 import java.util.List;
 
-import com.github.davidbolet.jpascalcoin.api.client.PascalCoinClient;
-import com.github.davidbolet.jpascalcoin.api.model.Account;
-
 import pasa.cbentley.core.src4.ctx.UCtx;
 import pasa.cbentley.core.src4.logging.Dctx;
+import pasa.cbentley.jpasc.pcore.client.IPascalCoinClient;
 import pasa.cbentley.jpasc.pcore.ctx.PCoreCtx;
 import pasa.cbentley.jpasc.pcore.domain.bo.AccountBO;
 import pasa.cbentley.jpasc.pcore.interfaces.IBOPascalChain;
 import pasa.cbentley.jpasc.pcore.listlisteners.IListListener;
+import pasa.cbentley.jpasc.pcore.rpc.model.Account;
 
 /**
  * 
@@ -41,7 +40,7 @@ public class BOPascalChainFirstImpl implements IBOPascalChain, IListListener<Acc
    }
 
 
-   public void syncWith(PascalCoinClient pClient) {
+   public void syncWith(IPascalCoinClient pClient) {
       
    }
 
