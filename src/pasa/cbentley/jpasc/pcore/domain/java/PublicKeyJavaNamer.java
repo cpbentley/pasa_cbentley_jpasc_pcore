@@ -9,6 +9,13 @@ import pasa.cbentley.core.src4.logging.Dctx;
 import pasa.cbentley.core.src4.logging.IDLog;
 import pasa.cbentley.core.src5.interfaces.INameable;
 
+/**
+ * 
+ * @see INameable
+ * 
+ * @author Charles Bentley
+ *
+ */
 public class PublicKeyJavaNamer implements INameable<PublicKeyJava> {
 
    private PublicKeyJava key;

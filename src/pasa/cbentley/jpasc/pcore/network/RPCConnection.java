@@ -58,6 +58,9 @@ public class RPCConnection implements IBlockListener , IEventsPCore {
    private boolean              isConnected         = false;
 
    public RPCConnection(PCoreCtx pcc) {
+      if(pcc == null) {
+         throw new NullPointerException();
+      }
       this.pc = pcc;
       pclient = new PascalClientDummy(pcc);
       isConnected = false;

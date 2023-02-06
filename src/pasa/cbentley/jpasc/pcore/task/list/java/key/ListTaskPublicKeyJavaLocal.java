@@ -11,6 +11,7 @@ import pasa.cbentley.core.src4.logging.Dctx;
 import pasa.cbentley.jpasc.pcore.client.IPascalCoinClient;
 import pasa.cbentley.jpasc.pcore.ctx.PCoreCtx;
 import pasa.cbentley.jpasc.pcore.domain.java.PublicKeyJava;
+import pasa.cbentley.jpasc.pcore.domain.java.PublicKeyJavaCache;
 import pasa.cbentley.jpasc.pcore.listlisteners.IListListener;
 import pasa.cbentley.jpasc.pcore.pages.PagerAbstract;
 import pasa.cbentley.jpasc.pcore.task.ListTask;
@@ -18,7 +19,6 @@ import pasa.cbentley.jpasc.pcore.task.ListTaskPage;
 import pasa.cbentley.jpasc.pcore.task.list.dbolet.key.ListTaskPublicKeyAbstract;
 import pasa.cbentley.jpasc.pcore.tools.KeyNameProvider;
 import pasa.cbentley.jpasc.pcore.tools.PkNamesStore;
-import pasa.cbentley.jpasc.pcore.utils.PublicKeyJavaCache;
 
 /**
  * Task for listing keys from {@link PkNamesStore}

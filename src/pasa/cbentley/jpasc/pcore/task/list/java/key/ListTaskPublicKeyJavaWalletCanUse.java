@@ -4,15 +4,10 @@
  */
 package pasa.cbentley.jpasc.pcore.task.list.java.key;
 
-import java.util.List;
-
-import pasa.cbentley.core.src4.ctx.UCtx;
 import pasa.cbentley.core.src4.logging.Dctx;
 import pasa.cbentley.jpasc.pcore.ctx.PCoreCtx;
 import pasa.cbentley.jpasc.pcore.domain.java.PublicKeyJava;
-import pasa.cbentley.jpasc.pcore.filter.publickey.FilterKeyCanUse;
 import pasa.cbentley.jpasc.pcore.listlisteners.IListListener;
-import pasa.cbentley.jpasc.pcore.pages.PagerAbstract;
 import pasa.cbentley.jpasc.pcore.task.list.dbolet.key.ListTaskPublicKeyWalletCanUse;
 
 /**
@@ -20,8 +15,7 @@ import pasa.cbentley.jpasc.pcore.task.list.dbolet.key.ListTaskPublicKeyWalletCan
  * @author Charles Bentley
  *
  */
-public class ListTaskPublicKeyJavaWalletCanUse extends ListTaskPublicKeyJavaWallet  {
-
+public class ListTaskPublicKeyJavaWalletCanUse extends ListTaskPublicKeyJavaWallet {
 
    public ListTaskPublicKeyJavaWalletCanUse(PCoreCtx pc, IListListener<PublicKeyJava> listener) {
       super(pc, listener);
@@ -29,29 +23,23 @@ public class ListTaskPublicKeyJavaWalletCanUse extends ListTaskPublicKeyJavaWall
       taskPublicKey = new ListTaskPublicKeyWalletCanUse(pc, this);
    }
 
-   
    //#mdebug
    public void toString(Dctx dc) {
-      dc.root(this, "ListTaskPublicKeyJavaWalletCanUse");
+      dc.root(this, ListTaskPublicKeyJavaWalletCanUse.class, "@line5");
       toStringPrivate(dc);
       super.toString(dc.sup());
    }
 
    private void toStringPrivate(Dctx dc) {
-      
+
    }
 
    public void toString1Line(Dctx dc) {
-      dc.root1Line(this, "ListTaskPublicKeyJavaWalletCanUse");
+      dc.root1Line(this, ListTaskPublicKeyJavaWalletCanUse.class);
       toStringPrivate(dc);
       super.toString1Line(dc.sup1Line());
    }
 
-
-
    //#enddebug
-   
-
-
 
 }

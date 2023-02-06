@@ -6,7 +6,9 @@ package pasa.cbentley.jpasc.pcore.task.list.dbolet.account.wallet;
 
 import java.util.List;
 
+import pasa.cbentley.core.src4.ctx.UCtx;
 import pasa.cbentley.core.src4.logging.Dctx;
+import pasa.cbentley.core.src4.logging.IDLog;
 import pasa.cbentley.jpasc.pcore.client.IPascalCoinClient;
 import pasa.cbentley.jpasc.pcore.ctx.PCoreCtx;
 import pasa.cbentley.jpasc.pcore.domain.java.PublicKeyJava;
@@ -18,7 +20,8 @@ import pasa.cbentley.jpasc.pcore.rpc.model.PublicKey;
 import pasa.cbentley.jpasc.pcore.task.list.dbolet.account.ListTaskAccountAbstract;
 
 /**
- * Returns all accounts from public keys registered in the daemon. no filtering
+ * Returns all accounts from public keys registered in the daemon. no filtering.
+ * 
  * @author Charles Bentley
  *
  */
@@ -58,20 +61,23 @@ public class ListTaskAccountWalletPubKey extends ListTaskAccountAbstract {
 
    //#mdebug
    public void toString(Dctx dc) {
-      dc.root(this, "ListTaskAccountWalletPubKey");
+      dc.root(this, ListTaskAccountWalletPubKey.class, "@line64");
       toStringPrivate(dc);
       super.toString(dc.sup());
    }
 
+   private void toStringPrivate(Dctx dc) {
+      
+   }
+
    public void toString1Line(Dctx dc) {
-      dc.root1Line(this, "ListTaskAccountWalletPubKey");
+      dc.root1Line(this, ListTaskAccountWalletPubKey.class);
       toStringPrivate(dc);
       super.toString1Line(dc.sup1Line());
    }
 
-   private void toStringPrivate(Dctx dc) {
-   }
-
    //#enddebug
+   
+
 
 }

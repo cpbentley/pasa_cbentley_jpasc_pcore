@@ -282,7 +282,7 @@ public class Account extends ObjectPCore implements Serializable {
    }
 
    /**
-    * Last block that updated this account. If equal to blockchain blocks count it means that it has pending 
+    * Last block that updated this account. If equal to blockchain blocks count, it means that it has pending 
     * operations to be included to the blockchain
     * @return Integer
     */

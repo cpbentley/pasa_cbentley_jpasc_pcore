@@ -57,6 +57,16 @@ public class OperationJavaChangeAccountInfo extends OperationJavaAbstract {
    protected void executePostSuccess() {
       pc.getPasaServices().registerAccountInPendingOperations(op);
    }
+   
+   public void doValidateParams() {
+      if(accountTarget == null) {
+         throw new NullPointerException();
+      }
+      if((newType == null && newName == null) && (newEncPubKey == null && newB58PubKey == null)) {
+         throw new NullPointerException();
+      }
+      isParamValidated = true;
+   }
 
    public Integer getAccountSigner() {
       return accountSigner;

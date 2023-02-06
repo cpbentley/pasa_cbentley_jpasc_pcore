@@ -15,8 +15,15 @@ import pasa.cbentley.jpasc.pcore.pages.PagerAbstract;
 import pasa.cbentley.jpasc.pcore.rpc.exception.RPCApiException;
 
 /**
- * List objects from an {@link IPascalCoinClient}
- * TODO move a generic version of this to core5
+ * 
+ * Paging support for {@link ListTask} <- {@link PCoreTask} <- {@link AbstractBRunnable}
+ * 
+ * <br>
+ * <br>
+ * 
+ * List objects from an {@link IPascalCoinClient} using a pager for smooth end user operation.
+ * 
+ * TODO move a generic (not bound to PCoreTask) version of this to core5
  * @author Charles Bentley
  *
  * @param <T>

@@ -14,21 +14,44 @@ import pasa.cbentley.core.src4.structs.IntBuffer;
 import pasa.cbentley.jpasc.pcore.ctx.PCoreCtx;
 import pasa.cbentley.jpasc.pcore.rpc.model.KeyType;
 import pasa.cbentley.jpasc.pcore.utils.PascalCoinValue;
-import pasa.cbentley.jpasc.pcore.utils.PublicKeyJavaCache;
 
+/**
+ * A Java representation of the Public Key from the Pascal Daemon.
+ * 
+ * Provides services
+ * <li> Tracks the number of coins on the key
+ * <li> {@link IntBuffer} of accounts numbers
+ * <li> Wildcard key 
+ * 
+ * @author Charles Bentley
+ *
+ */
 public class PublicKeyJava implements Serializable, IStringable {
    /**
     * 
     */
    private static final long  serialVersionUID = 1L;
 
+   /**
+    * 
+    */
    private IntBuffer          accounts;
+
+   /**
+    * 
+    */
+   private Integer            accountsBlockTime;
 
    /**
    * Encoded value of this public key in Base 58 format, also contains a checksum.This is the same value that Application Wallet exports as a public key
    */
    protected String           base58PubKey;
 
+   /**
+    * Reference track for the {@link PublicKeyJavaCache} that owns this {@link PublicKeyJava}
+    * <br><br>
+    * When null, the {@link PublicKeyJava} does not belong to any cache.
+    */
    private PublicKeyJavaCache cache;
 
    private int                cachedTableIndex = -1;
@@ -66,9 +89,14 @@ public class PublicKeyJava implements Serializable, IStringable {
 
    /**
     * total number of coins on this accounts'key
-    * when null, not computed
+    * when null, value is not computed not computed
     */
    private PascalCoinValue    numCoins;
+
+   /**
+    * Block height at which the number of coins has been computed
+    */
+   private Integer            numCoinsBlockTime;
 
    protected final PCoreCtx   pc;
 
@@ -106,6 +134,10 @@ public class PublicKeyJava implements Serializable, IStringable {
       }
    }
 
+   /**
+    * 
+    * @param balance
+    */
    public void addCoins(Double balance) {
       if (balance == null) {
          return;
@@ -145,6 +177,10 @@ public class PublicKeyJava implements Serializable, IStringable {
       }
    }
 
+   public Integer getAccountsBlockTime() {
+      return accountsBlockTime;
+   }
+
    public String getBase58PubKey() {
       return base58PubKey;
    }
@@ -165,9 +201,17 @@ public class PublicKeyJava implements Serializable, IStringable {
       return encPubKey;
    }
 
+   /**
+    * 
+    * @return
+    * @throws IllegalArgumentException when not enough data to create
+    */
    public String getEncPubKeyOrFetch() {
       if (encPubKey == null) {
-
+         if (base58PubKey == null) {
+            throw new IllegalArgumentException();
+         }
+         throw new RuntimeException("not implemented");
       }
       return encPubKey;
    }
@@ -196,6 +240,10 @@ public class PublicKeyJava implements Serializable, IStringable {
 
    public PascalCoinValue getNumCoins() {
       return numCoins;
+   }
+
+   public Integer getNumCoinsBlockTime() {
+      return numCoinsBlockTime;
    }
 
    public int getSaleCount() {
@@ -241,10 +289,20 @@ public class PublicKeyJava implements Serializable, IStringable {
       return isWildcard;
    }
 
+   public void setAccountsBlockTime(Integer accountsBlockTime) {
+      this.accountsBlockTime = accountsBlockTime;
+   }
+
    public void setBase58PubKey(String base58PubKey) {
       this.base58PubKey = base58PubKey;
    }
 
+   /**
+    * Reference track for the {@link PublicKeyJavaCache} that owns this {@link PublicKeyJava}
+    * <br><br>
+    * When null, the {@link PublicKeyJava} does not belong to any cache.
+    * @param cache
+    */
    public void setCache(PublicKeyJavaCache cache) {
       this.cache = cache;
    }
@@ -286,6 +344,10 @@ public class PublicKeyJava implements Serializable, IStringable {
       this.numAccounts = numAccounts;
    }
 
+   public void setNumCoinsBlockTime(Integer numCoinsBlockTime) {
+      this.numCoinsBlockTime = numCoinsBlockTime;
+   }
+
    public void setWalletKey(boolean isWalletKey) {
       this.isWalletKey = isWalletKey;
    }
@@ -312,13 +374,29 @@ public class PublicKeyJava implements Serializable, IStringable {
    }
 
    public void toString(Dctx dc) {
-      dc.root(this, "PublicKeyJava");
+      dc.root(this, PublicKeyJava.class);
       toStringPrivate(dc);
+
+      dc.appendVarWithSpace("name", name);
+
+      dc.appendVarWithSpace("isNew", isNew);
+      dc.appendVarWithSpace("canUse", canUse);
+      dc.appendVarWithSpace("isWalletKey", isWalletKey);
+      dc.appendVarWithSpace("isWildcard", isWildcard);
 
       dc.appendVarWithNewLine("base58PubKey", base58PubKey);
       dc.appendVarWithNewLine("encPubKey", encPubKey);
       dc.appendVarWithNewLine("x", x);
       dc.appendVarWithNewLine("y", y);
+
+      dc.nlLvl(accounts, "Accounts");
+      dc.appendVarWithSpace("accountsBlockTime", getAccountsBlockTime());
+
+      dc.nlLvl(numCoins, "numCoins");
+      dc.appendVarWithSpace("numCoinsBlockTime", getNumCoinsBlockTime());
+
+      dc.appendVarWithNewLine("keyType", keyType.toString());
+
    }
 
    public String toString1Line() {
@@ -326,7 +404,7 @@ public class PublicKeyJava implements Serializable, IStringable {
    }
 
    public void toString1Line(Dctx dc) {
-      dc.root1Line(this, "PublicKeyJava");
+      dc.root1Line(this, PublicKeyJava.class);
       toStringPrivate(dc);
    }
 

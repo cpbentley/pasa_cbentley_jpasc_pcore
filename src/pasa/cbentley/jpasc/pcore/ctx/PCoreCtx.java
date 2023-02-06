@@ -42,6 +42,7 @@ import pasa.cbentley.jpasc.pcore.domain.ipc.IPCAccount;
 import pasa.cbentley.jpasc.pcore.domain.ipc.IPCAccountMutable;
 import pasa.cbentley.jpasc.pcore.domain.java.AccountJava;
 import pasa.cbentley.jpasc.pcore.domain.java.PublicKeyJava;
+import pasa.cbentley.jpasc.pcore.domain.java.PublicKeyJavaCache;
 import pasa.cbentley.jpasc.pcore.domain.tech.ITechAccount;
 import pasa.cbentley.jpasc.pcore.interfaces.IAccessPascal;
 import pasa.cbentley.jpasc.pcore.interfaces.IBOPascalChain;
@@ -58,7 +59,6 @@ import pasa.cbentley.jpasc.pcore.utils.PASCAddressValidation;
 import pasa.cbentley.jpasc.pcore.utils.PascalCoinDouble;
 import pasa.cbentley.jpasc.pcore.utils.PascalCoinValue;
 import pasa.cbentley.jpasc.pcore.utils.PascalUtils;
-import pasa.cbentley.jpasc.pcore.utils.PublicKeyJavaCache;
 
 /**
  * All the core services not related to the UI.
@@ -218,6 +218,17 @@ public class PCoreCtx extends ACtx implements IStringable, ICtx {
       return new PascalCoinValue(this, d);
    }
 
+   /**
+    * Create a new {@link IPascalCoinClient} RPC instance from our Client Factory
+    * <br>
+    * <br>
+    * 
+    * See {@link PCoreCtx#setPascalCoinClientFactory(IPascalCoinClientFactory)}
+    * 
+    * @param address
+    * @param port
+    * @return
+    */
    public IPascalCoinClient createInstance(String address, int port) {
       if (pascalCoinClientFactory == null) {
          throw new IllegalStateException("Cannot call createInstance before setting a client factory");
@@ -467,14 +478,30 @@ public class PCoreCtx extends ACtx implements IStringable, ICtx {
       return payloadEncoding;
    }
 
+   private IPascalCoinClient pclient;
+
    /**
     * Never null. Returns a thread local object
     * @return
     */
    public IPascalCoinClient getPClient() {
+      if (pclient != null) {
+         return pclient;
+      }
       return rpcConnection.getPClient();
    }
 
+   /**
+    * Overrides the {@link RPCConnection} client 
+    * 
+    * @param pclient
+    */
+   public void setPascalCoinClient(IPascalCoinClient pclient) {
+      if (pclient == null) {
+         throw new NullPointerException();
+      }
+      this.pclient = pclient;
+   }
 
    public PingParams getPingParams() {
       return pingParams;
@@ -588,6 +615,12 @@ public class PCoreCtx extends ACtx implements IStringable, ICtx {
       this.keyNameProvider = keyNameProvider;
    }
 
+   /**
+    * Must be called by the {@link PCoreCtx} creator as soon as it knows which RPC engine to use.
+    * 
+    * 
+    * @param pascalCoinClientFactory
+    */
    public void setPascalCoinClientFactory(IPascalCoinClientFactory pascalCoinClientFactory) {
       this.pascalCoinClientFactory = pascalCoinClientFactory;
    }

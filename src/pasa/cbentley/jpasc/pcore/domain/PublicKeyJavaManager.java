@@ -7,6 +7,11 @@ package pasa.cbentley.jpasc.pcore.domain;
 import pasa.cbentley.jpasc.pcore.ctx.PCoreCtx;
 import pasa.cbentley.jpasc.pcore.domain.java.PublicKeyJava;
 
+/**
+ * 
+ * @author Charles Bentley
+ *
+ */
 public class PublicKeyJavaManager {
 
    protected final PCoreCtx pc;
@@ -19,7 +24,7 @@ public class PublicKeyJavaManager {
       this.pc = pc;
       publicKeyJavaAll = new PublicKeyJava(pc);
       publicKeyJavaEmpties = new PublicKeyJava(pc);
-      
+
       languageUpdate();
    }
 
