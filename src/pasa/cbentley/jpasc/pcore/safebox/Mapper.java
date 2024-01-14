@@ -217,32 +217,5 @@ public class Mapper implements ITechAccountVariableFullBO {
 
    }
 
-   //#mdebug
-   public String toString() {
-      return Dctx.toString(this);
-   }
-
-   public void toString(Dctx dc) {
-      dc.root(this, "Mapper");
-      toStringPrivate(dc);
-   }
-
-   public String toString1Line() {
-      return Dctx.toString1Line(this);
-   }
-
-   private void toStringPrivate(Dctx dc) {
-
-   }
-
-   public void toString1Line(Dctx dc) {
-      dc.root1Line(this, "Mapper");
-      toStringPrivate(dc);
-   }
-
-   public UCtx toStringGetUCtx() {
-      return pc.getUCtx();
-   }
-   //#enddebug
 
 }

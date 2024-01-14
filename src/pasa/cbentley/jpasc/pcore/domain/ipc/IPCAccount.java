@@ -4,7 +4,7 @@
  */
 package pasa.cbentley.jpasc.pcore.domain.ipc;
 
-import pasa.cbentley.byteobjects.src4.tech.ITechAcceptor;
+import pasa.cbentley.byteobjects.src4.objects.function.ITechAcceptor;
 import pasa.cbentley.core.src4.logging.IStringable;
 import pasa.cbentley.jpasc.pcore.domain.tech.ITechAccount;
 import pasa.cbentley.jpasc.pcore.utils.PascalCoinDouble;

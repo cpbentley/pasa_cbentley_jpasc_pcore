@@ -4,7 +4,7 @@
  */
 package pasa.cbentley.jpasc.pcore.domain.tech;
 
-import pasa.cbentley.byteobjects.src4.tech.ITechByteObject;
+import pasa.cbentley.byteobjects.src4.core.interfaces.IByteObject;
 
 /**
  * We start to list fixed size data
@@ -37,7 +37,7 @@ import pasa.cbentley.byteobjects.src4.tech.ITechByteObject;
  * @author Charles Bentley
  *
  */
-public interface ITechAccountVariableFullBO extends ITechByteObject {
+public interface ITechAccountVariableFullBO extends IByteObject {
 
    public final static int ACCOUNT_BASIC_SIZE               = A_OBJECT_BASIC_SIZE + 36;
 

@@ -4,9 +4,9 @@
  */
 package pasa.cbentley.jpasc.pcore.domain.tech;
 
-import pasa.cbentley.byteobjects.src4.tech.ITechByteObject;
+import pasa.cbentley.byteobjects.src4.core.interfaces.IByteObject;
 
-public interface ITechPascalObject extends ITechByteObject {
+public interface ITechPascalObject extends IByteObject {
 
    public static final int PASCAL_BASIC_SIZE = A_OBJECT_BASIC_SIZE + 1;
    
