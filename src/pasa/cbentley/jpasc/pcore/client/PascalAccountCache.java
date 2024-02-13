@@ -79,7 +79,7 @@ public class PascalAccountCache implements IPascalCoinClient, IEventConsumer, IS
       this.client = client;
 
       //register for memory events..so as to clear cache automatically
-      pc.getUCtx().getEventBusRoot().addConsumer(this, IEventsCore.PID_3_MEMORY, IEventsCore.PID_3_MEMORY_0_ANY);
+      pc.getUCtx().getEventBusRoot().addConsumer(this, IEventsCore.PID_03_MEMORY, IEventsCore.PID_03_MEMORY_0_ANY);
 
    }
 
@@ -152,7 +152,7 @@ public class PascalAccountCache implements IPascalCoinClient, IEventConsumer, IS
    }
 
    public void consumeEvent(BusEvent e) {
-      e.checkSanity(pc.getUCtx(), IEventsCore.PID_3_MEMORY, IEventsCore.PID_3_MEMORY_0_ANY);
+      e.checkSanity(pc.getUCtx(), IEventsCore.PID_03_MEMORY, IEventsCore.PID_03_MEMORY_0_ANY);
 
       cacheClear();
       accounts = new ArrayList<>();
