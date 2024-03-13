@@ -73,7 +73,7 @@ public class CoreOperations implements IStringable {
    }
 
    public UCtx toStringGetUCtx() {
-      return pc.getUCtx();
+      return pc.getUC();
    }
 
    //#enddebug

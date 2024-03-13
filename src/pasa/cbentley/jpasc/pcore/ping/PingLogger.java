@@ -52,7 +52,7 @@ public class PingLogger implements IBlockListener {
          long minutes = TimeUnit.MILLISECONDS.toMinutes(millis);
          String str = String.format("%d,%d min,sec", minutes, TimeUnit.MILLISECONDS.toSeconds(millis) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millis)));
 
-         StringBBuilder sb = new StringBBuilder(pc.getUCtx());
+         StringBBuilder sb = new StringBBuilder(pc.getUC());
          //TODO introduce sentence for i8n
          sb.append("New Block " + newBlock);
          sb.append(" found after " + str + ".");
@@ -61,7 +61,7 @@ public class PingLogger implements IBlockListener {
             sb.append("\t#ops=" + block.getOperationCount());
             Double fee = block.getFee();
             if (fee != null) {
-               String feeStr = pc.getUCtx().getStrU().prettyDouble(fee.doubleValue(), 4);
+               String feeStr = pc.getUC().getStrU().prettyDouble(fee.doubleValue(), 4);
                sb.append("\tfees=" + feeStr);
             }
             sb.append("\tminer=" + block.getPayload());
@@ -74,7 +74,7 @@ public class PingLogger implements IBlockListener {
 
    public void pingNewPendingCount(Integer count, Integer oldCount) {
       int difference = count - oldCount;
-      String prettyDiff = pc.getUCtx().getStrU().prettyIntPaddStr(Math.abs(difference), 5, " ");
+      String prettyDiff = pc.getUC().getStrU().prettyIntPaddStr(Math.abs(difference), 5, " ");
       if (difference < 0) {
          //number of txs mined
          String mined = prettyDiff + " transactions mined.";
@@ -85,7 +85,7 @@ public class PingLogger implements IBlockListener {
          }
          pc.getLog().consoleLogDateGreen(mined);
       } else {
-         String prettyCount = pc.getUCtx().getStrU().prettyIntPaddStr(Math.abs(count), 5, " ");
+         String prettyCount = pc.getUC().getStrU().prettyIntPaddStr(Math.abs(count), 5, " ");
          pc.getLog().consoleLogDate(prettyDiff + " operations recieved." + " Total pending=" + prettyCount);
       }
    }
@@ -114,7 +114,7 @@ public class PingLogger implements IBlockListener {
    }
 
    public UCtx toStringGetUCtx() {
-      return pc.getUCtx();
+      return pc.getUC();
    }
 
    private void toStringPrivate(Dctx dc) {

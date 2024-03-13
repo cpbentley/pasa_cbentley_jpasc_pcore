@@ -176,7 +176,7 @@ public class RPCConnection implements IBlockListener , IEventsPCore {
                isLocked = wasLocked;
             }
 
-            StringBBuilder sb = new StringBBuilder(pc.getUCtx());
+            StringBBuilder sb = new StringBBuilder(pc.getUC());
             sb.append("Connected to Wallet Node with #");
             sb.append(blockCount);
             sb.append(" blocks");
@@ -444,7 +444,7 @@ public class RPCConnection implements IBlockListener , IEventsPCore {
    }
 
    public UCtx toStringGetUCtx() {
-      return pc.getUCtx();
+      return pc.getUC();
    }
    //#enddebug
 

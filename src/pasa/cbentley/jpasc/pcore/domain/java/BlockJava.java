@@ -140,7 +140,7 @@ public class BlockJava  implements Serializable, IStringable {
    }
 
    public UCtx toStringGetUCtx() {
-      return pc.getUCtx();
+      return pc.getUC();
    }
 
    //#enddebug

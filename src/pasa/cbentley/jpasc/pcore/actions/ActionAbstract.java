@@ -47,7 +47,7 @@ public abstract class ActionAbstract implements IStringable {
    }
 
    public UCtx toStringGetUCtx() {
-      return pc.getUCtx();
+      return pc.getUC();
    }
 
    //#enddebug

@@ -67,7 +67,7 @@ public class PascalCoinDouble {
 
    public String getString() {
       //for the string we have to make sure we have 00 in front
-      StringBBuilder sb = new StringBBuilder(pc.getUCtx());
+      StringBBuilder sb = new StringBBuilder(pc.getUC());
       sb.append(mantisse);
       sb.append(".");
       sb.appendPrettyFront(molinas, 4, '0');

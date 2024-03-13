@@ -80,7 +80,7 @@ public class SetFilterAccount implements IFilterAccount {
    }
 
    public UCtx toStringGetUCtx() {
-      return pc.getUCtx();
+      return pc.getUC();
    }
 
    private void toStringPrivate(Dctx dc) {

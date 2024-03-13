@@ -269,7 +269,7 @@ public class AccountJava implements IPCAccount, Serializable, IPCAccountMutable 
    }
 
    public UCtx toStringGetUCtx() {
-      return pc.getUCtx();
+      return pc.getUC();
    }
 
    //#enddebug

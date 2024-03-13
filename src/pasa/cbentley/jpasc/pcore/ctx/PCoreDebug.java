@@ -27,7 +27,7 @@ public class PCoreDebug {
    }
 
    public String dAccounts(List<Account> e) {
-      Dctx dc = new Dctx(pc.getUCtx());
+      Dctx dc = new Dctx(pc.getUC());
       d(e, dc);
       return dc.toString();
    }
@@ -41,7 +41,7 @@ public class PCoreDebug {
    }
 
    public String d1(Account acc) {
-      Dctx dc = new Dctx(pc.getUCtx());
+      Dctx dc = new Dctx(pc.getUC());
       d1(acc, dc);
       return dc.toString();
    }
@@ -146,13 +146,13 @@ public class PCoreDebug {
    }
 
    public String dPublicKeyJavas(List<PublicKeyJava> ops) {
-      Dctx dc = new Dctx(pc.getUCtx());
+      Dctx dc = new Dctx(pc.getUC());
       dPublicKeyJavas(ops, dc);
       return dc.toString();
    }
 
    public String dPublicKeys(List<PublicKey> ops) {
-      Dctx dc = new Dctx(pc.getUCtx());
+      Dctx dc = new Dctx(pc.getUC());
       dPublicKeys(ops, dc);
       return dc.toString();
    }
@@ -174,7 +174,7 @@ public class PCoreDebug {
    }
 
    public String dBlocks(List<Block> ops) {
-      Dctx dc = new Dctx(pc.getUCtx());
+      Dctx dc = new Dctx(pc.getUC());
       dBlocks(ops, dc);
       return dc.toString();
    }
@@ -188,7 +188,7 @@ public class PCoreDebug {
    }
 
    public String dOperations(List<Operation> ops) {
-      Dctx dc = new Dctx(pc.getUCtx());
+      Dctx dc = new Dctx(pc.getUC());
       dOperations(ops, dc);
       return dc.toString();
    }

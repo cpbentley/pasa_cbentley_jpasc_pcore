@@ -48,7 +48,7 @@ public class PingRunnable extends AbstractBRunnable {
     * @param lis
     */
    public PingRunnable(PCoreCtx pctx, IBlockListener lis) {
-      super(pctx.getUCtx());
+      super(pctx.getUC());
       this.pc = pctx;
       if (lis == null)
          throw new NullPointerException();

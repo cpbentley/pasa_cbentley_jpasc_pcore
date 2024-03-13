@@ -46,7 +46,7 @@ public abstract class FilterOperationAbstract implements IFilterOperation {
    }
 
    public UCtx toStringGetUCtx() {
-      return pc.getUCtx();
+      return pc.getUC();
    }
 
    //#enddebug

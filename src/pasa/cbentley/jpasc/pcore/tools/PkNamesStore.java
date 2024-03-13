@@ -176,7 +176,7 @@ public class PkNamesStore implements IStringable {
       if(!directoryPath.exists()) {
          boolean success = directoryPath.mkdirs();
          if(!success) {
-            pc.getUCtx().getUserLog().consoleLogDateRed("Could not create settings directory "+ directoryPath.getAbsolutePath());
+            pc.getUC().getUserLog().consoleLogDateRed("Could not create settings directory "+ directoryPath.getAbsolutePath());
          }
       }
       File f = new File(directoryPath, fileName);
@@ -313,7 +313,7 @@ public class PkNamesStore implements IStringable {
    }
 
    public UCtx toStringGetUCtx() {
-      return pc.getUCtx();
+      return pc.getUC();
    }
    //#enddebug
 

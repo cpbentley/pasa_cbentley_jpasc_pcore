@@ -166,7 +166,7 @@ public abstract class OperationJavaAbstract implements IStringable {
          dc.nl();
          dc.appendVarWithSpace("Payload", toStringPayloadEncryptionMethod(payloadEncryptionMethod));
          dc.appendVarWithSpace("pwd", pwd);
-         String str = pc.getUCtx().getBU().toStringBytes(payload, 16);
+         String str = pc.getUC().getBU().toStringBytes(payload, 16);
          dc.nl();
          dc.append(str);
       }
@@ -198,7 +198,7 @@ public abstract class OperationJavaAbstract implements IStringable {
    }
 
    public String toString(PublicKey pkNew, Account buyer, Account bought, Double fee) {
-      StringBBuilder sb = new StringBBuilder(pc.getUCtx());
+      StringBBuilder sb = new StringBBuilder(pc.getUC());
       sb.append("Account ");
       sb.append(buyer.getAccount());
       sb.append(" buys ");
@@ -218,7 +218,7 @@ public abstract class OperationJavaAbstract implements IStringable {
    }
 
    public UCtx toStringGetUCtx() {
-      return pc.getUCtx();
+      return pc.getUC();
    }
    //#enddebug
 

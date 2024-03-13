@@ -127,7 +127,7 @@ public class PublicKeyJava implements Serializable, IStringable {
    public void addAccount(Integer account) {
       if (account != null) {
          if (accounts == null) {
-            accounts = new IntBuffer(pc.getUCtx(), 16, 16);
+            accounts = new IntBuffer(pc.getUC(), 16, 16);
          }
          accounts.addInt(account.intValue());
          numAccounts++;
@@ -409,7 +409,7 @@ public class PublicKeyJava implements Serializable, IStringable {
    }
 
    public UCtx toStringGetUCtx() {
-      return pc.getUCtx();
+      return pc.getUC();
    }
 
    private void toStringPrivate(Dctx dc) {

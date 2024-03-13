@@ -132,7 +132,7 @@ public class SetFilterKey implements IFilterPublicKeyJava {
    }
 
    public UCtx toStringGetUCtx() {
-      return pc.getUCtx();
+      return pc.getUC();
    }
 
    //#enddebug

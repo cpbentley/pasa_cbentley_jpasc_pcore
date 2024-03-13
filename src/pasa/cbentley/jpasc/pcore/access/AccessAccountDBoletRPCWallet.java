@@ -112,7 +112,7 @@ public class AccessAccountDBoletRPCWallet implements IAccessAccountDBolet {
    }
 
    public UCtx toStringGetUCtx() {
-      return pc.getUCtx();
+      return pc.getUC();
    }
 
    private void toStringPrivate(Dctx dc) {

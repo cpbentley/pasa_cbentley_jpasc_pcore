@@ -50,7 +50,7 @@ public class RPCConnectionThreadSlave implements IStringable {
    }
 
    public UCtx toStringGetUCtx() {
-      return pc.getUCtx();
+      return pc.getUC();
    }
 
    private void toStringPrivate(Dctx dc) {

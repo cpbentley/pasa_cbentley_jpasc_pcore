@@ -575,7 +575,7 @@ public class PCoreCtx extends ACtx implements IStringable, ICtx {
       return settingsPathCustom;
    }
 
-   public UCtx getUCtx() {
+   public UCtx getUC() {
       return uc;
    }
 

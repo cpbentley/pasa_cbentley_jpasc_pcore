@@ -41,7 +41,7 @@ public abstract class PascalAccessAbstract implements IStringable {
    }
 
    public UCtx toStringGetUCtx() {
-      return pc.getUCtx();
+      return pc.getUC();
    }
    //#enddebug
 

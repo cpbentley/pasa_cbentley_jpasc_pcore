@@ -203,7 +203,7 @@ public class PascalUtils {
       String str = String.valueOf(d);
       int len = str.length();
       int index = str.indexOf('.'); //by construction never -1 
-      StringBBuilder sb = new StringBBuilder(pc.getUCtx());
+      StringBBuilder sb = new StringBBuilder(pc.getUC());
       if (str != null && !str.equals("")) {
          String sub = str.substring(0, index);
          if (sub.length() <= 3) {

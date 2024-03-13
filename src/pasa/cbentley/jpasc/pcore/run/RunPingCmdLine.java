@@ -113,7 +113,7 @@ public class RunPingCmdLine implements IBlockListener {
    }
 
    public UCtx toStringGetUCtx() {
-      return pc.getUCtx();
+      return pc.getUC();
    }
    //#enddebug
 

@@ -26,7 +26,7 @@ public abstract class PCoreTask extends AbstractBRunnable {
    protected PCoreCtx pc;
 
    public PCoreTask(PCoreCtx pc) {
-      super(pc.getUCtx());
+      super(pc.getUC());
       this.pc = pc;
    }
 

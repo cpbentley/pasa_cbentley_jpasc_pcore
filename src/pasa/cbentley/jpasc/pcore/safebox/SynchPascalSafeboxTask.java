@@ -81,11 +81,11 @@ public class SynchPascalSafeboxTask extends PCoreTask implements IListListener<A
 
       ByteObjectManaged bom = new ByteObjectManaged(pc.getBOC());
       int initSize = pClient.getBlockCount() * 100;
-      baos = new BAByteOS(pc.getUCtx(), initSize);
-      byteOut = new BADataOS(pc.getUCtx(), baos);
+      baos = new BAByteOS(pc.getUC(), initSize);
+      byteOut = new BADataOS(pc.getUC(), baos);
 
-      baosIndex = new BAByteOS(pc.getUCtx(), initSize);
-      byteOutbaosIndex = new BADataOS(pc.getUCtx(), baos);
+      baosIndex = new BAByteOS(pc.getUC(), initSize);
+      byteOutbaosIndex = new BADataOS(pc.getUC(), baos);
 
       //strategy: use Pascal
       ListTaskAccountChain accountTask = new ListTaskAccountChain(pc, this);

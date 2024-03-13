@@ -416,7 +416,7 @@ public class PascalClientDummy implements IPascalCoinClient {
    }
 
    public UCtx toStringGetUCtx() {
-      return pcc.getUCtx();
+      return pcc.getUC();
    }
 
    private void toStringPrivate(Dctx dc) {
